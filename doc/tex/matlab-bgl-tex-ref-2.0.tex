@@ -1,0 +1,762 @@
+\hrule
+\subsection*{Searches}
+\vspace{1cm}
+\hrule
+\subsubsection*{bfs}
+\begin{mcode}
+  BFS Compute the breadth first search order.
+ 
+  [d dt pred] = bfs(A,u) returns the distance to each vertex (d) and the  
+  discover time (dt) in a breadth first search starting from vertex u.
+     d(i) = dt(i) = -1 if vertex i is not reachable from vertex u.
+  pred is the predecessor array.  pred(i) = 0 if vertex (i)  
+  is in a component not reachable from u and i != u.
+ 
+  This method works on directed graphs.
+  The runtime is O(V+E).
+ 
+  ... = bfs(A,u,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    There are no additional options for this function.
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example:
+     load graphs/bfs_example.mat
+     d = bfs(A,1)
+ 
+  See also DFS
+\end{mcode}
+\newpage
+\subsubsection*{dfs}
+\begin{mcode}
+  DFS Compute the depth first search times.
+ 
+  [d dt ft pred] = dfs(A,u) returns the distance (d), the discover (dt) and
+  finish time (ft) for each vertex in the graph in a depth first search 
+  starting from vertex u.
+    d = dt(i) = ft(i) = -1 if vertex i is not reachable from u
+  pred is the predecessor array.  pred(i) = 0 if vertex (i)  
+  is in a component not reachable from u and i != u.
+  
+  ... = dfs(A,u,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.full: compute the full dfs instead of the dfs of
+       the current component (see Note 1) [{0} | 1]
+ 
+  Note 1: When computing the full dfs, the vertex u is ignored, vertex 1 is
+  always used as the starting vertex.  
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example:
+     load graphs/dfs_example.mat
+     d = dfs(A,1)
+ 
+  See also BFS
+\end{mcode}
+\newpage
+\subsubsection*{breadth\_first\_search}
+\begin{mcode}
+  BREADTH_FIRST_SEARCH Fully wrap the Boost breadth_first_search call
+  including the bfs_visitor.
+ 
+  breadth_first_search(A,u,vis) performs a breadth first traversal 
+  of A starting from vertex u.  For each event defined by the bfs_visitor 
+  structure below, the visitor is called with the either the name of the 
+  vertex (u), or the edge index and it's source and target (ei,u,v).  
+ 
+  See http://www.boost.org/libs/graph/doc/BFSVisitor.html for a description
+  of the events.
+  
+  bfs_visitor is a struct with the following optional fields
+     vis.initialize_vertex(u)
+     vis.discover_vertex(u)
+     vis.examine_vertex(u)
+     vis.examine_edge(ei,u,v)
+     vis.tree_edge(ei,u,v)
+     vis.non_tree_edge(ei,u,v)
+     vis.gray_target(ei,u,v)
+     vis.black_target(ei,u,v)
+     vis.finish_vertex(u)
+  Each bfs_visitor parameter should be a function pointer, which returns 0
+  if the bfs should stop.  (If the function does not return anything, the
+  bfs continues.)
+ 
+  This method works on directed graphs.
+  The runtime is O(V+E), excluding the complexity of the visitor
+  operations.
+ 
+  Realistically, this function must be used with the
+  pass-by-reference/in-place modification library.  
+ 
+  ... = breadth_first_search(A,u,vis,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    There are no additional options for this function.
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example:
+    This example finds the distance to a single point and stops the search.
+    function dist_uv(A,u,v,options)
+      vstar = v;
+      dmap = ipdouble(zeros(size(A,1),1));
+      function stop=on_tree_edge(ei,u,v)
+        dmap[v] = dmap[u]+1;
+        return (v ~= vstar);
+      end;
+      breadth_first_search(A,u,struct('tree_edge',@on_tree_edge),options);
+    end;
+ 
+  See also BFS
+\end{mcode}
+\newpage
+\subsubsection*{depth\_first\_search}
+\begin{mcode}
+  DEPTH_FIRST_SEARCH Fully wrap the Boost depth_first_search call
+  including the dfs_visitor.
+ 
+  depth_first_search(A,u,dfs_visitor) performs a depth first traversal 
+  of A starting from vertex u.  For each event defined by the dfs_visitor 
+  structure below, the visitor is called with the either the name of the 
+  vertex (u), or the edge index and it's source and target (ei,u,v).  
+ 
+  See http://www.boost.org/libs/graph/doc/DFSVisitor.html for a description
+  of the events.
+  
+  dfs_visitor is a struct with the following optional fields
+     vis.initialize_vertex(u)
+     vis.start_vertex(u)
+     vis.discover_vertex(u)
+     vis.examine_edge(ei,u,v)
+     vis.tree_edge(ei,u,v)
+     vis.back_edge(ei,u,v)
+     vis.forward_or_cross_edge(ei,u,v)
+     vis.finish_vertex(u)
+  Each dfs_visitor parameter should be a function pointer, which returns 0
+  if the dfs should stop.  (If the function does not return anything, the
+  dfs continues.)
+ 
+  This method works on directed graphs.
+  The runtime is O(V+E), excluding the complexity of the visitor
+  operations.
+ 
+  Realistically, this function must be used with the
+  pass-by-reference/in-place modification library.  
+ 
+  ... = depth_first_search(A,u,vis,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.full: compute the full dfs instead of the dfs of
+       the current component (see Note 1) [{0} | 1]
+ 
+  Note 1: When computing the full dfs, the vertex u is ignored, vertex 1 is
+  always used as the starting vertex.  
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example:
+    This example finds the distance to a single point and stops the search.
+    function dist_uv(A,u,v,options)
+      vstar = v;
+      dmap = ipdouble(zeros(size(A,1),1));
+      function stop=on_tree_edge(ei,u,v)
+        dmap[v] = dmap[u]+1;
+        return (v ~= vstar);
+      end;
+      breadth_first_search(A,u,struct('tree_edge',@on_tree_edge),options);
+    end;
+ 
+  See also DFS
+\end{mcode}
+\newpage
+\hrule
+\subsection*{Components}
+\vspace{1cm}
+\hrule
+\subsubsection*{components}
+\begin{mcode}
+  Simulink components.
+ 
+  slmdldiscui   - Launch Simulink Model Discretizer UI
+  sldiscmdl     - Discretize Simulink model block by block 
+
+
+components is both a directory and a function.
+
+  COMPONENTS Compute the connected components of a graph.
+ 
+  [ci sizes] = components(A) returns the component index vector (ci) and
+  the size of each of the connected components (sizes).  The number of
+  connected components is max(components(A)).  The algorithm used computes
+  the strongly connected components of A, which are the connected
+  components of A if A is undirected (i.e. symmetric).  
+ 
+  This method works on directed graphs.
+  The runtime is O(V+E), the algorithm is just depth first search.
+ 
+  ... = components(A,u,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    There are no additional options for this function.
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example: 
+     load graphs/dfs_example.mat
+     components(A)
+ 
+  See also DMPERM, BICONNECTED_COMPONENTS
+\end{mcode}
+\newpage
+\subsubsection*{biconnected\_components}
+\begin{mcode}
+  BICONNECTED_COMPONENTS Compute the biconnected components and
+  articulation points for a symmetric graph A.
+ 
+  [a C] = biconnected_components(A) returns a list of articulation points 
+  a and the component graph C where each non-zero indicates the connected
+  component of the edge.  That is, C is a matrix with the same non-zero
+  structure as A, but with the values replaced with the index of the
+  biconnected component of that edge.  The vector a is a list of
+  articulation points in the graph.  Articulation points are vertices that
+  belong to more than one biconnected component.  Removing an articulation
+  point disconnects the graph.
+ 
+  If C is not requested, it is not built.
+ 
+  This method works on undirected graphs.
+  The runtime is O(V+E), the algorithm is just depth first search.
+ 
+  ... = biconnected_components(A,optionsu) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    There are no additional options for this function.
+ 
+  Note: the input to this function must be symmetric, so this function
+  ignores the 'notrans' default option and never transposes the input.
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example:
+     load graphs/tarjan-biconn.mat
+     biconnected_components(A)
+ 
+  See also COMPONENTS
+\end{mcode}
+\newpage
+\hrule
+\subsection*{Shortest Paths}
+\vspace{1cm}
+\hrule
+\subsubsection*{shortest\_paths}
+\begin{mcode}
+  SHORTEST_PATHS Compute the weighted single source shortest path problem.
+ 
+  [d pred] = shortest_paths(A,u) returns the distance (d) and the predecessor
+  (pred) for each of the vertices along the shortest path from u to every
+  other vertex in the graph.  
+  
+  ... = shortest_paths(A,u,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.algname: the algorithm to use 
+        [{'auto'} | 'dijkstra' | 'bellman_ford' | 'dag']
+    options.inf: the value to use for unreachable vertices 
+        [double > 0 | {Inf}]
+    options.visitor: a structure with visitor callbacks.  This option only
+        applies to dijkstra or bellman_ford algorithms.  See dijkstra_sp or
+        bellman_ford_sp for details on the visitors.
+ 
+  Note: 'auto' cannot be used with 'nocheck' = 1.  The 'auto' algorithm
+  checks if the graph has negative edges and uses bellman_ford in that
+  case, otherwise, it uses 'dijkstra'.  In the future, it may check if the
+  graph is a dag and use 'dag'.  
+ 
+  Example:
+     load graphs/clr-25-2.mat
+     shortest_paths(A,1)
+     shortest_paths(A,1,struct('algname','bellman_ford'))
+ 
+  See also DIJKSTRA_SP, BELLMAN_FORD_SP, DAG_SP
+\end{mcode}
+\newpage
+\subsubsection*{all\_shortest\_paths}
+\begin{mcode}
+  all_shortest_paths Compute the weighted all pairs shortest path problem.
+ 
+  D = all_shortest_paths(A) returns the distance matrix D for all vertices
+  where D(i,j) indicates the shortest path distance between vertex i and
+  vertex j.  
+  
+  ... = all_shortest_paths(A,u,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.algname:: the algorithm to use 
+        [{'auto'} | 'johnson' | 'floyd_warshall']
+    options.inf: the value to use for unreachable vertices 
+        [double > 0 | {Inf}]
+ 
+  Note: 'auto' cannot be used with 'nocheck' = 1.  The 'auto' algorithms
+  checks the number of edges in A and if the graph is more than 10% dense,
+  it uses the Floyd-Warshall algorithm instead of Johnson's algorithm.
+ 
+  Example:
+     load graphs/clr-26-1.mat
+     all_shortest_paths(A)
+     all_shortest_paths(A,struct('algname','johnson'))
+ 
+  See also JOHNSON_ALL_SP, FLOYD_WARSHALL_ALL_SP.
+\end{mcode}
+\newpage
+\subsubsection*{dijkstra\_sp}
+\begin{mcode}
+  DIJKSTRA_SP Compute the weighted single source shortest path problem.
+ 
+  Dijkstra's algorithm for the single source shortest path problem only
+  works on graphs without negative edge weights.
+ 
+  This method works on weighted directed graphs without negative edge
+  weights.
+  The runtime is O(V log (V)).
+ 
+  See the shortest_paths function for calling information.  This function 
+  just calls shortest_paths(...,struct('algname','dijkstra'));
+ 
+  The options structure can contain a visitor for the Dijkstra algorithm.  
+ 
+  See http://www.boost.org/libs/graph/doc/DijkstraVisitor.html for a 
+  description of the events.
+  
+  visitor is a struct with the following optional fields
+     vis.initialize_vertex(u)
+     vis.discover_vertex(u)
+     vis.examine_vertex(u)
+     vis.examine_edge(ei,u,v)
+     vis.edge_relaxed(ei,u,v)
+     vis.edge_not_relaxed(ei,u,v)
+     vis.finish_vertex(u)
+  Each visitor parameter should be a function pointer, which returns 0
+  if the shortest path search should stop.  (If the function does not 
+  return anything, the algorithm continues.)
+ 
+  Example:
+     load graphs/clr-25-2.mat
+     dijkstra_sp(A,1)
+ 
+  See also SHORTEST_PATHS, BELLMAN_FORD_SP.
+\end{mcode}
+\newpage
+\subsubsection*{bellman\_ford\_sp}
+\begin{mcode}
+  BELLMAN_FORD_SP Compute the weighted single source shortest path problem.
+ 
+  The Bellman-Ford algorithm for the single source shortest path problem
+  works on graphs with negative edge weights.  
+ 
+  See the shortest_paths function for calling information.  This function 
+  just calls shortest_paths(...,struct('algname','bellman_ford'));
+ 
+  This method works on weighted directed graphs with negative edge weights.
+  The runtime is O(VE).
+ 
+  The options structure can contain a visitor for the Bellman-Ford 
+  algorithm.  
+ 
+  See http://www.boost.org/libs/graph/doc/BellmanFordVisitor.html for a 
+  description of the events.
+  
+  visitor is a struct with the following optional fields
+     vis.initialize_vertex(u)
+     vis.examine_edge(ei,u,v)
+     vis.edge_relaxed(ei,u,v)
+     vis.edge_not_relaxed(ei,u,v)
+     vis.edge_minimized(ei,u,v)
+     vis.edge_not_minimized(ei,u,v)
+  Each visitor parameter should be a function pointer, which returns 0
+  if the shortest path search should stop.  (If the function does not 
+  return anything, the algorithm continues.)
+ 
+  Example:
+     load graphs/kt-6-23.mat
+     d = bellman_ford_sp(A,1);
+ 
+  See also SHORTEST_PATHS, DIJKSTRA_SP.
+\end{mcode}
+\newpage
+\subsubsection*{dag\_sp}
+\begin{mcode}
+  DAG_SP Compute the weighted single source shortest path problem.
+ 
+  The DAG shortest path algorithm for the single source shortest path
+  problem only works on directed acyclic-graphs (DAGs).  
+ 
+  If the graph is not a DAG, the results are undefined.  In the future, the
+  function may throw an error if the graph is not a DAG.
+ 
+  See the shortest_paths function for calling information.  This function 
+  just calls shortest_paths(...,struct('algname','dag'));
+ 
+  This algorithm works on weighted directed acyclic graphs.
+  The runtime is O(V+E)
+ 
+  ... = clustering_coefficients(A,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+     There are no additional options for this function.
+ 
+  Example:
+     load graphs/kt-3-7.mat
+     dag_sp(A,1)
+ 
+  See also SHORTEST_PATHS
+\end{mcode}
+\newpage
+\subsubsection*{johnson\_all\_sp}
+\begin{mcode}
+  JOHNSON_ALL_SP Compute the weighted all-pairs shortest path problem.
+ 
+  Johnson's algorithm for the all-pairs shortest path problem 
+  works only on graphs without negative edge weights.  This method should
+  be used over the Floyd-Warshall algorithm for sparse graphs.  
+ 
+  This method works on weighted directed graphs.
+  The runtime is O(VE log(V)).
+ 
+  See the shortest_paths function for calling information.  This function 
+  just calls all_shortest_paths(...,struct('algname','johnson'));
+ 
+  Example:
+     load graphs/clr-26-1.mat
+     johnson_all_sp(A)
+ 
+  See also ALL_SHORTEST_PATHS, FLOYD_WARSHALL_ALL_SP.
+\end{mcode}
+\newpage
+\subsubsection*{floyd\_warshall\_all\_sp}
+\begin{mcode}
+  FLOYD_WARSHALL_ALL_SP Compute the weighted all-pairs shortest path problem.
+ 
+  The Floyd-Warshall algorithm for the all-pairs shortest path problem 
+  works only on graphs without negative edge weights.  This method should
+  be used over the Johnson algorithm for dense graphs.  
+ 
+  This method works on weighted directed graphs.
+  The runtime is O(V^3).
+ 
+  See the shortest_paths function for calling information.  This function 
+  just calls all_shortest_paths(...,struct('algname','floyd_warshall'));
+ 
+  Example:
+     load graphs/clr-26-1.mat
+     floyd_warshall_all_sp(A)
+ 
+  See also ALL_SHORTEST_PATHS, JOHNSON_ALL_SP.
+\end{mcode}
+\newpage
+\subsubsection*{astar\_search}
+\begin{mcode}
+  ASTAR_SEARCH Perform a heuristically guided (A*) search on the graph.
+ 
+  [d pred rank]=astar_search(A,s,h,optionsu) returns the distance map,
+  search tree and f-value of each node in an astar_search. 
+  The search begins at vertex s.  The heuristic h guides the search, 
+  h(v) should be small close to a goal and large far from a goal.  The
+  heuristic h can either be a vector with an entry for each vertex in the
+  graph or a function which maps vertices to values.
+ 
+  This method works on non-negatively weighted directed graphs.
+  The runtime is O((E+V)log(V)).
+ 
+  ... = astar_search(A,u,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.visitor: a visitor to use with the A* search (see Note)
+    options.inf: the value to use for unreachable vertices 
+        [double > 0 | {Inf}]
+    
+  Note: You can specify a visitor for this algorithm.  The visitor has the
+  following optional functions.
+     vis.initialize_vertex(u)
+     vis.discover_vertex(u)
+     vis.examine_vertex(u)
+     vis.examine_edge(ei,u,v)
+     vis.edge_relaxed(ei,u,v)
+     vis.edge_not_relaxed(ei,u,v)
+     vis.black_target(ei,u,v)
+     vis.finish_vertex(u)
+  Each visitor parameter should be a function pointer, which returns 0
+  if the search should stop.  (If the function does not return anything, 
+  the algorithm continues.)
+ 
+  Example:
+    load graphs/bgl_cities.mat
+    goal = 11; % Binghamton
+    start = 9; % Buffalo
+    % Use the euclidean distance to the goal as the heuristic
+    h = @(u) norm(xy(u,:) - xy(goal,:));
+    % Setup a routine to stop when we find the goal
+    ev = @(u) (u ~= goal);
+    [d pred f] = astar_search(A, start, h, ...
+        struct('visitor', struct('examine_vertex', ev)));
+\end{mcode}
+\newpage
+\hrule
+\subsection*{Minimum Spanning Trees}
+\vspace{1cm}
+\hrule
+\subsubsection*{mst}
+\begin{mcode}
+  MST Compute a minimum spanning tree for an undirected graph A.
+ 
+  There are two ways to call MST.
+  T = mst(A)
+  [i j v] = mst(A) 
+  The first call returns the minimum spanning tree T of A.  
+  The second call returns the set of edges in the minimum spanning tree.  
+  The calls are related by 
+     T = sparse(i,j,v,size(A,1), size(A,1)); 
+     T = T + T';
+  The optional algname parameter chooses which algorithm to use to compute
+  the minium spanning tree.  Note that the set of edges returned is not
+  symmetric and the final graph must be explicitly symmetrized.
+ 
+  This method works on undirected graphs graphs.
+ 
+  ... = mst(A,optionsu) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.algname: the minimum spanning tree algorithm
+      ['prim' | {'kruskal'}]
+ 
+  Note: the input to this function must be symmetric, so this function
+  ignores the 'notrans' default option and never transposes the input.
+ 
+  Example:
+     load graphs/clr-24-1.mat
+     mst(A)
+ 
+  See also PRIM_MST, KRUSKAL_MST
+\end{mcode}
+\newpage
+\subsubsection*{kruskal\_mst}
+\begin{mcode}
+  KRUSKAL_MST Compute a minimum spanning with Kruskal's algorithm.
+ 
+  The Kruskal MST algorithm computes a minimum spanning tree for a graph.
+ 
+  This method works on weighted symmetric graphs.
+  The runtime is O(E log (E)).
+ 
+  See the mst function for calling information.  This function just calls
+  mst(...,struct('algname','kruskal'));
+ 
+  Example:
+     load graphs/clr-24-1.mat
+     kruskal_mst(A)
+ 
+  See also MST, PRIM_MST.
+\end{mcode}
+\newpage
+\subsubsection*{prim\_mst}
+\begin{mcode}
+  PRIM_MST Compute a minimum spanning with Kruskal's algorithm.
+ 
+  Prim's MST algorithm computes a minimum spanning tree for a graph.
+ 
+  This method works on weighted symmetric graphs without negative edge
+  weights.
+  The runtime is O(E log (V)).
+ 
+  See MST for calling information.  This function just calls
+  mst(...,struct('algname','prim'));
+ 
+  Example:
+     load graphs/clr-24-1.mat
+     prim_mst(A)
+ 
+  See also MST, KRUSKAL_MST.
+\end{mcode}
+\newpage
+\hrule
+\subsection*{Statistics}
+\vspace{1cm}
+\hrule
+\subsubsection*{num\_edges}
+\begin{mcode}
+  NUM_EDGES The number of edges in a graph.
+ 
+  n = num_edges(A) returns the number of edges in graph A.  
+ 
+  For symmetric/undirected graphs, the number of edges returned is twice 
+  the number of undirected edges.
+ 
+  Example:
+     load graphs/dfs_example.mat
+     n = num_edges(A)
+ 
+  See also NUM_VERTICES
+\end{mcode}
+\newpage
+\subsubsection*{num\_vertices}
+\begin{mcode}
+  NUM_VERTICES The number of vertices in a graph.
+ 
+  n = num_vertices(A) returns the number of vertices in graph A.  
+ 
+  Example:
+     A = sparse(ones(5));
+     n = num_vertices(A);
+ 
+  See also NUM_EDGES
+\end{mcode}
+\newpage
+\subsubsection*{clustering\_coefficients}
+\begin{mcode}
+  CLUSTERING_COEFFICIENTS Compute the clustering coefficients for vertices.
+ 
+  ccfs = clustering_coefficients(A) returns the clustering coefficients for
+  all vertices in A.  The clustering coefficient is the ratio of the number
+  of edges between a vertex's neighbors to the total possible number of 
+  edges between the vertex's neighbors. 
+ 
+  This method works on directed or undirected graphs.
+  The runtime is O(nd^2) where d is the maximum vertex degree.
+ 
+  ... = clustering_coefficients(A,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    There are no additional options for this function.
+ 
+  Note: this function does not depend upon the non-zero values of A, but
+  only uses the non-zero structure of A.
+ 
+  Example:
+     load graphs\clique-10.mat
+     clustering_coefficients(A)
+\end{mcode}
+\newpage
+\subsubsection*{betweenness\_centrality}
+\begin{mcode}
+  BETWEENNESS_CENTRALITY Compute the betweenness centrality for vertices.
+ 
+  bc = betweenness_centrality(A) returns the betweenness centrality for
+  all vertices in A.  
+ 
+  This method works on weighted or weighted directed graphs.
+  For unweighted graphs (options.unweighted=1), the runtime is O(VE).
+  For weighted graphs, the runtime is O(VE + V(V+E)log(V)).
+ 
+  ... = betweenness_centrality(A,options) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    options.unweighted: use the slightly more efficient unweighted
+      algorithm in the case where all edge-weights are equal [{0} | 1]  
+ 
+  Example:
+     load graphs/padgett-florentine.mat
+     betweenness_centrality(A)
+\end{mcode}
+\newpage
+\hrule
+\subsection*{Flow}
+\vspace{1cm}
+\hrule
+\subsubsection*{max\_flow}
+\begin{mcode}
+  MAX_FLOW Compute the max flow on A from u to v.
+ 
+  flowval=max_flow(A,u,v) computes the maximum flow on the network defined by
+  the adjacency structure A, with source u and sink v.
+ 
+  [flowval cut R F] = max_flow(A,u,v) returns the maximum flow in the 
+  network A with source u and sink v as well as additional information.  
+  For each vertex on the source side of the mincut, mincut(i) = 1, 
+  for each vertex on the sink side, mincut(i) = -1.  
+  R is the residual graph.  R(i,j) is the amount of unused capacity 
+  on edge (i,j).  F is the flow graph, F(i,j) is the amount of used 
+  capacity on edge (i,j).  F, A, and R satisfy the relationship A = F + R.
+ 
+  The algorithm used is the push-relabel algorithm.
+ 
+  ... = max_flow(A,optionsu) sets optional parameters (see 
+  set_matlab_bgl_options) for the standard options.
+    There are no additional options for this function.
+ 
+  Note: the values on A are interpreted as integers, please round them
+  yourself to get the best interpretation.  The code uses the floor of 
+  the values in A.
+ 
+  Example:
+     load graphs\max_flow_example.mat
+     max_flow(A,1,8)
+\end{mcode}
+\newpage
+\hrule
+\subsection*{Other}
+\vspace{1cm}
+\hrule
+\subsubsection*{erdos\_reyni}
+\begin{mcode}
+  ERDOS_REYNI Generates a random Erdos-Reyni (Gnp) graph
+ 
+  A=erdos_reyni(n,p) generates a random Gnp graph with n vertices and where
+  the probability of each edge is p.  The resulting graph is symmetric.
+ 
+  This function is different from the Boost Graph library version, it was
+  reimplemented natively in Matlab.
+ 
+  Example:
+    A = erdos_reyni(100,0.05);
+\end{mcode}
+\newpage
+\subsubsection*{combine\_visitors}
+\begin{mcode}
+  COMBINE_VISITORS Generate a new visitor by combining existing visitors
+ 
+  cv = combine_visitors(v1, v2, ...) generates a new algorithm visitor that
+  works by calling the functions in v1 followed by the functions in v2, and
+  so on.  
+ 
+  The value returned by the combined visitor function is the bitwise & of
+  all the individual return values.  So, if any visitor requests the
+  algorithm to halt, then the algorithm will halt.
+ 
+  Note: using a combined visitor is somewhat slower than writing a custom
+  combined visitor yourself.
+ 
+  Example:
+     vis1 = struct();
+     vis1.examine_vertex = @(u) fprintf('vis1: examine_vertex(%i)\n', u);
+     vis2 = struct();
+     vis2.examine_vertex = @(u) fprintf('vis2: examine_vertex(%i)\n', u);
+     combined_vis = combine_visitors(vis1, vis2);
+     load graphs/bfs_example.mat
+     breadth_first_search(A,1,combined_vis);
+\end{mcode}
+\newpage
+\subsubsection*{set\_matlab\_bgl\_default}
+\begin{mcode}
+  SET_MATLAB_BGL_DEFAULT Sets a default option for the Matlab BGL interface
+ 
+  old_default = set_matlab_bgl_default(options)
+  options.istrans: the input matrices are already transposed [{0} | 1]
+  options.nocheck: skip the input checking [{0} | 1]
+  options.full2sparse: convert full matrices to sparse [{0} | 1]
+ 
+  to get the current set of default options, call
+  options = set_matlab_bgl_default()
+ 
+  These options can make the Matlab BGL interface more efficient by
+  eliminating the copying operations that occur between Matlab's structures
+  and the BGL structures.  However, they are more difficult to use and are
+  disabled by default.
+ 
+  Generally, they are best used when you want to perform a large series of
+  computations.
+ 
+  e.g.
+  % tranpose the matrix initially...
+  At = A'
+  old_options = set_matlab_bgl_default(struct('istrans',1));
+  % perform a bunch of graph work with At...
+  d1 = dfs(At,1); d2 = dfs(At,2); ...
+  % restore the old options 
+  set_matlab_bgl_default(old_options);
+\end{mcode}
