@@ -52,15 +52,14 @@ function breadth_first_search(A,u,bfs_visitor,varargin)
 %
 % See also BFS
 
-%
 % David Gleich
-% 16 May 2006
-%
-% 2006-05-31: Added full2sparse check 
-%
-% 2007-04-17
-% Fixed documentation
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-05-15: Initial version
+%  2006-05-31: Added full2sparse check 
+%  2007-04-17: Fixed documentation
+%% 
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if (full2sparse && ~issparse(A)) 

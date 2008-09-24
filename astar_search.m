@@ -49,23 +49,19 @@ function [d pred f]=astar_search(A,s,h,varargin)
 %   [d pred f] = astar_search(A, start, h, ...
 %       struct('visitor', struct('examine_vertex', ev)));
 
-%
-% 20 April 2007
-% Added edge weight option
-%
-% 12 July 2007
-% Fixed edge_weight documentation.
-%
+% David Gleich
+% Copyright, Stanford University, 2006-2008
+
+%% History 
+%  2007-04-20: Added edge weight option
+%  2007-07-12: Fixed edge_weight documentation.
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('inf', Inf, 'edge_weight', 'matrix', 'target', 'none');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
 
 edge_weight_opt = 'matrix';
 
@@ -84,23 +80,16 @@ else
         'options.target is not ''none'' or a vertex number.');
 end
 
-if check
-    % no additional input checks
-    check_matlab_bgl(A,struct());
-end
-
-if (trans)
-    A = A';
-end
+if check, check_matlab_bgl(A,struct()); end
+if trans, A = A'; end
 
 function hi=vec2func(u)
     hi = h(u);
 end
 
-if (isa(h,'function_handle'))
+if isa(h,'function_handle')
     hfunc = h;
 else
-    
     hfunc = @vec2func;
 end
 

@@ -39,39 +39,31 @@ function [out1 out2 out3] = mst(A,varargin)
 %
 % See also PRIM_MST, KRUSKAL_MST
 
+% David Gleich
+% Copyright, Stanford University, 2006-2008
 
-%
-% 2006-05-03: Changed to using kruskal as the default following problems
-% with prim due to negative edge weights.
-% 2006-05-31: Added full2sparse option
-% 2006-06-15: Fixed error with graph symmetric (T+T') instead of max(T,T')
-% found by Mark Cummins
-% 2006-11-09: Temporary fix for disconnected graphs and the number of edges
-% in the mst is LESS than n-1.
-% 2006-11-10: Added warning for prim with disconnected graphs.
-% 2007-04-09: Fixed documentation typos.  (Thanks Chris Maes.)
-% 2007-04-09: Fixed bug with 0 weighted graphs.  (Thanks Chris Maes.)
-%
-% 20 April 2007
-% Added edge weight option
-%
-% 12 July 2007
-% Fixed edge_weight documentation
-% Added note about symmetric edge weights
-%
-% 14 December 2007
-% Added rooted option for prim's algorithm
-%
+%% History
+%  2006-05-03: Changed to using kruskal as the default following problems
+%    with prim due to negative edge weights.
+%  2006-05-31: Added full2sparse option
+%  2006-06-15: Fixed error with graph symmetric (T+T') instead of max(T,T')
+%    found by Mark Cummins
+%  2006-11-09: Temporary fix for disconnected graphs and the number of edges
+%    in the mst is LESS than n-1.
+%  2006-11-10: Added warning for prim with disconnected graphs.
+%  2007-04-09: Fixed documentation typos.  (Thanks Chris Maes.)
+%  2007-04-09: Fixed bug with 0 weighted graphs.  (Thanks Chris Maes.)
+%  2007-04-20: Added edge weight option
+%  2007-07-12: Fixed edge_weight documentation
+%    Added note about symmetric edge weights
+%  2007-12-14: Added rooted option for prim's algorithm
+%%
 
 
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if full2sparse && ~issparse(A)
-    A = sparse(A); 
-end
-
-if trans
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
+if trans, end % no trans check
 
 options = struct('algname', 'kruskal', 'edge_weight', 'matrix', 'root', 'none');
 if ~isempty(varargin)

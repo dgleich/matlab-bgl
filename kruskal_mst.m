@@ -15,16 +15,18 @@ function [varargout] = kruskal_mst(A,options)
 %
 % See also MST, PRIM_MST.
 
-%
 % David Gleich
-% 23 April 2006
-%
+% Copyright, Stanford University, 2006-2008
 
-if (nargin > 1)
-    options.algname = 'kruskal';
-else
-    options = struct('algname','kruskal');
-end;
+%% History
+%  2006-04-23: Initial version
+%  2008-09-24: Code cleanup
+%%
+
+algname = 'kruskal';
+if nargin > 1, options.algname = algname;
+else options = struct('algname',algname);
+end
 
 varargout = cell(1,max(nargout,1));
 

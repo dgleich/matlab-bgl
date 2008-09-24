@@ -57,37 +57,27 @@ function [m,max_card_matching]=matching(A,varargin)
 %   [m,v] = matching(A,struct('augmenting_path','none'))% not maximum matching
 
 
-%
 % David Gleich
-% 8 July 2007
-% Initial version
-%
+% Copyright, Stanford University, 2007-2008
 
+%% History
+% 2007-07-08: % Initial version
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
-
-% input must be symmetric, so no need to transpose
-% if trans
-% end
+if full2sparse && ~issparse(A), A = sparse(A); end
+if trans, end % input must be symmetric, so no need to transpose
 
 options = struct('initial_match', 'extra_greedy', ...
     'augmenting_path', 'edmonds', ...
     'verify', 1, ...
     'matrix_output', 0);
-if ~isempty(varargin)
-    options = merge_structs(varargin{1}, options);
-end
-
-if check
-    % make sure the matrix is symmetric
-    check_matlab_bgl(A,struct('sym',1));
-end
+    
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+if check, check_matlab_bgl(A,struct('sym',1)); end % make sure the matrix is symmetric
 
 [m,max_card_matching] = matching_mex(A, ...
- 	options.verify, ...
+    options.verify, ...
     lower(options.initial_match), ...
     lower(options.augmenting_path));
 

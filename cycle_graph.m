@@ -16,12 +16,12 @@ function [A xy] = cycle_graph(n,varargin)
 %
 % See also WHEEL_GRAPH, STAR_GRAPH
 
-%
 % David Gleich
-% 
-% 8 July 2007
-% Added directed graph option
-%
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-07-08: Added directed graph option
+%%
 
 [trans] = get_matlab_bgl_options(varargin{:});
 options = struct('directed', '1');

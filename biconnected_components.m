@@ -32,12 +32,13 @@ function [a,C] = biconnected_components(A,varargin)
 %
 % See also COMPONENTS
 
-% 
 % David Gleich
-% 19 April 2006
-%
-% 2006-05-31: Added full2sparse check
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-19: Initial version
+%  2006-05-31: Added full2sparse check
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if (full2sparse && ~issparse(A)) 

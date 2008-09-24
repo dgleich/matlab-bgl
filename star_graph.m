@@ -14,6 +14,9 @@ function [A xy] = star_graph(n)
 %
 % See also WHEEL_GRAPH, CYCLE_GRAPH
 
+%% History
+%%
+
 i = 1:n-1;
 j = n*ones(1,n-1);
 A = sparse(i,j,1,n,n);

@@ -12,4 +12,7 @@ function n=num_edges(A)
 %
 % See also NUM_VERTICES
 
+% David Gleich
+% Copyright, Stanford University, 2006-2008
+
 n = nnz(A);

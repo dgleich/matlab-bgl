@@ -37,27 +37,17 @@ function [cn rt] = core_numbers(A,varargin)
 %    load graphs/cores_example.mat
 %    core_numbers(A)
 
-
-%
 % David Gleich
-% Copyright, Stanford University, 2007
-%
+% Copyright, Stanford University, 2007-2008
 
-%
-% 10 July 2007
-% Initial version
-%
-% 11 July 2007
-% Updated for weighted cores
-%
-% 22 July 2007
-% Fixed accum array error on Matlab 7.0
-% Added check to not compute size if it isn't used.
-%
-% 30 July 2007
-% Removed size option from output
-% Added removal time output
-%
+%% History
+%  2007-07-10: Initial version
+%  2007-07-11: Updated for weighted cores
+%  2007-07-22: Fixed accum array error on Matlab 7.0
+%    Added check to not compute size if it isn't used.
+%  2007-07-30: Removed size option from output
+%    Added removal time output
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end

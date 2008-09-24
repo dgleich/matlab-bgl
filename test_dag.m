@@ -12,6 +12,9 @@ function dag = test_dag(A,varargin)
 %   A(10,1) = 1; % complete the cycle
 %   test_dag(A)
 
+%% History
+%%
+
 dag = 1;
 if isempty(topological_order(A,varargin{:}))
     dag = 0;

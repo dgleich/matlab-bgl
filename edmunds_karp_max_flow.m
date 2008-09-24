@@ -12,16 +12,16 @@ function [varargout]=edmunds_karp_max_flow(A,u,v,options)
 %   load('graphs/max_flow_example.mat');
 %   edmunds_karp_max_flow(A,1,8)
 
-%
-% 7 July 2008
-% Initial version
-%
+% David Gleich
+% Copyright, Stanford University, 2007-2008
 
-if (nargin > 1)
-    options.algname = 'edmunds_karp';
-else
-    options = struct('algname','edmunds_karp');
-end;
+%% History
+%  2007-07-07: Initial version
+%%
+
+if nargin > 1, options.algname = 'edmunds_karp';
+else options = struct('algname','edmunds_karp');
+end
 
 varargout = cell(1,max(nargout,1));
 

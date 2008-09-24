@@ -33,30 +33,22 @@ function [d dt ft pred] = dfs(A,u,varargin)
 %
 % See also BFS
 
-%
 % David Gleich
-% 19 April 2006
-%
-% 2006-05-31: Added full2sparse check
-%
-% 19 April 2007
-% Added target option
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-19: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-04-19: Added target option
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('target', 'none', 'full', 0);
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
 
-
-if (check) 
-    check_matlab_bgl(A,struct()); 
-end
+if check, check_matlab_bgl(A,struct()); end
 
 if strcmp(options.target,'none')
     target = 0; % a flag used to denote "no target" to the mex
@@ -67,9 +59,7 @@ else
         'options.target is not ''none'' or a vertex number.');
 end
 
-if (trans) 
-    A = A'; 
-end
+if trans, A = A'; end
 
 [d dt ft pred] = dfs_mex(A,u,target,options.full);
 

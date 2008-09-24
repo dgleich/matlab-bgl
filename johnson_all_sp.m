@@ -1,4 +1,4 @@
-function D = johnson_all_sp(A,varargin)
+function D = johnson_all_sp(A,options)
 % JOHNSON_ALL_SP Compute the weighted all-pairs shortest path problem.
 %
 % Johnson's algorithm for the all-pairs shortest path problem 
@@ -17,19 +17,20 @@ function D = johnson_all_sp(A,varargin)
 %
 % See also ALL_SHORTEST_PATHS, FLOYD_WARSHALL_ALL_SP.
 
-%
+
 % David Gleich
-% 23 April 2006
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-23: Initial version
+%  2008-09-24: Code cleanup
+%%
 
 algname = 'johnson';
 
-if (nargin > 1)
-    options = varargin{1};
-    options.algname = algname;
-else
-    options = struct('algname',algname);
-end;
+if nargin > 1, options.algname = algname;
+else options = struct('algname',algname);
+end
 
 D = all_shortest_paths(A,options);
 

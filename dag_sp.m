@@ -1,4 +1,4 @@
-function [d pred] = dag_sp(A,u,varargin)
+function [d pred] = dag_sp(A,u,options)
 % DAG_SP Compute the weighted single source shortest path problem.
 %
 % The DAG shortest path algorithm for the single source shortest path
@@ -23,19 +23,18 @@ function [d pred] = dag_sp(A,u,varargin)
 %
 % See also SHORTEST_PATHS
 
-%
 % David Gleich
-% 23 April 2006
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-23: Initial version
+%%
 
 algname = 'dag';
 
-if (nargin > 2)
-    options = varargin{1};
-    options.algname = algname;
-else
-    options = struct('algname',algname);
-end;
+if nargin > 2, options.algname = algname; 
+else options = struct('algname',algname);
+end
 
 [d pred] = shortest_paths(A,u,options);
 

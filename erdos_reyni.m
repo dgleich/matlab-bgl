@@ -10,15 +10,13 @@ function A=erdos_reyni(n,p)
 % Example:
 %   A = erdos_reyni(100,0.05);
 
-%
 % David Gleich
-% 21 May 2006
-%
+% Copyright, Stanford University, 2006-2008
 
-%
-% 5 April 2007
-% Fixed the function so it returns correct output.
-%
+%% History
+%  2006-05-21: Initial version
+%  2007-04-05: Fixed the function so it returns correct output.
+%%
 
 A = triu(rand(n)<p,1);
 A = sparse(A);

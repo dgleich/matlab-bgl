@@ -18,10 +18,12 @@ function [A coords] = grid_graph(varargin)
 %   gplot(A,xy);
 %   A = grid_graph(2*ones(1,10)); % compute 10d hypercube
 
-%
-% 13 July 2007
-% Initial version
-%
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-07-13: Initial version
+%%
 
 k = length(varargin);
 

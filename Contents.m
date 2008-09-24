@@ -82,3 +82,6 @@
 % minimum_degree_perm        - Minimum degree ordering
 % king_perm                  - King ordering
 % sloan_perm                 - Sloan ordering
+
+% David Gleich
+% Copyright, Stanford University, 2006-2008

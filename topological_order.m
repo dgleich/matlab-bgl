@@ -23,16 +23,14 @@ function perm=topological_order(A,varargin)
 %
 % See also TEST_DAG
 
+%% History
+%  2008-09-23: Reformatted common section. 
+%%
+
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
-if (check) 
-    check_matlab_bgl(A,struct()); 
-end
-if (trans) 
-    A = A'; 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
+if check, check_matlab_bgl(A,struct()); end
+if trans, A = A'; end
 
 [perm dag] = topological_order_mex(A);
 
