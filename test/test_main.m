@@ -73,6 +73,7 @@ c = clustering_coefficients(sparse([]));
 ei = edge_weight_index(sparse([]));
 m = matching(sparse([]));
 m = core_numbers(sparse([]));
+v = edge_weight_vector(sparse([]),sparse([]));
 
 %% Code examples
 
@@ -166,6 +167,14 @@ Av = sparse(iu,ju,edge_rand,size(A,1),size(A,1)); Av = Av + Av';
 ee = @(ei,u,v) fprintf('examine_edge %2i, %1i, %1i, %4f, %4f, %4f\n', ...
             ei, u, v, edge_rand(eil(ei)), Av(u,v), edge_rand(Ei(u,v)));
 breadth_first_search(A,1,struct('examine_edge', ee));
+
+% edge weight vector
+n = 8; u = 1; v = 2;
+E = [1:n 2:n 1; 2:n 1 1:n]';
+w = [1 zeros(1,n-1) 1 zeros(1,n-1)]';
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
 
 % edmonds_maximum_cardinality_matching
 load('../graphs/matching_example.mat');
@@ -512,6 +521,94 @@ load('../graphs/matching_example.mat');
 [m,v] = edmonds_maximum_cardinality_matching(A);
 if nnz(m)/2 ~= 8
     error(msgid, 'edmonds_maximum_cardinality_matching failed');
+end
+
+%% edge_weight_vector
+n = 8; u = 1; v = 2;
+E = [1:n 2:n 1; 2:n 1 1:n]';
+w = [1 zeros(1,n-1) 1 zeros(1,n-1)]';
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 0
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% remove the edge between node 1 and edge 8 to test non-symmetric in As
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 1 || any(d>1) 
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% make the weights non-symmetric to test non-symmetry in A
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+A(1,2) = 2; 
+A(1,8) = 3;
+A(2,3) = 4;
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 2 || any(d(d>2)~=3)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% test non-symmetric A and non-symmetric As
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+A(1,2) = 2; 
+A(2,3) = 4;
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 2 || any(d(d>2)~=6)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% make sure it works with pre-transposed matrices, repeat all the test
+% cases
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 0
+    error(msgid, 'edge_weight_vector failed');
+end
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 1
+    error(msgid, 'edge_weight_vector failed');
+end
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+A(1,2) = 2; 
+A(1,8) = 3;
+A(2,3) = 4;
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 2 || any(d(d>2)~=3)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+A(1,2) = 2; 
+A(2,3) = 4;
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 2 || any(d(d>2)~=6)
+    error(msgid, 'edge_weight_vector failed');
 end
 
 %% matching
