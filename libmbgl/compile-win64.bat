@@ -17,7 +17,7 @@ rem OUTDIR requires the extra "\\" to avoid escaping the \" when used with quote
 set OUTDIR=Release\\
 
 set YASMICDIR=.
-set BOOSTDIR=C:\dev\boost_1_34_1
+set BOOSTDIR=C:\dev\boost_1_36_0
 
 set CFLAGS=/c /nologo /I"%YASMICDIR%" /I"%BOOSTDIR%" /Fo"%OUTDIR%" /EHsc /DNDEBUG /DMATLAB_BGL_LARGE_ARRAYS /O2 
 rem set CFLAGS=-c -nologo -Ie:\dev\yasmic -Ie:\dev\lib\boost_1_33_1 /Fo"%OUTDIR%\\" /EHsc /ML /Od /D "_DEBUG" /Fd"%OUTDIR%\vc70.pdb" /Zi
