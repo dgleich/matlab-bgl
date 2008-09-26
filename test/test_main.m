@@ -75,6 +75,8 @@ m = matching(sparse([]));
 m = core_numbers(sparse([]));
 v = edge_weight_vector(sparse([]),sparse([]));
 
+X = circle_layout(sparse([]));
+
 %% Code examples
 
 % all_shortest_paths
@@ -116,6 +118,11 @@ biconnected_components(A);
 % see (dist_uv_bfs below)    
 load('../graphs/bfs_example.mat');
 d2 = dist_uv_bfs(A,1,3);
+
+% circle_layout
+G = cycle_graph(6);
+X = circle_layout(G);
+gplot(G,X);
 
 % clustering_coefficients
 load('../graphs/clique-10.mat');
