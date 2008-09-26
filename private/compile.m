@@ -1,6 +1,7 @@
-% History
+%% History
 %  2008-04-01: Added check for pre Matlab 2006b for non-large dim 
 %              sparse matrices.
+%%
 
 clear mex
 
@@ -16,7 +17,8 @@ mbglfiles = {'astar_search_mex.c', 'bfs_mex.c', 'dfs_mex.c', 'biconnected_compon
          'core_numbers_mex.c', ...
          'dominator_tree_mex.c', ...
          'test_matching_mex.c', ...
-         'path_from_pred_mex.c'};
+         'path_from_pred_mex.c', ...
+         'kamada_kawai_spring_layout_mex.c'};
      
 c = computer;
 
