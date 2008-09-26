@@ -3,7 +3,7 @@
 
 /**
  * @file integer_extra.hpp
- * This file fixes some problems with the boost::int_t type 
+ * This file fixes some problems with the boost::int_t type
  * and 64-bit compiles under Windows.
  */
 

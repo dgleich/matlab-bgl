@@ -1,27 +1,16 @@
-/**
- * @file statistics.cc
- *
- * Implement the graph statistics algorithms.
+/** @file statistics.cc
+ * @author David F. Gleich
+ * @date 2006-04-21
+ * @copyright Stanford University, 2006-2008
+ * Graph statistics wrappers
  */
 
-/*
- * David Gleich
- * 21 April 2006
- */
-
-/*
- * 18 April 2007
- * Implemented topological order function
- * 
- * 5-10 July 2007
- * Implemented matchings
- * Implemented core_numbers
- *
- * 11 July 2007
- * Implemented directed and weighted clustering coefficient computations
- * 
- * 12 July 2007
- * Implemented dominator tree
+/** History
+ *  2007-04-18: Implemented topological order function
+ *  2007-07-05: Implemented matchings
+ *  2007-07-05: Implemented core_numbers
+ *  2007-07-11: Implemented directed and weighted clustering coefficients
+ *  2007-07-12: Implemented dominator tree
  */
 
 #include "include/matlab_bgl.h"
@@ -59,7 +48,7 @@ struct in_indicator_pred
     Vertex u;
 
 	bool operator() (const Vertex &v) const
-	{   
+	{
 		return (i[v] > 0) && (u != v);
 	}
 };
@@ -76,7 +65,7 @@ void cluster_coefficients(const Graph& g, CCMap cc, IndMap ind)
 		ind[v] = 0;
 	}
 
-	
+
 	BGL_FORALL_VERTICES_T(v,g,Graph)
 	{
 		BGL_FORALL_ADJ_T(v,w,g,Graph)
@@ -89,7 +78,7 @@ void cluster_coefficients(const Graph& g, CCMap cc, IndMap ind)
 		typename property_traits<CCMap>::value_type cur_cc = 0;
 		typename graph_traits<Graph>::degree_size_type d = out_degree(v, g);
 
-		
+
 
 		BGL_FORALL_ADJ_T(v,w,g,Graph)
 		{
@@ -134,7 +123,7 @@ void undirected_clustering_coefficients(const Graph& g, CCMap cc, EdgeWeightMap 
     for (tie(vi,vi_end)=vertices(g);vi!=vi_end;++vi) {
         put(cc,*vi,0);
         put(ind,*vi,0);
-    } 
+    }
     // a lazy cache for the temp weights for each vertex, could be more
     // efficient using the maximum degree
     std::vector<typename property_traits<EdgeWeightMap>::value_type> cache(num_vertices(g));
@@ -177,11 +166,11 @@ void undirected_clustering_coefficients(const Graph& g, CCMap cc, EdgeWeightMap 
 
 // graph must be a bidirectional graph
 template <class Graph, class CCMap, class EdgeWeightMap, class IndMap>
-void directed_clustering_coefficients(const Graph& g, 
+void directed_clustering_coefficients(const Graph& g,
     CCMap cc, EdgeWeightMap wm, IndMap ind)
 {
     using namespace boost;
-    typedef typename property_traits<CCMap>::value_type value_type; 
+    typedef typename property_traits<CCMap>::value_type value_type;
     typedef typename graph_traits<Graph>::vertex_descriptor vertex;
     typename graph_traits<Graph>::vertex_iterator vi,vi_end;
     for (tie(vi,vi_end)=vertices(g);vi!=vi_end;++vi) {
@@ -211,7 +200,7 @@ void directed_clustering_coefficients(const Graph& g,
                 cache[source(*ii,g)] += pow(get(wm,*ii),1.0/3.0);
             }
         }
-        // we've precomputed the set of in-edges, so we know how 
+        // we've precomputed the set of in-edges, so we know how
         // to get back to v to complete a triangle that ends
         // with an edge to v.
         typename graph_traits<Graph>::degree_size_type bilateral_edges = 0;
@@ -220,7 +209,7 @@ void directed_clustering_coefficients(const Graph& g,
         for (tie(oi,oi_end)=out_edges(v,g);oi!=oi_end;++oi) {
             vertex w = target(*oi,g);
             if (v == w) { continue; }
-            value_type cache_w = pow(get(wm,*oi),1.0/3.0); 
+            value_type cache_w = pow(get(wm,*oi),1.0/3.0);
             for (tie(oi2,oi2_end)=out_edges(w,g);oi2!=oi2_end;++oi2) {
                 vertex u = target(*oi2,g);
                 if (u == v) { ++bilateral_edges; continue; }
@@ -234,7 +223,7 @@ void directed_clustering_coefficients(const Graph& g,
         for (tie(oi,oi_end)=out_edges(v,g);oi!=oi_end;++oi) {
             vertex w = target(*oi,g);
             if (v == w) { continue; }
-            value_type cache_w = pow(get(wm,*oi),1.0/3.0); 
+            value_type cache_w = pow(get(wm,*oi),1.0/3.0);
             for (tie(ii,ii_end)=in_edges(w,g);ii!=ii_end;++ii) {
                 vertex u = source(*ii,g);
                 if (u == w) { continue; }
@@ -247,7 +236,7 @@ void directed_clustering_coefficients(const Graph& g,
         for (tie(ii,ii_end)=in_edges(v,g);ii!=ii_end;++ii) {
             vertex w = source(*ii,g);
             if (v == w) { continue; }
-            value_type cache_w = pow(get(wm,*ii),1.0/3.0); 
+            value_type cache_w = pow(get(wm,*ii),1.0/3.0);
             for (tie(oi,oi_end)=out_edges(w,g);oi!=oi_end;++oi) {
                 vertex u = target(*oi,g);
                 if (u == w) { continue; }
@@ -257,7 +246,7 @@ void directed_clustering_coefficients(const Graph& g,
                 }
             }
         }
-        
+
         // reset the cache
         for (tie(ii,ii_end)=in_edges(v,g);ii!=ii_end;++ii) {
             if (source(*ii,g) != v) {
@@ -265,7 +254,7 @@ void directed_clustering_coefficients(const Graph& g,
                 cache[source(*ii,g)] = 0;
             }
         }
-        
+
         // re-init the cache with out-edges
         for (tie(oi,oi_end)=out_edges(v,g);oi!=oi_end;++oi) {
             // check to ignore self edges
@@ -274,11 +263,11 @@ void directed_clustering_coefficients(const Graph& g,
                 cache[target(*oi,g)] += pow(get(wm,*oi),1.0/3.0);
             }
         }
-        
+
         for (tie(oi,oi_end)=out_edges(v,g);oi!=oi_end;++oi) {
             vertex w = target(*oi,g);
             if (v == w) { continue; }
-            value_type cache_w = pow(get(wm,*oi),1.0/3.0); 
+            value_type cache_w = pow(get(wm,*oi),1.0/3.0);
             for (tie(oi2,oi2_end)=out_edges(w,g);oi2!=oi2_end;++oi2) {
                 vertex u = target(*oi2,g);
                 if (u == w) { continue; }
@@ -288,9 +277,9 @@ void directed_clustering_coefficients(const Graph& g,
                 }
             }
         }
-        
+
         // store the value
-        typename graph_traits<Graph>::degree_size_type 
+        typename graph_traits<Graph>::degree_size_type
             norm_factor = degs[v]*(degs[v] - 1) - 2*bilateral_edges;
         if (norm_factor > 0) {
             put(cc,v,
@@ -299,10 +288,10 @@ void directed_clustering_coefficients(const Graph& g,
         } else {
             put(cc,v,(value_type)0);
         }
-        
-        //std::cout << std::endl;        
+
+        //std::cout << std::endl;
         //std::cout << v << " " <<  cur_cc_cyc << " " << cur_cc_mid << " " << cur_cc_in << " " << cur_cc_out << " " << degs[v] << " " << bilateral_edges << std::endl;
-        
+
         for (tie(oi,oi_end)=out_edges(v,g);oi!=oi_end;++oi) {
             // check to ignore self edges
             if (target(*oi,g) != v) {
@@ -319,22 +308,22 @@ int clustering_coefficients(
 {
     using namespace yasmic;
     using namespace boost;
-    
+
     typedef simple_csr_matrix<mbglIndex,double> crs_matrix;
     crs_matrix g(nverts, nverts, ia[nverts], ia, ja, NULL);
-    
+
     std::vector<int> indicator_map(num_vertices(g));
-    
+
     if (directed) {
         std::vector<mbglIndex> ati(nverts+1);
         std::vector<mbglIndex> atj(ia[nverts]);
         std::vector<mbglIndex> atid(ia[nverts]);
-        
+
         build_row_and_column_from_csr(g, &ati[0], &atj[0], &atid[0]);
-        
+
         typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
         bidir_graph bg(nverts, nverts, ia[nverts], ia, ja, NULL, &ati[0], &atj[0], &atid[0]);
-    
+
         directed_clustering_coefficients(bg,
             make_iterator_property_map(ccfs, get(vertex_index,bg)),
             boost::detail::constant_value_property_map<double>(1.0),
@@ -355,7 +344,7 @@ int weighted_clustering_coefficients(
 {
     using namespace yasmic;
     using namespace boost;
-    
+
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
     crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
@@ -377,19 +366,19 @@ int directed_clustering_coefficients(
 {
     using namespace yasmic;
     using namespace boost;
-    
+
     typedef simple_csr_matrix<mbglIndex,double> crs_matrix;
     crs_matrix g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     // early return for trivial input
     if (nverts==0) { return (0); }
-    
+
     std::vector<mbglIndex> ati(nverts+1);
     std::vector<mbglIndex> atj(ia[nverts]);
     std::vector<mbglIndex> atid(ia[nverts]);
-    
+
     build_row_and_column_from_csr(g, &ati[0], &atj[0], &atid[0]);
-    
+
     typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
     bidir_graph bg(nverts, nverts, ia[nverts], ia, ja, weight, &ati[0], &atj[0], &atid[0]);
 
@@ -400,7 +389,7 @@ int directed_clustering_coefficients(
             ccfs, get(vertex_index,bg)),
         get(edge_weight,bg),
         make_iterator_property_map(
-            indicator_map.begin(), 
+            indicator_map.begin(),
             get(vertex_index,bg)));
 
     return (0);
@@ -416,7 +405,7 @@ int betweenness_centrality(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     if (weight)
     {
@@ -447,7 +436,7 @@ int betweenness_centrality(
                             ecentrality, get(edge_index, g))));
         } else {
             brandes_betweenness_centrality(g,
-			    	make_iterator_property_map(centrality, 
+			    	make_iterator_property_map(centrality,
 				    	get(vertex_index, g)));
         }
     }
@@ -457,7 +446,7 @@ int betweenness_centrality(
 
 /**
  * Test for a topological order or topological sort of a graph.
- * 
+ *
  * This function will also test if the graph is a dag.  If the
  * rev_order parameter is null, then the actual topological order
  * is ignored and the function just tests for a dag.
@@ -474,31 +463,31 @@ int topological_order(
 {
     using namespace yasmic;
     using namespace boost;
-    
+
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
     if (is_dag) {
         *is_dag = 1;
     }
 
-    if (topo_order == NULL) 
+    if (topo_order == NULL)
     {
         return (-1);
     }
-    else 
+    else
     {
-        typedef reverse_iterator<mbglIndex*> 
+        typedef reverse_iterator<mbglIndex*>
             reverse_iter;
-            
+
         // note for the future, boost's reverse iterator is wild in that
-        // it actually dereferences the PRIOR element, so the correct 
+        // it actually dereferences the PRIOR element, so the correct
         // range of a boost reverse itertor is the same as the original
-        // iterator.  Consequently, the last element is actual topo_order + 
+        // iterator.  Consequently, the last element is actual topo_order +
         // nverts because the previous element (what * returns) is the
         // correct element.
         reverse_iter output(topo_order + (nverts));
-        
+
         try {
             topological_sort(g, output);
         } catch (not_a_dag) {
@@ -511,7 +500,7 @@ int topological_order(
     return (0);
 }
 
-template <typename Graph, 
+template <typename Graph,
         typename MateMap,
         typename VertexIndexMap>
 bool matching_help(const Graph& g, MateMap mate, VertexIndexMap vm,
@@ -524,26 +513,26 @@ bool matching_help(const Graph& g, MateMap mate, VertexIndexMap vm,
             if (verify == 1)
                 return matching<Graph,MateMap,VertexIndexMap,
                         no_augmenting_path_finder,
-                        empty_matching,  
+                        empty_matching,
                         no_matching_verifier>
                         (g, mate, vm);
             else
                 return matching<Graph,MateMap,VertexIndexMap,
                         no_augmenting_path_finder,
-                        empty_matching,  
+                        empty_matching,
                         maximum_cardinality_matching_verifier>
                         (g, mate, vm);
         else
             if (verify == 1)
                 return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder, 
-                        empty_matching, 
+                        edmonds_augmenting_path_finder,
+                        empty_matching,
                         no_matching_verifier>
                         (g, mate, vm);
             else
                 return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder, 
-                        empty_matching, 
+                        edmonds_augmenting_path_finder,
+                        empty_matching,
                         maximum_cardinality_matching_verifier>
                         (g, mate, vm);
     }
@@ -552,56 +541,56 @@ bool matching_help(const Graph& g, MateMap mate, VertexIndexMap vm,
         if (augmenting_path == 1)
             if (verify == 1)
                 return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder, 
-                        greedy_matching, 
+                        no_augmenting_path_finder,
+                        greedy_matching,
                         no_matching_verifier>
                         (g, mate, vm);
             else
                 return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder, 
-                        greedy_matching, 
+                        no_augmenting_path_finder,
+                        greedy_matching,
                         maximum_cardinality_matching_verifier>
                         (g, mate, vm);
         else
             if (verify == 1)
                 return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder, 
-                        greedy_matching, 
+                        edmonds_augmenting_path_finder,
+                        greedy_matching,
                         no_matching_verifier>
                         (g, mate, vm);
             else
                 return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder, 
-                        greedy_matching, 
+                        edmonds_augmenting_path_finder,
+                        greedy_matching,
                         maximum_cardinality_matching_verifier>
                         (g, mate, vm);
     }
-    else 
+    else
     {
         if (augmenting_path == 1)
             if (verify == 1)
                 return matching<Graph,MateMap,VertexIndexMap,
                         no_augmenting_path_finder,
-                        extra_greedy_matching, 
+                        extra_greedy_matching,
                         no_matching_verifier>
                         (g, mate, vm);
             else
                 return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder, 
-                        extra_greedy_matching, 
+                        no_augmenting_path_finder,
+                        extra_greedy_matching,
                         maximum_cardinality_matching_verifier>
                         (g, mate, vm);
         else
             if (verify == 1)
                 return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder, 
-                        extra_greedy_matching, 
+                        edmonds_augmenting_path_finder,
+                        extra_greedy_matching,
                         no_matching_verifier>
                         (g, mate, vm);
             else
                 return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder, 
-                        extra_greedy_matching, 
+                        edmonds_augmenting_path_finder,
+                        extra_greedy_matching,
                         maximum_cardinality_matching_verifier>
                         (g, mate, vm);
     }
@@ -633,10 +622,10 @@ bool matching_help(const Graph& g, MateMap mate, VertexIndexMap vm,
  * @param verify indicates if we verify the algorithm ouput
  *  1: no_matching_verifier
  *  2: maximum_cardinality_matching_verifier
- * @param verified the output of the verification algorithm (if run), or 
+ * @param verified the output of the verification algorithm (if run), or
  *  false otherwise
  * @param null_vertex the special index to indicate an unmatched vertex
- * @return an error code if possible 
+ * @return an error code if possible
  *   0: indicates success
  *  -1: indicates a parameter error with initial_matching, augmenting_path, or verify
  */
@@ -649,7 +638,7 @@ int maximum_cardinality_matching(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
     if (initial_matching < 1 || initial_matching > 3 ||
         augmenting_path < 1 || augmenting_path > 2 ||
@@ -693,27 +682,27 @@ int test_maximum_cardinality_matching(
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-    
-    // set the null_vertex to the true null 
+
+    // set the null_vertex to the true null
     mbglIndex true_null = graph_traits<crs_graph>::null_vertex();
     for (mbglIndex v=0;v<num_vertices(g);++v) {
         if (mate[v] == nverts) { mate[v] = true_null; }
     }
-    
+
     bool max_matching = verify_matching_help(g, mate, get(vertex_index,g));
     if (verified) { *verified = 0; }
-    if (max_matching && verified) { *verified = 1; } 
-    
+    if (max_matching && verified) { *verified = 1; }
+
     return (0);
 }
 
 /** Compute the core_numbers of a graph
- * 
- * For an undirected graph, this function computes the core number of each 
+ *
+ * For an undirected graph, this function computes the core number of each
  * vertex.  The core number is the minimum number such that removing all
  * vertices of degree <= cn[k] removes vertex k.  For a directed graph
  * we compute the in-degree core number.
- * 
+ *
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
@@ -732,28 +721,28 @@ int core_numbers(
     // changed to mbglDegreeType
     using namespace yasmic;
     using namespace boost;
-    
+
     if (!cn || !rt) { return (-1); }
-    
+
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-    
-    int time = 0; 
-    
+
+    int time = 0;
+
     core_numbers(g, make_iterator_property_map(cn, get(vertex_index,g)),
         make_core_numbers_visitor(stamp_times(rt, time, on_examine_vertex())));
-    
+
     return (0);
 }
 
 /** Compute the core_numbers of a graph
- * 
- * For an undirected graph, this function computes the core number of each 
+ *
+ * For an undirected graph, this function computes the core number of each
  * vertex.  The core number is the minimum number such that removing all
  * vertices of degree <= cn[k] removes vertex k.  For a directed graph
  * we compute the in-degree core number.
- * 
+ *
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
@@ -774,26 +763,26 @@ int weighted_core_numbers(
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
-    
-    int time=0; 
-    
+
+    int time=0;
+
     weighted_core_numbers(g, make_iterator_property_map(cn, get(vertex_index,g)),
         make_core_numbers_visitor(stamp_times(rt, time, on_examine_vertex())));
-    
+
     return (0);
 }
 
-   
+
 int dominator_tree(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
     mbglIndex src, mbglIndex *pred)
 {
     //
     // History
-    // 
+    //
     // 12 July 2007
     // Initial implementation
-    // 
+    //
     // 23 July 2007
     // Added iterator property map call for pred.
     //
@@ -801,31 +790,31 @@ int dominator_tree(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
-    
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
+
     std::vector<mbglIndex> ati(nverts+1);
     std::vector<mbglIndex> atj(ia[nverts]);
     std::vector<mbglIndex> atid(ia[nverts]);
-    
+
     build_row_and_column_from_csr(g, &ati[0], &atj[0], &atid[0]);
-    
+
     typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
     bidir_graph bg(nverts, nverts, ia[nverts], ia, ja, NULL, &ati[0], &atj[0], &atid[0]);
-    
+
     // modify the output to conform to what matlab_bgl expects
     mbglIndex null_vertex = graph_traits<bidir_graph>::null_vertex();
     for (mbglIndex i=0; i< nverts; i++) { pred[i] = null_vertex; }
 
-    lengauer_tarjan_dominator_tree(bg, src, 
+    lengauer_tarjan_dominator_tree(bg, src,
         make_iterator_property_map(pred, get(vertex_index,bg)));
-    
+
     pred[src] = src;
-    
+
     // modify the output to conform to what matlab_bgl expects
-    for (mbglIndex i=0; i< nverts; i++) { 
+    for (mbglIndex i=0; i< nverts; i++) {
         if (pred[i] == null_vertex) { pred[i] = i; }
     }
-    
+
     return (0);
 }
-    
+
