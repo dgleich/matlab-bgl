@@ -1,5 +1,5 @@
 function X = random_graph_layout(G,box)
-% RANDOM_GRAPH_LAYOUT Layout the vertices of a graph on a circle
+% RANDOM_GRAPH_LAYOUT Layout the vertices of a graph randomly
 % 
 % X = random_graph_layout(G) generate a random layout of the graph in the
 % unit box [0,0],[1,1] with vertex points generated at random.
