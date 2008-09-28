@@ -1,8 +1,11 @@
+function compile(varargin)
 %% History
 %  2008-04-01: Added check for pre Matlab 2006b for non-large dim 
 %              sparse matrices.
 %%
 
+debug = 0;
+if strmatch('-debug',varargin), debug=1; end
 clear mex
 
 mbglfiles = {'astar_search_mex.c', 'bfs_mex.c', 'dfs_mex.c', 'biconnected_components_mex.c', ...
@@ -18,7 +21,8 @@ mbglfiles = {'astar_search_mex.c', 'bfs_mex.c', 'dfs_mex.c', 'biconnected_compon
          'dominator_tree_mex.c', ...
          'test_matching_mex.c', ...
          'path_from_pred_mex.c', ...
-         'kamada_kawai_spring_layout_mex.c'};
+         'kamada_kawai_spring_layout_mex.c', ...
+         'fruchterman_reingold_mex.c'};
      
 c = computer;
 
@@ -60,6 +64,10 @@ end
 
 mexflags = '';
 
+if debug, mexflags = [mexflags ' -D_DEBUG -g ']; 
+else mexflags = [mexflags ' -O '];
+end
+
 if (large_arrays)
     mexflags = [mexflags ' -largeArrayDims -DMATLAB_BGL_LARGE_ARRAYS '];
 end
@@ -67,7 +75,7 @@ end
 if (ispc)
     % must change /MD to /ML in mexopts.bat
     %mexflags = '-O -I..\libmbgl\include LINKFLAGS#''$LINKFLAGS -libpath:..\libmbgl\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST libmbgl.lib''';
-    mexflags = [mexflags sprintf('-O -I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
+    mexflags = [mexflags sprintf('-I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
     %mexflags = [mexflags sprintf('-g -I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Debug'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
 elseif (mac)
     % mac specific options
@@ -75,8 +83,7 @@ elseif (isunix)
     % 
     if (solaris)
     else
-        mexflags = [mexflags '-O -I../libmbgl/include -L../libmbgl '];
-        %mexflags = [mexflags '-g -D_DEBUG -I../libmbgl/include -L../libmbgl '];
+        mexflags = [mexflags '-I../libmbgl/include -L../libmbgl '];
     end
     
     mexflags = [mexflags sprintf('-l%s', libname)];

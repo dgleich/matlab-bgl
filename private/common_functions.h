@@ -10,7 +10,10 @@
 /** History
  *  2007-07-08: Initial version
  *  2008-09-26: Added isscalar and isscalardoube
+ *  2008-09-27: Added intmin
  */
+
+int intmin(int a, int b) { if (a<b) { return a; } else { return b; } }
 
 int isscalar(const mxArray* a) {
 	if (mxGetM(a) == 1 && mxGetN(a) == 1 && mxGetNumberOfDimensions(a) == 2) {

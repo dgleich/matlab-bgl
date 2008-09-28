@@ -10,11 +10,11 @@ function options = merge_options(default_options,varargin)
 %  2008-09-25: Initial coding
 %%
 
-if length(varargin)>0 && mod(length(varargin),2) == 0
+if ~isempty(varargin) && mod(length(varargin),2) == 0
     options = merge_structs(struct(varargin{:}),default_options);
 elseif length(varargin)==1
     options = merge_structs(varargin{1},default_options);
-elseif length(varargin) > 0
+elseif ~isempty(varargin)
     error('matlag_bgl:optionsParsing',...
         'There were an odd number of key-value pairs of options specified');
 else

@@ -463,6 +463,7 @@ int kamada_kawai_spring_layout(
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
  * @param iterations the number of iterations to run
+ * @param initial_temp the initial temperature of the system
  * @param grid_force_pairs a binary value (0 or 1) if the alg should use
  *   a grid to compute the force between pairs
  * @param width the total width of the layout
@@ -473,7 +474,7 @@ int kamada_kawai_spring_layout(
  */
 int fruchterman_reingold_force_directed_layout(
 		mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
-		int iterations, int grid_force_pairs,
+		int iterations, double initial_temp, int grid_force_pairs,
 		double width, double height, int progressive,
 		double *positions);
 

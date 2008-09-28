@@ -7,6 +7,7 @@
 
 /** History
  *  2008-09-25: Initial coding
+ *  2008-09-27: Fixed progressive calls
  */
 
 #include "include/matlab_bgl.h"
@@ -16,7 +17,7 @@
 #include <yasmic/iterator_utility.hpp>
 
 #include <boost/graph/kamada_kawai_spring_layout.hpp>
-#include <boost/graph/fruchterman_reingold.hpp>
+#include <yasmic/boost_mod/fruchterman_reingold.hpp>
 #include <boost/graph/gursoy_atun_layout.hpp>
 #include <boost/graph/circle_layout.hpp>
 #include <boost/graph/random_layout.hpp>
@@ -27,6 +28,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include <math.h>
 
@@ -64,6 +66,13 @@ int kamada_kawai_spring_layout(
 		circle_graph_layout(g,
 				make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
 				1.0);
+	} else {
+		// copy the layout from positions
+		mbglIndex n = num_vertices(g);
+		for (mbglIndex i = 0; i<n; i++) {
+			position_vec[i].x = positions[i+0*n];
+			position_vec[i].y = positions[i+1*n];
+		}
 	}
 	bool rval = false;
 	if (weight == NULL) {
@@ -116,7 +125,7 @@ int kamada_kawai_spring_layout(
  */
 int fruchterman_reingold_force_directed_layout(
 		mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
-		int iterations, int grid_force_pairs,
+		int iterations, double initial_temp, int grid_force_pairs,
 		double width, double height, int progressive,
 		double *positions)
 {
@@ -132,21 +141,65 @@ int fruchterman_reingold_force_directed_layout(
 		random_graph_layout(g,
 				make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
 				-width/2.0, width/2.0, -height/2.0, height/2.0, gen);
+	} else {
+		// copy the layout from positions
+		mbglIndex n = num_vertices(g);
+		for (mbglIndex i = 0; i<n; i++) {
+			position_vec[i].x = positions[i+0*n];
+			position_vec[i].y = positions[i+1*n];
+		}
 	}
+	/*std::cout << "iterations " << iterations << std::endl;
+	std::cout << "width " << width << std::endl;
+	std::cout << "height " << height << std::endl;
+	for (mbglIndex i = 0; i < std::min BOOST_PREVENT_MACRO_SUBSTITUTION ((mbglIndex)5,nverts); i++) {
+		std::cout << "p[" << i << "]=("<<position_vec[i].x<<","<<position_vec[i].y<<")" << std::endl;
+	}*/
 	if (grid_force_pairs) {
 		fruchterman_reingold_force_directed_layout(g,
 				make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
 				width, height,
-				cooling(linear_cooling<double>(iterations)).
-					vertex_index_map(get(vertex_index,g)));
+				cooling(linear_cooling<double>(iterations, initial_temp)));
 	} else {
 		fruchterman_reingold_force_directed_layout(g,
 				make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
 				width, height,
-				cooling(linear_cooling<double>(iterations)).
-					vertex_index_map(get(vertex_index,g)).
+				cooling(linear_cooling<double>(iterations, initial_temp)).
 					force_pairs(all_force_pairs()));
 	}
+	/*std::vector<simple_point<double> > displacement_vec(nverts);
+	if (grid_force_pairs) {
+		std::cout << "gridded" << std::endl;
+		fruchterman_reingold_force_directed_layout(
+			g,
+			make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
+			width,
+			height,
+			square_distance_attractive_force(),
+			square_distance_repulsive_force(),
+			make_grid_force_pairs(width, height,
+				make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
+				g),
+			linear_cooling<double>(iterations),
+			make_iterator_property_map(displacement_vec.begin(),get(vertex_index,g), simple_point<double>())
+			);
+	} else {
+		std::cout << "all" << std::endl;
+		fruchterman_reingold_force_directed_layout(
+			g,
+			make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
+			width,
+			height,
+			square_distance_attractive_force(),
+			square_distance_repulsive_force(),
+			all_force_pairs(),
+			linear_cooling<double>(iterations),
+			make_iterator_property_map(displacement_vec.begin(),get(vertex_index,g), simple_point<double>())
+			);
+	}
+	for (mbglIndex i = 0; i < std::min BOOST_PREVENT_MACRO_SUBSTITUTION ((mbglIndex)5,nverts); i++) {
+			std::cout << "d[" << i << "]=("<<displacement_vec[i].x<<","<<displacement_vec[i].y<<")" << std::endl;
+		}*/
 	// copy the positions over
 	mbglIndex n = num_vertices(g);
 	for (mbglIndex i = 0; i<n; i++) {

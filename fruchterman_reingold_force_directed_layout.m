@@ -1,13 +1,22 @@
-X = fruchterman_reingold_force_directed_layout(G,varargin)
+function X = fruchterman_reingold_force_directed_layout(A,varargin)
 % FRUCHTERMAN_REINGOLD_FORCE_DIRECTED_LAYOUT A force directed graph layout
 % 
 % Compute the layout for an unweighted, undirected graph.  
+% See
+% http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/kamada_kawai_spring_layout.html
+% for information about the layout function and the parameters
 %
-%   options.iterations: number of layout iterations
+%   options.iterations: number of layout iterations [int > 0 | {100}]
+%   options.initial_temp: starting temperature [double > 0 | {10}]
 %   options.force_pairs: [{'grid'} | 'all']
-%   options.width: width of layout area [double | {1}]
-%   options.height: height of layout area [double | {1}]
+%   options.width: width of layout area [double | {num_vertices(G)}]
+%   options.height: height of layout area [double | {num_vertices(G)}]
 %   options.progressive: [{0} | position matrix X]
+%
+% Example:
+%   G = grid_graph(6,5);
+%   X = fruchterman_reingold_force_directed_layout(G);
+%   gplot(G,X);
 
 
 % David F. Gleich
@@ -16,3 +25,27 @@ X = fruchterman_reingold_force_directed_layout(G,varargin)
 %% History
 %  2008-09-25: Initial coding
 %%
+
+[trans check full2sparse] = get_matlab_bgl_options(varargin{:});
+if full2sparse && ~issparse(A), A = sparse(A); end
+
+n = num_vertices(A);
+options = struct('iterations',100,'initial_temp',10,'force_pairs','grid',...
+    'width',n,'height',n,'progressive',0);
+options = merge_options(options,varargin{:});
+
+if check, check_matlab_bgl(A,struct('sym',1)); end
+
+progressive_opt = [];
+if ~isscalar(options.progressive), progressive_opt = options.progressive; end
+
+force_pair_type = 0;
+switch options.force_pairs
+    case 'grid', force_pair_type = 1;
+    case 'all', force_pair_type = 0;
+    otherwise, error('matlab_bgl:invalidParameter',...
+            'force_pair = %s isn''t a recognized option',options.force_pair);
+end
+
+X = fruchterman_reingold_mex(A,options.iterations,options.initial_temp,...
+    force_pair_type, options.width, options.height, progressive_opt);
