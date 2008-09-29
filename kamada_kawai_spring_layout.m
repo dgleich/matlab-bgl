@@ -1,17 +1,24 @@
 function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % KAMADA_KAWAI_SPRING_LAYOUT Use springs to compute a graph layout
+%
+% X = kamada_kawai_spring_layout(A) computes a layout for an undirected
+% graph, connected graph by simulating a system of springs.
+% [X,data] = kamada_kawai_spring_layout(A) returns extra data, such as the
+% spring matrix and matrix of distances between vertices, i.e.
+%   data.spring_strength % returns the spring stremgth
+%   data.distances % returns the distance between all points
 % 
 % See
 % http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/kamada_kawai_spring_layout.html
 % for information about the layout function and the parameters
-%
-% [X,data] returns extra data, such as the spring matrix and 
-%   data.spring_strength % returns the spring stremgth
-%   data.distances % returns the distance between all points
-%
+
+% ... = kamada_kawai_spring_layout(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.tol: stopping tolerance of layout change [double | {0.0001}]
 %   options.spring_constant: energy of the system [double | {1}]
-%   options.progressive: [{0} | position matrix X]
+%   options.progressive: if you want to start from an existing layout,
+%     provide the coordinates of the layout [{0} | position matrix X]
 %   options.edge_length: default length of an edge [double | {1}]
 %   options.edge_weight: a double array over the edges with an edge
 %       weight for each edge, see EDGE_INDEX and EXAMPLES/REWEIGHTED_GRAPHS
@@ -22,6 +29,9 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 %   G = grid_graph(6,5);
 %   X = kamada_kawai_spring_layout(G);
 %   gplot(G,X);
+%
+% See also FRUCHTERMAN_REINGOLD_FORCE_DIRECTED_LAYOUT, GURSOY_ATUN_LAYOUT, 
+% LAYOUT
 
 % David F. Gleich
 % Copyright, Stanford University, 2008
