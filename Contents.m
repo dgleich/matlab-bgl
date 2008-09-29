@@ -31,6 +31,13 @@
 % kolmogorov_max_flow       - Kolmogorov's max flow algorithm
 % push_relabel_max_flow     - Goldberg's push-relabel max flow algorithm
 %
+% Layouts
+% circle_graph_layout       - 
+% random_graph_layout       -
+% kamada_kawai_spring_layout-
+% gursoy_atun_layout        -
+% fruchterman_reingold_force_directed_layout -
+%
 % Matchings
 % matching                  - Compute a maximum cardinality matching
 % edmonds_maximum_cardinality_matching - Edmonds' algorithm for matching 

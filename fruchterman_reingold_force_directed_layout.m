@@ -3,7 +3,7 @@ function X = fruchterman_reingold_force_directed_layout(A,varargin)
 % 
 % Compute the layout for an unweighted, undirected graph.  
 % See
-% http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/fruchterman_reingold_force_directed_layout.html
+% http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/fruchterman_reingold.html
 % for information about the layout function and the parameters
 %
 % The temperature of the layout begins at the value initial_temp and 
@@ -14,10 +14,13 @@ function X = fruchterman_reingold_force_directed_layout(A,varargin)
 % for the standard options. 
 %   options.iterations: number of layout iterations [int > 0 | {100}]
 %   options.initial_temp: starting temperature [double > 0 | {10}]
-%   options.force_pairs: [{'grid'} | 'all']
+%   options.force_pairs: computation of forces between pairs of vertices can
+%     either be approximated on a grid or computed between all pairs 
+%     [{'grid'} | 'all']
 %   options.width: width of layout area [double | {num_vertices(G)}]
 %   options.height: height of layout area [double | {num_vertices(G)}]
-%   options.progressive: [{0} | position matrix X]
+%   options.progressive: whether to start from an old layout
+%     [{0} | position matrix X]
 %
 % Note: this function does not depend on the non-zero values of A, 
 % but only uses the non-zero structure of A
