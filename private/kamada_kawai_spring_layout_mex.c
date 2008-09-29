@@ -98,8 +98,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (!mxIsEmpty(arg_progressive_opt)) {
     if (mxGetM(arg_progressive_opt) != n || mxGetN(arg_progressive_opt) != 2) {
       mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
-          "The progressive call requires an %i-by-2 input matrix of positions",
-          n);
+        "The progressive call requires an %i-by-2 input matrix of positions",
+        n);
     }
     plhs[0]= mxDuplicateArray(arg_progressive_opt);
     progressive = 1;
@@ -108,6 +108,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   }
   X= mxGetPr(plhs[0]);
   if (n==0) { return; } /* special case empty graph */
+  if (n==1) { return; } /* special case singleton graph */  
   rval= kamada_kawai_spring_layout(n, ja, ia, a, tol, k, progressive, edgelen,
           X, S, D);
   if (rval == -2) {

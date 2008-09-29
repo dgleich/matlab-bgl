@@ -11,7 +11,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % See
 % http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/kamada_kawai_spring_layout.html
 % for information about the layout function and the parameters
-
+%
 % ... = kamada_kawai_spring_layout(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
 % for the standard options. 

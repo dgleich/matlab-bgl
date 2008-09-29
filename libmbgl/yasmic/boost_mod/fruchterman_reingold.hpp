@@ -267,7 +267,7 @@ fruchterman_reingold_force_directed_layout
 
   detail::fr_apply_force<PositionMap, DisplacementMap,
                          RepulsiveForce, Dim, Graph>
-    apply_force(position, displacement, repulsive_force, k, g);
+  apply_force(position, displacement, repulsive_force, k, g);
 
   Dim temp = cool();
   if (temp) do {
