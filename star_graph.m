@@ -14,12 +14,18 @@ function [A xy] = star_graph(n)
 %
 % See also WHEEL_GRAPH, CYCLE_GRAPH
 
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
 %% History
+%  2007-09-29: Changed output to double
 %%
+
 
 i = 1:n-1;
 j = n*ones(1,n-1);
 A = sparse(i,j,1,n,n);
 A = A|A';
+A = double(A);
 
 xy = [[cos(2*pi*(i./(n-1))) 0]' [sin(2*pi*(i./(n-1))) 0]'];

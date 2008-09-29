@@ -21,25 +21,26 @@ function [A xy] = cycle_graph(n,varargin)
 
 %% History
 %  2007-07-08: Added directed graph option
+%  2007-09-29: Changed output to double, fixed for n=0, changed options
+%    format
 %%
 
 [trans] = get_matlab_bgl_options(varargin{:});
 options = struct('directed', '1');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+options = merge_options(options,varargin{:});
 
-
-i = 1:n;
-j = [i(2:end) i(1)];
-A = sparse(i,j,1,n,n);
-if ~options.directed
-    A = A|A';
+if n>0
+    i = 1:n;
+    j = [i(2:end) i(1)];
+    A = sparse(i,j,1,n,n);
+    if ~options.directed
+        A = A|A';
+        A = double(A);
+    end
+    xy = [cos(2*pi*(i./n))' sin(2*pi*(i./n))'];
+else
+    A = sparse(n,n);
+    xy = zeros(0,2);
 end
    
-if trans
-    A = A';
-end
-
-xy = [cos(2*pi*(i./n))' sin(2*pi*(i./n))'];
-
+if trans && options.directed, A = A'; end
