@@ -18,7 +18,7 @@ function [d pred] = shortest_paths(A,u,varargin)
 %       applies to dijkstra or bellman_ford algorithms.  See dijkstra_sp or
 %       bellman_ford_sp for details on the visitors.
 %   options.edge_weight: a double array over the edges with an edge
-%       weight for each node, see EDGE_INDEX and EXAMPLES/REWEIGHTED_GRAPHS
+%       weight for each edge, see EDGE_INDEX and EXAMPLES/REWEIGHTED_GRAPHS
 %       for information on how to use this option correctly
 %       [{'matrix'} | length(nnz(A)) double vector]
 %
@@ -76,7 +76,7 @@ else
         'options.target is not ''none'' or a vertex number.');
 end
 
-if (check)
+if check
     % check the values of the matrix
     check_matlab_bgl(A,struct('values',edge_weights ~= 1));
     
