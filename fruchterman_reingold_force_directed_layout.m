@@ -3,9 +3,15 @@ function X = fruchterman_reingold_force_directed_layout(A,varargin)
 % 
 % Compute the layout for an unweighted, undirected graph.  
 % See
-% http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/kamada_kawai_spring_layout.html
+% http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/fruchterman_reingold_force_directed_layout.html
 % for information about the layout function and the parameters
 %
+% The temperature of the layout begins at the value initial_temp and 
+% decreases to 0 over the number of iterations given. 
+%
+% ... = fruchterman_reingold_force_directed_layout(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.iterations: number of layout iterations [int > 0 | {100}]
 %   options.initial_temp: starting temperature [double > 0 | {10}]
 %   options.force_pairs: [{'grid'} | 'all']
@@ -13,11 +19,16 @@ function X = fruchterman_reingold_force_directed_layout(A,varargin)
 %   options.height: height of layout area [double | {num_vertices(G)}]
 %   options.progressive: [{0} | position matrix X]
 %
+% Note: this function does not depend on the non-zero values of A, 
+% but only uses the non-zero structure of A
+%
 % Example:
 %   G = grid_graph(6,5);
 %   X = fruchterman_reingold_force_directed_layout(G);
 %   gplot(G,X);
-
+%   X = fruchterman_reingold_force_directed_layout(G,'initial_temp',100);
+%
+% See also KAMADA_KAWAI_SPRING_LAYOUT, GURSOY_ATUN_LAYOUT, LAYOUT
 
 % David F. Gleich
 % Copyright, Stanford University, 2008

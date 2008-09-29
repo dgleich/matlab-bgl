@@ -75,7 +75,10 @@ m = matching(sparse([]));
 m = core_numbers(sparse([]));
 v = edge_weight_vector(sparse([]),sparse([]));
 
-X = circle_layout(sparse([]));
+X = circle_graph_layout(sparse([]));
+X = random_graph_layout(sparse([]));
+X = kamada_kawai_spring_layout(sparse([]));
+X = fruchterman_reingold_force_directed_layout(sparse([]));
 
 %% Code examples
 
@@ -119,9 +122,9 @@ biconnected_components(A);
 load('../graphs/bfs_example.mat');
 d2 = dist_uv_bfs(A,1,3);
 
-% circle_layout
+% circle_graph_layout
 G = cycle_graph(6);
-X = circle_layout(G);
+X = circle_graph_layout(G);
 gplot(G,X);
 
 % clustering_coefficients
@@ -199,6 +202,11 @@ A = erdos_reyni(100,0.05);
 load('../graphs/clr-26-1.mat');
 D=floyd_warshall_all_sp(A);
 
+% fruchterman_reingold_force_directed_layout
+G = grid_graph(6,5);
+X = fruchterman_reingold_force_directed_layout(G);
+gplot(G,X);
+
 % grid_graph
 [A xy] = grid_graph(5,10);
 gplot(A,xy);
@@ -209,6 +217,11 @@ A = grid_graph(2*ones(1,10)); % compute 10d hypercube
 % johnson_all_sp
 load('../graphs/clr-26-1.mat');
 D=johnson_all_sp(A);
+
+% kamada_kawai_spring_layout
+G = grid_graph(6,5);
+X = kamada_kawai_spring_layout(G);
+gplot(G,X);
 
 % kolmogorov_max_flow
 load('../graphs/max_flow_example.mat');
@@ -269,6 +282,15 @@ T = prim_mst(A,struct('root',5)); % root the tree at vertex e
 % push_relabel_max_flow
 load('../graphs/max_flow_example.mat');
 f=push_relabel_max_flow(A,1,8);
+
+% random_graph_layout
+G = cycle_graph(1500);
+X = random_graph_layout(G);
+gplot(G,X); hold on; plot(X(:,1),X(:,2),'r.'); hold off;
+% Layout on the grid
+X = random_graph_layout(G,int32([0 0 5 5])); % random grid layout
+gplot(G,X); grid on; hold on; plot(X(:,1),X(:,2),'r.'); hold off;
+
 
 % shoretst_paths
 load('../graphs/clr-25-2.mat');
@@ -420,6 +442,12 @@ load('../graphs/tarjan-biconn.mat');
 
 %% breadth_first_search
 
+%% circle_graph_layout
+X = circle_graph_layout(sparse(4,4));
+Y = [1 0; 0 1; -1 0; 0 -1];
+if norm(X-Y)>5e-6, error(msgid, 'circle_graph_layout(4) bad coords'); 
+end
+
 %% clustering_coefficients
 
 % Create a clique, where all the clustering coefficients are equal
@@ -445,6 +473,9 @@ cn = core_numbers(sparse(A),struct('unweighted',0));
 if any(cn-[-1; -1; -4])
     error(msgid, 'core_numbers failed negative test');
 end
+
+%% cycle_graph
+G = cycle_graph(10,struct('directed',0));
 
 %% dfs
 
@@ -618,6 +649,38 @@ if d(v) ~= 2 || any(d(d>2)~=6)
     error(msgid, 'edge_weight_vector failed');
 end
 
+%% fruchterman_reingold_force_directed_layout
+G = cycle_graph(10,struct('directed',0));
+X = fruchterman_reingold_force_directed_layout(G);
+G = cycle_graph(10);
+try
+  G = fruchterman_reingold_force_directed_layout(G);
+  error(msgid, 'fruchterman_reingold failed to throw on a directed graph');
+catch, end
+G = grid_graph(5,6);
+X = fruchterman_reingold_force_directed_layout(G);
+for i=0:10, X = fruchterman_reingold_force_directed_layout(sparse(i,i)); end
+G = cycle_graph(10,struct('directed',0));
+X1 = fruchterman_reingold_force_directed_layout(G,...
+  'progressive',circle_graph_layout(G));
+X2 = fruchterman_reingold_force_directed_layout(G,...
+  struct('progressive',circle_graph_layout(G)));
+if norm(X1-X2,'fro')>1e-10, error(msgid, 'fruchterman_reingold options failed'); end
+
+
+%% kamada_kawai_spring_layout
+% TODO: Expand these test cases
+try
+  X = kamada_kawai_spring_layout(sparse(2,2));
+  error(msgid,'kamada_kawai_spring_layout didn''t fail on empty graph');
+catch
+end
+X = kamada_kawai_spring_layout(grid_graph(1,2));
+Y = [0 0; -1 0];
+if norm(X-Y,'fro')>5e-6, error(msgid,'kamada_kawai_spring_layout incorrect'); end
+
+for i=0:10, X=kamada_kawai_spring_layout(grid_graph(i,i)); check_layout(X); end
+
 %% matching
 load('../graphs/dfs_example.mat');
 try
@@ -681,6 +744,27 @@ if nnz(triu(T1-T2)-T1T2diff) ~= 0
     error(msgid, 'prim_mst failed rooted test');
 end
 
+%% random_graph_layout
+rand('state',0);
+X = random_graph_layout(sparse(4,4));
+if ~isequal(size(X),[4,2])
+  error(msgid,'random_graph_layout(4) wrong output size');
+end
+if any(any(X<0)) || any(any(X>1))
+  error(msgid,'random_graph_layout(4) wrong output area');
+end
+X = random_graph_layout(sparse(1500,1500),[-1e5,-1e5,1e5,1e5]);
+if ~isequal(size(X),[1500,2])
+  error(msgid,'random_graph_layout(1500) wrong output size');
+end
+if any(any(X<-1e5)) || any(any(X>1e5))
+  error(msgid,'random_graph_layout(1500) wrong output area');
+end
+
+X = random_graph_layout(sparse(256,256),int32([0 0 0 0]));
+if ~all(all(X==0))
+  error(msgid,'random_graph_layout(256) invalid output');
+end
 %% shortest_paths
 
 %% test_dag
@@ -752,3 +836,7 @@ end
       end
       breadth_first_search(A,u,struct('tree_edge',@on_tree_edge));
     end
+
+function check_layout(X)
+if ~all(all(isfinite(X))), error('invalid layout'); end
+end

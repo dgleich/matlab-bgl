@@ -9,7 +9,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 %   data.spring_strength % returns the spring stremgth
 %   data.distances % returns the distance between all points
 %
-%   options.tol: stopping tolerance of layout change [double | {0.001}]
+%   options.tol: stopping tolerance of layout change [double | {0.0001}]
 %   options.spring_constant: energy of the system [double | {1}]
 %   options.progressive: [{0} | position matrix X]
 %   options.edge_length: default length of an edge [double | {1}]
@@ -21,7 +21,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % Example:
 %   G = grid_graph(6,5);
 %   X = kamada_kawai_spring_layout(G);
-%   
+%   gplot(G,X);
 
 % David F. Gleich
 % Copyright, Stanford University, 2008
@@ -34,7 +34,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 n = num_vertices(A);
-options = struct('tol',0.001,'spring_constant',1,'progressive',false,...
+options = struct('tol',0.0001,'spring_constant',1,'progressive',0,...
     'edge_length',1,'edge_weight','matrix');
 options = merge_options(options,varargin{:});
 
@@ -65,11 +65,11 @@ if check
     end
 end
 
-progessive_opt = [];
+progressive_opt = [];
 if ~isscalar(options.progressive), progressive_opt = options.progressive; end
 
 [X,spring,distance]=kamada_kawai_spring_layout_mex(...
-    A, options.tol, options.spring_constant, progessive_opt, ...
+    A, options.tol, options.spring_constant, progressive_opt, ...
     options.edge_length, edge_weights, edge_weight_opt);
 
 if nargout>1, data.spring_strength = spring; data.distances = distance; end

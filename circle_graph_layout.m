@@ -22,7 +22,7 @@ function X = circle_layout(G,radius)
 
 if ~exist('radius','var') || isempty(radius), radius = 1.0; end;
 pi = 3.14159;
-n = num_vertices(g);
+n = num_vertices(G);
 X = zeros(n,2);
 X(:,1) = radius*cos( (0:n-1)'*2*pi/n );
 X(:,2) = radius*sin( (0:n-1)'*2*pi/n );
