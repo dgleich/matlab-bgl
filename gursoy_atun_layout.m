@@ -9,7 +9,8 @@ function X = gursoy_atun_layout(G,varargin)
 %     [{'square'} | 'heart' | 'sphere' | 'ballN'* | 'cubeN'*]
 %     * for the ball and cube topolgy, N can be replaced by any number, so 
 %       ball3 is the same as the sphere, cube2 is the same as the square,
-%       but cube3 is the true cube and cube4 is a hypercube.
+%       but cube3 is the true cube and cube4 is a hypercube.  At the moment, 
+%       only dimensions between 1 and 10 are implemented. 
 %   options.iterations: the number of iterations [num_vertices(G) | integer]
 %   options.diameter_range: The inital and final diameters when updating
 %     [ {[sqrt(num_vertices(G)),1.0]} | [diameter_initial,diameter_final] ]
