@@ -23,24 +23,15 @@ function [ci sizes] = components(A,varargin)
 %
 % See also DMPERM, BICONNECTED_COMPONENTS
 
-%
 % David Gleich
-% Copyright, Stanford University, 2006-2007
-%
+% Copyright, Stanford University, 2006-2008
 
-%
-% 21 April 2006
-% Initial version
-%
-% 31 May 2006
-% Added full2sparse check
-%
-% 9 November 2006
-% Fixed documentation typo.
-%
-% 8 July 2007
-% Code cleanup
-%
+%% History
+%  2006-04-21: Initial version
+%  2006-05-31: Added full2sparse check
+%  2006-11-09: Fixed documentation typo.
+%  2007-07-08: Code cleanup
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end

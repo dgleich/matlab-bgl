@@ -34,7 +34,14 @@ function m=maximal_matching(A,options)
 %   mmax=matching(A);
 %   sum(mmax>0)/2             % maximum matching cardinality, should be 8 
 
-if (nargin > 1)
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-07-09: Initial coding
+%%
+
+if nargin > 1
     options.augmenting_path = 'none';
     options.initial_match = options.algname;
     options.verify = 0;
@@ -42,6 +49,6 @@ else
     options = struct('initial_match', 'extra_greedy', ...
         'augmenting_path', 'none', ...
         'verify', 0);
-end;
+end
 
 m = matching(A,options);

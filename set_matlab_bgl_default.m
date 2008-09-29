@@ -26,6 +26,12 @@ function old_default = set_matlab_bgl_default(options)
 %   % restore the old options 
 %   set_matlab_bgl_default(old_options);
 
+% David Gleich
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%%
+
 persistent default_options;
 if (~isa(default_options,'struct'))
     % initial default options

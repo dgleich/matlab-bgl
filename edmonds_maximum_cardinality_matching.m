@@ -22,7 +22,14 @@ function [varargout]=edmonds_maximum_cardinality_matching(A,options)
 %   m=edmonds_maximum_cardinality_matching(A) 
 %   sum(m>0)/2                % matching cardinality, should be 8
 
-if (nargin > 1)
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-07-09: Initial version
+%%
+
+if nargin > 1
     options.augmenting_path = 'edmonds';
     options.initial_match = 'extra_greedy';
     options.verify = 1;
@@ -30,7 +37,7 @@ else
     options = struct('initial_match', 'extra_greedy', ...
         'augmenting_path', 'edmonds', ...
         'verify', 1);
-end;
+end
 
 varargout = cell(1,max(nargout,1));
 

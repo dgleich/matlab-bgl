@@ -9,11 +9,16 @@
 % optional 'weights' parameter.  Using the 'weights' parameter correctly
 % can be difficult due to issues with how edges are indexed in MatlabBGL.
 
-%% A first attempt
-% A trivial example graph to illustrate the problem that occurs with 0
-% weighted graphs occurs even with a simple cycle.  Suppose that the graph
-% corresponding to adjacency matrix A is a symmetric cycle where all edges
-% have weight 0 except for one edge between vertices (1,2).
+%% "I just want the simpliest solution..."
+% In this section, we'll see the really-easy but somewhat expensive way of
+% reweighting a graph.  I'll run through all the cases detailed below with
+% the simple code.  If you just need something to work and don't
+% necessarily need to know about all the details, this section is for you!
+
+
+%%
+% Let's compute shortest paths in a cycle graph with only one weighted
+% edge.  The simple case requires a structural and weight matrix.
 
 %%
 % n will be the total size of the graph, and u and v will be the special
@@ -22,6 +27,50 @@
 n = 8; % it's just an example, so let's make it small.
 u = 1;
 v = 2;
+
+%%
+% These commands create an undirected cycle graph.  The cycle is 
+% ... n <-> 1 <-> 2 <-> ... <-> n-1 <-> n <-> 1 ...
+% where the weight on every edge is 0 except for the edge between vertex
+% u,v.  Notice that the edge list is already symmetric.  
+%
+% This setup means that while there is a weight 1 edge between u and v, the
+% shortest path, or smallest weight path, is actually the path from u,
+% circling every vertex except v and so d(v) should be 0.
+
+E = [1:n 2:n 1; 2:n 1 1:n]';
+w = [1 zeros(1,n-1) 1 zeros(1,n-1)]';
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create a weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create a structural sparse matrix
+
+%% 
+% The relationship between As and A is that As should have a non-zero value
+% for every edge, but the _values_ of As will be ignored and the
+% computation will proceed with the _values_ in the corresponding spots in
+% the matrix A.
+
+%%
+% The wrong way to compute shortest paths.
+
+[d pred] = shortest_paths(A,u);
+d(v)
+
+%% 
+% The right way to compute shortest paths.
+
+[d pred] = shortest_paths(A,u,struct('edge_weight',edge_weight_vector(As,A)));
+d(v)
+
+%%
+% That's better, d(v) = 0 as expected.
+
+
+%% A first attempt
+% A trivial example graph to illustrate the problem that occurs with 0
+% weighted graphs occurs even with a simple cycle.  Suppose that the graph
+% corresponding to adjacency matrix A is a symmetric cycle where all edges
+% have weight 0 except for one edge between vertices (1,2).
 
 %%
 % These commands create an undirected cycle graph.  The cycle is 

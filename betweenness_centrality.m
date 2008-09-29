@@ -35,24 +35,17 @@ function [bc,E] = betweenness_centrality(A,varargin)
 %    load graphs/padgett-florentine.mat
 %    betweenness_centrality(A)
 
-%
 % David Gleich
-% 19 April 2006
-%
-% 2006-05-31: Added full2sparse check
-%
-% 1 March 2007
-% Added edge centrality output
-%
-% 20 April 2007
-% Added edge weight option
-%
-% 9 July 2007
-% Restricted input to positive edge weights
-%
-% 12 July 2007
-% Fixed edge_weight documentation.
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-19: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-03-01: Added edge centrality output
+%  2007-04-20: Added edge weight option
+%  2007-07-09: Restricted input to positive edge weights
+%  2007-07-12: Fixed edge_weight documentation.
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if (full2sparse && ~issparse(A)) 

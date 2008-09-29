@@ -15,14 +15,12 @@
  
 /** History
  *
- * 30 July 2007
- * Added mbglDegreeType to be a type that is a 64-bit integer when
- * for large graphs and a 32-bit unsigned int for small graphs.
- *
- * 27 August 2007
- * Added proper comments for C files.
+ *  2007-07-30: Added mbglDegreeType to be a type that is a 64-bit 
+ *    integer when for large graphs and a 32-bit unsigned int for
+ *    small graphs.
+ * 2007-08-27: Added proper comments for C files.
+ * 2008-09-19: Fixed comments
  */
-
 
 #ifdef MATLAB_BGL_LARGE_ARRAYS
 #include <stdlib.h>

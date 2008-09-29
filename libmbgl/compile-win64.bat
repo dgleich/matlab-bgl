@@ -4,19 +4,22 @@ rem % SETUP command line options
 rem % the first call gets us all the vc8.00 tools including lib.exe
 
 rem % This call gives the cross-compiler for 32-bit windows to 64-bit windows
-call D:\vstudio8\VC\bin\x86_amd64\vcvarsx86_amd64.bat
+rem call D:\vstudio8\VC\bin\x86_amd64\vcvarsx86_amd64.bat
 
 rem % This call gives the 64-bit compiler on 64-bit windows
 rem call d:\vstudio8\VC\bin\amd64\vcvarsamd64.bat
 
+echo This program must be called from the Visual Studio 2005 x64 Command Prompt
+echo Make sure you have updated the path to boost
 
 set LIBNAME=libmbgl-pcwin64-large.lib
-set OUTDIR=Release
+rem OUTDIR requires the extra "\\" to avoid escaping the \" when used with quotes below
+set OUTDIR=Release\\
 
-set YASMICDIR=.\
-set BOOSTDIR=e:\dev\lib\boost_1_33_1
+set YASMICDIR=.
+set BOOSTDIR=C:\dev\boost_1_36_0
 
-set CFLAGS=-c -nologo -I"%YASMICDIR%" -I"%BOOSTDIR%" /Fo"%OUTDIR%\" /EHsc /D "NDEBUG MATLAB_BGL_LARGE_ARRAYS" /O2 /ML
+set CFLAGS=/c /nologo /I"%YASMICDIR%" /I"%BOOSTDIR%" /Fo"%OUTDIR%" /EHsc /DNDEBUG /DMATLAB_BGL_LARGE_ARRAYS /O2 
 rem set CFLAGS=-c -nologo -Ie:\dev\yasmic -Ie:\dev\lib\boost_1_33_1 /Fo"%OUTDIR%\\" /EHsc /ML /Od /D "_DEBUG" /Fd"%OUTDIR%\vc70.pdb" /Zi
 set LIBFLAGS=-nologo /out:"%OUTDIR%\\%LIBNAME%"
 

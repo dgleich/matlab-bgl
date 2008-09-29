@@ -1,4 +1,4 @@
-function [D,P] = floyd_warshall_all_sp(A,varargin)
+function [D,P] = floyd_warshall_all_sp(A,options)
 % FLOYD_WARSHALL_ALL_SP Compute the weighted all-pairs shortest path problem.
 %
 % The Floyd-Warshall algorithm for the all-pairs shortest path problem 
@@ -19,29 +19,20 @@ function [D,P] = floyd_warshall_all_sp(A,varargin)
 %
 % See also ALL_SHORTEST_PATHS, JOHNSON_ALL_SP.
 
-%
 % David Gleich
-% 23 April 2006
-%
+% Copyright, Stanford University, 2006-2008
 
-% History
-% 2008-04-02: Added documenation for predecessor matrix
+%% History
+%  2006-04-23: Initial version
+%  2008-04-02: Added documenation for predecessor matrix
+%%
 
 algname = 'floyd_warshall';
 
-if (nargin > 1)
-    options = varargin{1};
-    options.algname = algname;
-else
-    options = struct('algname',algname);
-end;
-
-if nargout > 1
-    [D,P] = all_shortest_paths(A,options);
-else
-    D = all_shortest_paths(A,options);
+if nargin > 1, options.algname = algname;
+else options = struct('algname',algname);
 end
 
-
-
-
+if nargout > 1, [D,P] = all_shortest_paths(A,options);
+else D = all_shortest_paths(A,options);
+end

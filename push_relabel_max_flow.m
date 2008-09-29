@@ -11,17 +11,15 @@ function [varargout]=push_relabel_max_flow(A,u,v,options)
 %   load('graphs/max_flow_example.mat');
 %   push_relabel_max_flow(A,1,8)
 
-%
-% 7 July 2008
-% Initial version
-%
+% David Gleich
+% Copyright, Stanford University, 2007-2008
 
-if (nargin > 1)
-    options.algname = 'push_relabel';
-else
-    options = struct('algname','push_relabel');
-end;
+%% History
+%  2007-07-07: Initial version
+%%
+
+if nargin > 1, options.algname = 'push_relabel'; 
+else options = struct('algname','push_relabel'); end;
 
 varargout = cell(1,max(nargout,1));
-
 [varargout{:}] = max_flow(A,u,v,options);

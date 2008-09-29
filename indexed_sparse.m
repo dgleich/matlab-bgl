@@ -28,32 +28,28 @@ function [As,A,eil,Ei] = indexed_sparse(i,j,v,m,n,varargin)
 % Example:
 %   % see example/reweighted_edges 
 
-%
-% 13 July 2007
-% Changed input options to use undirected as the option name.
-%
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-07-13: Changed input options to use undirected as the option name.
+%%
 
 [trans check]  = get_matlab_bgl_options(varargin{:});
 
 options = struct('undirected', 0);
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
 
 symmetric = options.undirected;
 
 Ei = accumarray([i j], 1:length(v), [m n], @min, 0, true);
-if symmetric
-    Ei = min(Ei,Ei');
-end
+if symmetric, Ei = min(Ei,Ei'); end
 
 A = sparse(i, j, v, m, n);
 As = spones(Ei);
 
-if trans
-    eil = nonzeros(Ei');
-else
-    eil = nonzeros(Ei);
+if trans, eil = nonzeros(Ei');
+else eil = nonzeros(Ei);
 end
 
 if check

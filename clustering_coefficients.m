@@ -30,24 +30,15 @@ function ccfs = clustering_coefficients(A,varargin)
 %    load('graphs/clique-10.mat');
 %    clustering_coefficients(A)
 
-% 
 % David Gleich
-% Copyright, Stanford University
-%
+% Copyright, Stanford University, 2006-2008
 
-%
-% 19 April 2006
-% Initial version
-%
-% 31 May 2006
-% Added full2sparse check
-%
-% 11 July 2007
-% Added directed and weighted options
-%
-% 12 July 2007
-% Added non-negative edge check
-%
+%%
+%  2006-04-19: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-07-11: Added directed and weighted options
+%  2007-07-12: Added non-negative edge check
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end

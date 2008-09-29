@@ -11,17 +11,16 @@ function [varargout]=kolmogorov_max_flow(A,u,v,options)
 %   load('graphs/max_flow_example.mat');
 %   kolmogorov_max_flow(A,1,8)
 
+% David Gleich
+% Copyright, Stanford University, 2007-2008
 
-%
-% 7 July 2008
-% Initial version
-%
+%% History
+%  2007-07-07: Initial version
+%%
 
-if (nargin > 1)
-    options.algname = 'kolmogorov';
-else
-    options = struct('algname','kolmogorov');
-end;
+if nargin > 1, options.algname = 'kolmogorov';
+else options = struct('algname','kolmogorov');
+end
 
 varargout = cell(1,max(nargout,1));
 

@@ -73,6 +73,13 @@ c = clustering_coefficients(sparse([]));
 ei = edge_weight_index(sparse([]));
 m = matching(sparse([]));
 m = core_numbers(sparse([]));
+v = edge_weight_vector(sparse([]),sparse([]));
+
+X = circle_graph_layout(sparse([]));
+X = random_graph_layout(sparse([]));
+X = kamada_kawai_spring_layout(sparse([]));
+X = fruchterman_reingold_force_directed_layout(sparse([]));
+X = gursoy_atun_layout(sparse([]));
 
 %% Code examples
 
@@ -115,6 +122,11 @@ biconnected_components(A);
 % see (dist_uv_bfs below)    
 load('../graphs/bfs_example.mat');
 d2 = dist_uv_bfs(A,1,3);
+
+% circle_graph_layout
+G = cycle_graph(6);
+X = circle_graph_layout(G);
+gplot(G,X);
 
 % clustering_coefficients
 load('../graphs/clique-10.mat');
@@ -167,6 +179,14 @@ ee = @(ei,u,v) fprintf('examine_edge %2i, %1i, %1i, %4f, %4f, %4f\n', ...
             ei, u, v, edge_rand(eil(ei)), Av(u,v), edge_rand(Ei(u,v)));
 breadth_first_search(A,1,struct('examine_edge', ee));
 
+% edge weight vector
+n = 8; u = 1; v = 2;
+E = [1:n 2:n 1; 2:n 1 1:n]';
+w = [1 zeros(1,n-1) 1 zeros(1,n-1)]';
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+
 % edmonds_maximum_cardinality_matching
 load('../graphs/matching_example.mat');
 m=edmonds_maximum_cardinality_matching(A) ;
@@ -183,16 +203,36 @@ A = erdos_reyni(100,0.05);
 load('../graphs/clr-26-1.mat');
 D=floyd_warshall_all_sp(A);
 
+% fruchterman_reingold_force_directed_layout
+G = grid_graph(6,5);
+X = fruchterman_reingold_force_directed_layout(G);
+gplot(G,X);
+
 % grid_graph
 [A xy] = grid_graph(5,10);
 gplot(A,xy);
 A = grid_graph(2*ones(1,10)); % compute 10d hypercube
+
+% gursoy_atun_layout
+G1 = cycle_graph(5000,struct('directed',0));
+X1 = gursoy_atun_layout(G1,'topology','heart');
+G2 = grid_graph(50,50);
+X2 = gursoy_atun_layout(G2,'topology','square');
+G3 = grid_graph(50,50);
+X3 = gursoy_atun_layout(G3,'topology','circle');
+subplot(1,3,1); gplot(G1,X1,'k'); subplot(1,3,2); gplot(G2,X2,'k');
+subplot(1,3,3); gplot(G3,X3,'k');
      
 % indexed_sparse
 
 % johnson_all_sp
 load('../graphs/clr-26-1.mat');
 D=johnson_all_sp(A);
+
+% kamada_kawai_spring_layout
+G = grid_graph(6,5);
+X = kamada_kawai_spring_layout(G);
+gplot(G,X);
 
 % kolmogorov_max_flow
 load('../graphs/max_flow_example.mat');
@@ -253,6 +293,15 @@ T = prim_mst(A,struct('root',5)); % root the tree at vertex e
 % push_relabel_max_flow
 load('../graphs/max_flow_example.mat');
 f=push_relabel_max_flow(A,1,8);
+
+% random_graph_layout
+G = cycle_graph(1500);
+X = random_graph_layout(G);
+gplot(G,X); hold on; plot(X(:,1),X(:,2),'r.'); hold off;
+% Layout on the grid
+X = random_graph_layout(G,int32([0 0 5 5])); % random grid layout
+gplot(G,X); grid on; hold on; plot(X(:,1),X(:,2),'r.'); hold off;
+
 
 % shoretst_paths
 load('../graphs/clr-25-2.mat');
@@ -404,6 +453,12 @@ load('../graphs/tarjan-biconn.mat');
 
 %% breadth_first_search
 
+%% circle_graph_layout
+X = circle_graph_layout(sparse(4,4));
+Y = [1 0; 0 1; -1 0; 0 -1];
+if norm(X-Y)>5e-6, error(msgid, 'circle_graph_layout(4) bad coords'); 
+end
+
 %% clustering_coefficients
 
 % Create a clique, where all the clustering coefficients are equal
@@ -429,6 +484,14 @@ cn = core_numbers(sparse(A),struct('unweighted',0));
 if any(cn-[-1; -1; -4])
     error(msgid, 'core_numbers failed negative test');
 end
+
+%% cycle_graph
+G = cycle_graph(10,struct('directed',0));
+G = cycle_graph(10,'directed',0);
+[A,xy] = cycle_graph(0); assert(all(size(A)==[0 0]));
+[A,xy] = cycle_graph(1); assert(all(size(A)==[1 1])); assert(nnz(A)==1);
+for i=0:10, [A,xy] = cycle_graph(i); end
+for i=50:50:250, [A,xy] = cycle_graph(i); end
 
 %% dfs
 
@@ -514,6 +577,143 @@ if nnz(m)/2 ~= 8
     error(msgid, 'edmonds_maximum_cardinality_matching failed');
 end
 
+%% edge_weight_vector
+n = 8; u = 1; v = 2;
+E = [1:n 2:n 1; 2:n 1 1:n]';
+w = [1 zeros(1,n-1) 1 zeros(1,n-1)]';
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 0
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% remove the edge between node 1 and edge 8 to test non-symmetric in As
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 1 || any(d>1) 
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% make the weights non-symmetric to test non-symmetry in A
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+A(1,2) = 2; 
+A(1,8) = 3;
+A(2,3) = 4;
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 2 || any(d(d>2)~=3)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% test non-symmetric A and non-symmetric As
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+A(1,2) = 2; 
+A(2,3) = 4;
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
+if d(v) ~= 2 || any(d(d>2)~=6)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+% make sure it works with pre-transposed matrices, repeat all the test
+% cases
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 0
+    error(msgid, 'edge_weight_vector failed');
+end
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 1
+    error(msgid, 'edge_weight_vector failed');
+end
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+A(1,2) = 2; 
+A(1,8) = 3;
+A(2,3) = 4;
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 2 || any(d(d>2)~=3)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+A = sparse(E(:,1), E(:,2), w, n, n); % create weighted sparse matrix
+As = sparse(E(:,1), E(:,2), true, n, n); % create structural sparse matrix
+As(1,8) = 0;
+A(1,2) = 2; 
+A(2,3) = 4;
+[d pred] = shortest_paths(As',u,...
+    struct('edge_weight',edge_weight_vector(As',A',struct('istrans',1)),...
+        'istrans',1));
+if d(v) ~= 2 || any(d(d>2)~=6)
+    error(msgid, 'edge_weight_vector failed');
+end
+
+%% fruchterman_reingold_force_directed_layout
+G = cycle_graph(10,struct('directed',0));
+X = fruchterman_reingold_force_directed_layout(G);
+G = cycle_graph(10);
+try
+  G = fruchterman_reingold_force_directed_layout(G);
+  error(msgid, 'fruchterman_reingold failed to throw on a directed graph');
+catch end
+G = grid_graph(5,6);
+X = fruchterman_reingold_force_directed_layout(G);
+for i=0:10, X = fruchterman_reingold_force_directed_layout(sparse(i,i)); end
+G = cycle_graph(10,struct('directed',0));
+X1 = fruchterman_reingold_force_directed_layout(G,...
+  'progressive',circle_graph_layout(G));
+X2 = fruchterman_reingold_force_directed_layout(G,...
+  struct('progressive',circle_graph_layout(G)));
+if norm(X1-X2,'fro')>1e-10, error(msgid, 'fruchterman_reingold options failed'); end
+
+%% gursoy_atun_layout
+check_layout = @(X) all(all(isfinite(X)));
+for i=0:10, X=gursoy_atun_layout(sparse(i,i)); assert(check_layout(X)); end
+for i=0:10, X=gursoy_atun_layout(grid_graph(i,i)); assert(check_layout(X)); end
+for i=0:10, for j=2:10,
+        X=gursoy_atun_layout(wheel_graph(i),'topology',sprintf('cube%i',j));
+        assert(check_layout(X)); 
+        X=gursoy_atun_layout(wheel_graph(i),'topology',sprintf('ball%i',j));
+        assert(check_layout(X));         
+end, end
+
+try
+    X=gursoy_atun_layout(sparse(10,10),'topology','ball');
+    error(msgid,'gursoy_atun_layout did not throw on invalid topology(ball)');
+catch end
+
+try
+    X=gursoy_atun_layout(sparse(10,10),'topology','cube');
+    error(msgid,'gursoy_atun_layout did not throw on invalid topology(cube)');
+catch end
+
+%% kamada_kawai_spring_layout
+% TODO: Expand these test cases
+try
+  X = kamada_kawai_spring_layout(sparse(2,2));
+  error(msgid,'kamada_kawai_spring_layout didn''t fail on empty graph');
+catch
+end
+X = kamada_kawai_spring_layout(grid_graph(1,2));
+for i=0:10, X=kamada_kawai_spring_layout(grid_graph(i,i)); assert(check_layout(X)); end
+
 %% matching
 load('../graphs/dfs_example.mat');
 try
@@ -577,7 +777,34 @@ if nnz(triu(T1-T2)-T1T2diff) ~= 0
     error(msgid, 'prim_mst failed rooted test');
 end
 
+%% random_graph_layout
+rand('state',0);
+X = random_graph_layout(sparse(4,4));
+if ~isequal(size(X),[4,2])
+  error(msgid,'random_graph_layout(4) wrong output size');
+end
+if any(any(X<0)) || any(any(X>1))
+  error(msgid,'random_graph_layout(4) wrong output area');
+end
+X = random_graph_layout(sparse(1500,1500),[-1e5,-1e5,1e5,1e5]);
+if ~isequal(size(X),[1500,2])
+  error(msgid,'random_graph_layout(1500) wrong output size');
+end
+if any(any(X<-1e5)) || any(any(X>1e5))
+  error(msgid,'random_graph_layout(1500) wrong output area');
+end
+
+X = random_graph_layout(sparse(256,256),int32([0 0 0 0]));
+if ~all(all(X==0))
+  error(msgid,'random_graph_layout(256) invalid output');
+end
 %% shortest_paths
+
+%% star_graph
+[A,xy] = star_graph(0); assert(all(size(A)==[0 0]));
+[A,xy] = star_graph(1); assert(all(size(A)==[1 1])); assert(nnz(A)==0);
+for i=0:10, [A,xy] = star_graph(i); end
+for i=50:50:250, [A,xy] = star_graph(i); end
 
 %% test_dag
 % Test the dag_test function, which also tests topological order
@@ -619,7 +846,11 @@ if any(p - (1:n)')
     error(msgid, 'topological_order failed on simple case');
 end
 
-
+%% wheel_graph
+[A,xy] = wheel_graph(0); assert(all(size(A)==[0 0]));
+[A,xy] = wheel_graph(1); assert(all(size(A)==[1 1])); assert(nnz(A)==0);
+for i=0:10, [A,xy] = wheel_graph(i); end
+for i=50:50:250, [A,xy] = wheel_graph(i); end
 
 %%
 % ***** end test_main *****

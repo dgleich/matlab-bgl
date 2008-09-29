@@ -34,41 +34,26 @@ function [D,P] = all_shortest_paths(A,varargin)
 %
 % See also JOHNSON_ALL_SP, FLOYD_WARSHALL_ALL_SP.
 
-%
 % David Gleich
-% 19 April 2006
-%
-% 2006-05-31
-% Added full2sparse check
-%
-% 1 March 2007
-% Added option for predecessor matrix from floyd_warshall
-%
-% 20 April 2007
-% Added edge weight option
-%
-% 8 July 2007
-% Fixed typos in strings and documentation
-% Removed fixes for the Johnson algorithm
-%
-% 12 July 2007
-% Fixed edge_weight documentation.
-%
-% 21 July 2007
-% Fixed divide by 0 error in check for algorithm type
-%
-% 2008-04-02: Added documenation for predecessor matrix
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-19: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-03-01: Added option for predecessor matrix from floyd_warshall
+%  2007-04-20: Added edge weight option
+%  2007-07-08: Fixed typos in strings and documentation
+%    Removed fixes for the Johnson algorithm
+%  2007-07-12: Fixed edge_weight documentation.
+%  2007-07-21: Fixed divide by 0 error in check for algorithm type
+%  2008-04-02: Added documenation for predecessor matrix
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('algname', 'auto', 'inf', Inf, 'edge_weight', 'matrix');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.
@@ -81,12 +66,12 @@ else
     edge_weight_opt = options.edge_weight;
 end
 
-if (check)
+if check
     % check the values of the matrix
     check_matlab_bgl(A,struct('values',1));
     
     % set the algname
-    if (strcmpi(options.algname, 'auto'))
+    if strcmpi(options.algname, 'auto')
         nz = nnz(A);
         if (nz/(numel(A)+1) > .1)
             options.algname = 'floyd_warshall';
@@ -95,15 +80,13 @@ if (check)
         end
     end
 else
-    if (strcmpi(options.algname, 'auto'))
+    if strcmpi(options.algname, 'auto')
         error('all_shortest_paths:invalidParameter', ...
             'algname auto is not compatible with no check');       
     end
 end
 
-if (trans)
-    A = A';
-end
+if trans, A = A'; end
 
 if nargout > 1
     [D,P] = matlab_bgl_all_sp_mex(A,lower(options.algname),options.inf,edge_weight_opt);
@@ -112,7 +95,5 @@ else
     D = matlab_bgl_all_sp_mex(A,lower(options.algname),options.inf,edge_weight_opt);
 end
 
-if trans
-    D = D';
-end
+if trans, D = D'; end
 

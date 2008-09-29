@@ -18,7 +18,7 @@ function [d pred] = shortest_paths(A,u,varargin)
 %       applies to dijkstra or bellman_ford algorithms.  See dijkstra_sp or
 %       bellman_ford_sp for details on the visitors.
 %   options.edge_weight: a double array over the edges with an edge
-%       weight for each node, see EDGE_INDEX and EXAMPLES/REWEIGHTED_GRAPHS
+%       weight for each edge, see EDGE_INDEX and EXAMPLES/REWEIGHTED_GRAPHS
 %       for information on how to use this option correctly
 %       [{'matrix'} | length(nnz(A)) double vector]
 %
@@ -37,31 +37,23 @@ function [d pred] = shortest_paths(A,u,varargin)
 %
 % See also DIJKSTRA_SP, BELLMAN_FORD_SP, DAG_SP
 
-%
 % David Gleich
-% 19 April 2006
-%
-% 18 April 2007
-% Added edge_weight option.
-% 
-% 19 April 2007
-% Added target option.
-% Added additional error checks.
-%
-% 12 July 2007
-% Fixed edge_weight documentation
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History
+%  2006-04-19: Initial coding
+%  2007-04-18: Added edge_weight option.
+%  2007-04-19: Added target option.
+%    Added additional error checks.
+%  2007-07-12: Fixed edge_weight documentation
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('algname', 'auto', 'inf', Inf, 'edge_weight', 'matrix', ...
     'target', 'none');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.
@@ -84,7 +76,7 @@ else
         'options.target is not ''none'' or a vertex number.');
 end
 
-if (check)
+if check
     % check the values of the matrix
     check_matlab_bgl(A,struct('values',edge_weights ~= 1));
     
@@ -127,15 +119,11 @@ else
     end
 end
 
-if (options.inf < 0)
-    error('options.inf must be larger than 0');
-end
+if options.inf < 0, error('options.inf must be larger than 0'); end
 
-if (trans)
-    A = A';
-end
+if trans, A = A'; end
 
-if (isfield(options,'visitor'))
+if isfield(options,'visitor')
     [d pred] = matlab_bgl_sp_mex(A,u,target,lower(options.algname),options.inf,...
         edge_weight_opt, options.visitor);
 else

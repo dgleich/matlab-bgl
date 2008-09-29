@@ -19,26 +19,19 @@ function [varargout] = prim_mst(A,options)
 %
 % See also MST, KRUSKAL_MST.
 
-%
 % David Gleich
-% 23 April 2006
-%
+% Copyright, Stanford University, 2006-2008
 
-%
-% 23 April 2007
-% Fixed bug with output without parameters
-%
-% 8 July 2007
-% Fixed documentation typo
-%
+%% History
+%  2006-04-23: Initial version
+%  2007-04-23: Fixed bug with output without parameters
+%  2007-07-08: Fixed documentation typo
+%% 
 
-if (nargin > 1)
-    options.algname = 'prim';
-else
-    options = struct('algname','prim');
-end;
+if nargin > 1, options.algname = 'prim';
+else options = struct('algname','prim');
+end
 
 varargout = cell(1,max(nargout,1));
-
 [varargout{:}] = mst(A,options);
 

@@ -1,4 +1,3 @@
-
 function depth_first_search(A,u,dfs_visitor,varargin)
 % DEPTH_FIRST_SEARCH Fully wrap the Boost depth_first_search call
 % including the dfs_visitor.
@@ -56,46 +55,35 @@ function depth_first_search(A,u,dfs_visitor,varargin)
 %
 % See also DFS
 
-%
 % David Gleich
-% Copyright, Stanford University, 2007
-%
+% Copyright, Stanford University, 2007-2008
 
-% 
-% 21 May 2006
-% Initial Version
-%
-% 31 May 2006
-% Added full2sparse check
-%
-% 24 July 2007
-% Fixed example
-%
+%% History
+%  2006-05-21: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-07-24: Fixed example
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
-if (check)
+if check
     % no additional input checks
     check_matlab_bgl(A,struct());
-end;
+end
 
-if (trans)
-    A = A';
-end;
+if trans, A = A'; end
 
 % parse the optional parameters
 full = 0;
-if (~isempty(varargin))
+if ~isempty(varargin)
     optionsu = varargin{1};
     if (isfield(optionsu,'full'))
         full = optionsu.full;
-    end;
-end;
+    end
+end
 
-if (full)
+if full
     % 202 is the call for dfs with full searches
     bfs_dfs_vis_mex(A,u,dfs_visitor,202);
 else

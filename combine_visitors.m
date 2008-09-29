@@ -21,16 +21,15 @@ function cv = combine_visitors(varargin)
 %    load graphs/bfs_example.mat
 %    breadth_first_search(A,1,combined_vis);
 
+% David Gleich
+% Copyright, Stanford University, 2006-2008
+
 % trivial output
 if isempty(varargin)
     error('matlab_bgl:invalidParameter', 'combine_visitors requires at least one argument');
 end
 
-if (length(varargin) == 1)
-    cv = varargin{1};
-    return
-end
-
+if length(varargin) == 1, cv = varargin{1}; return; end
 
 cv_fn = struct();
 
@@ -38,7 +37,7 @@ for ii = 1:length(varargin)
     fn = fieldnames(varargin{ii});
     
     for jj = 1:length(fn)
-        if (~isfield(cv_fn,fn{jj}))
+        if ~isfield(cv_fn,fn{jj})
             cv_fn.(fn{jj}) = 1;
         else
             cv_fn.(fn{jj}) = cv_fn.(fn{jj}) + 1;
@@ -52,7 +51,7 @@ end
         cur_used = 1;
         
         for kk = 1:length(varargin)
-            if (isfield(varargin{kk}, name))
+            if isfield(varargin{kk}, name)
                 used_visitors{cur_used} = varargin{kk}.(name);
                 cur_used = cur_used + 1;
             end
@@ -66,7 +65,7 @@ end
                     rval = rval & double(stop);
                 catch
                     [lastmsg,lastid] = lasterr;
-                    if (~strcmp(lastid, 'MATLAB:TooManyOutputs'))
+                    if ~strcmp(lastid, 'MATLAB:TooManyOutputs')
                         rethrow(lasterr);
                     else
                         feval(used_visitors{ll}, varargin{:});

@@ -13,7 +13,7 @@
  * 18 April 2007
  * Added src/dst vertex pairs to all the calls to allow partial searches.
  * Corrected small documentation bugs.
- * 
+ *
  * 9 July 2007
  * Switched to simple_csr_matrix graph type
  */
@@ -31,32 +31,7 @@
 
 #include "visitor_macros.hpp"
 #include "stop_visitors.hpp"
-
-/*
- * Wrapper class to turn a row-storage matrix into 
- * a boost BasicMatrix 
- */
-template <class value_type>
-struct row_matrix
-{
-    value_type* head;
-    std::size_t nrows;
-    std::size_t ncols;
-	const value_type* operator[](std::size_t i) const
-    {
-        return (head+ncols*i);
-    }
-    
-    value_type* operator[](std::size_t i)
-    {
-    	return (head+ncols*i);
-    }
-
-    row_matrix(value_type* _head, std::size_t _nrows, std::size_t _ncols)
-        : head(_head), nrows(_nrows), ncols(_ncols)
-    {}
-};
-
+#include "libmbgl_util.hpp"
 
 struct stop_dijkstra {}; // stop dijkstra exception
 
@@ -69,13 +44,13 @@ int dijkstra_sp(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
-    
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+
     if (dst == nverts) {
         dijkstra_shortest_paths(g, src, distance_inf(dinf).predecessor_map(pred).distance_map(d));
     } else {
         try {
-            dijkstra_shortest_paths(g, src, 
+            dijkstra_shortest_paths(g, src,
                 distance_inf(dinf).predecessor_map(pred).distance_map(d).
                 visitor(make_dijkstra_visitor(
                             stop_search_on_vertex_target(dst, stop_dijkstra(), on_discover_vertex()))));
@@ -104,15 +79,15 @@ struct c_dijkstra_visitor
 int dijkstra_sp_visitor(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     mbglIndex src, /* problem data */
-    double* d, mbglIndex *pred, 
+    double* d, mbglIndex *pred,
     double dinf, dijkstra_visitor_funcs_t vis)
 {
     using namespace yasmic;
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
-    
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+
     c_dijkstra_visitor<crs_weighted_graph> visitor_impl;
     visitor_impl.vis = &vis;
 
@@ -138,14 +113,14 @@ int bellman_ford_sp(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     if (dst == nverts) {
-        bellman_ford_shortest_paths(g, 
+        bellman_ford_shortest_paths(g,
             root_vertex(src).distance_inf(dinf).predecessor_map(pred).distance_map(d));
     } else {
         try {
-            bellman_ford_shortest_paths(g, 
+            bellman_ford_shortest_paths(g,
                 root_vertex(src).distance_inf(dinf).predecessor_map(pred).distance_map(d).
                 visitor(make_bellman_visitor(
                             stop_search_on_vertex_target(dst, stop_bellman_ford(), on_discover_vertex()))));
@@ -179,14 +154,14 @@ int bellman_ford_sp_visitor(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
-    
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+
     c_bellman_ford_visitor<crs_weighted_graph> visitor_impl;
     visitor_impl.vis = &vis;
 
     try
     {
-        bellman_ford_shortest_paths(g, 
+        bellman_ford_shortest_paths(g,
             root_vertex(src).distance_inf(dinf).predecessor_map(pred).distance_map(d).visitor(visitor_impl));
     }
     catch (stop_bellman_ford)
@@ -207,14 +182,14 @@ int dag_sp(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     if (dst == nverts) {
-        dag_shortest_paths(g, src, 
+        dag_shortest_paths(g, src,
             distance_inf(dinf).predecessor_map(pred).distance_map(d));
     } else {
         try {
-            dag_shortest_paths(g, src, 
+            dag_shortest_paths(g, src,
                 distance_inf(dinf).predecessor_map(pred).distance_map(d).
                 visitor(make_dijkstra_visitor(
                     stop_search_on_vertex_target(dst, stop_dag(), on_discover_vertex()))));
@@ -232,18 +207,18 @@ int johnson_all_sp(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     row_matrix<double> Dmat(D,nverts,nverts);
-    
-    bool rval = johnson_all_pairs_shortest_paths(g, Dmat, 
+
+    bool rval = johnson_all_pairs_shortest_paths(g, Dmat,
 		distance_inf(dinf).distance_combine(std::plus<double>()));
 
 	if (rval == true)
 	{
 		return (0);
 	}
-	
+
 	// else, there was an error
 	return (-1);
 }
@@ -257,16 +232,16 @@ int floyd_warshall_all_sp(
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
-    row_matrix<double> Dmat(D,nverts,nverts);    
+    row_matrix<double> Dmat(D,nverts,nverts);
     bool rval = false;
     if (!pred) {
-        rval = floyd_warshall_all_pairs_shortest_paths(g, 
+        rval = floyd_warshall_all_pairs_shortest_paths(g,
             Dmat, distance_inf(dinf).distance_combine(std::plus<double>()));
     } else {
-        row_matrix<mbglIndex> Pmat(pred,nverts,nverts);  
-        //rval = floyd_warshall_all_pairs_shortest_paths(g, 
+        row_matrix<mbglIndex> Pmat(pred,nverts,nverts);
+        //rval = floyd_warshall_all_pairs_shortest_paths(g,
         //    Dmat, distance_inf(dinf).distance_combine(std::plus<double>()).predecessor_map(Pmat));
         // making this call is ridiculous, but otherwise, it won't pick up the right type!
         rval = floyd_warshall_all_pairs_shortest_paths(g, Dmat, Pmat, get(edge_weight,g),
@@ -277,7 +252,7 @@ int floyd_warshall_all_sp(
 	{
 		return (0);
 	}
-	
+
 	// else, there was an error
 	return (-1);
 }

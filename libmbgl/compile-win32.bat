@@ -10,8 +10,8 @@ call d:\vstudio8\vctoolkit\vcvars32.bat
 set LIBNAME=libmbgl-pcwin32.lib
 set OUTDIR=Release
 
-set YASMICDIR=e:\dev\yasmic
-set BOOSTDIR=e:\dev\lib\boost_1_34_1
+set YASMICDIR=.
+set BOOSTDIR=e:\dev\lib\boost_1_36_0
 
 set CFLAGS=-c -nologo -I"%YASMICDIR%" -I"%BOOSTDIR%" /Fo"%OUTDIR%\\" /EHsc /D "NDEBUG" /O2 /ML
 rem set CFLAGS=-c -nologo -Ie:\dev\yasmic -Ie:\dev\lib\boost_1_33_1 /Fo"%OUTDIR%\\" /EHsc /ML /Od /D "_DEBUG" /Fd"%OUTDIR%\vc70.pdb" /Zi

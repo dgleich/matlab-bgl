@@ -24,15 +24,14 @@ function [d dt pred] = bfs(A,u,varargin)
 %
 % See also DFS
 
-%
 % David Gleich
-% 19 April 2006
-%
-% 2006-05-31: Added full2sparse check
-%
-% 19 April 2007
-% Added target option
-%
+% Copyright, Stanford University, 2006-2008
+
+%% History 
+%  2006-04-19: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-04-19: Added target option
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if (full2sparse && ~issparse(A)) 

@@ -24,7 +24,13 @@ function pred=lengauer_tarjan_dominator_tree(A,u,varargin)
 % Example:
 %   load('graphs/dominator_tree_example.mat');
 %   p=lengauer_tarjan_dominator_tree(A);
-%   
+
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-07-13: Initial version
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end

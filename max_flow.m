@@ -29,57 +29,34 @@ function [flowval cut R F] = max_flow(A,u,v,varargin)
 %    load graphs/max_flow_example.mat
 %    max_flow(A,1,8)
 
-%
 % David Gleich
-% Copyright, Stanford University, 2006-2007
-%
+% Copyright, Stanford University, 2006-2008
 
-%
-% 16 April 2006
-% Initial version
-%
-% 31 May 2006
-% Added full2sparse check
-%
-% 8 July 2007
-% Added additional algname
-% Fixed transpose option to implement the pretranspose
-% Fixed documentation bug
-%
-% 9 July 2007
-% Added non-negative edge capacities check
-%
+%% History
+%  2006-04-16: Initial version
+%  2006-05-31: Added full2sparse check
+%  2007-07-08: Added additional algname
+%    Fixed transpose option to implement the pretranspose
+%    Fixed documentation bug
+%  2007-07-09: Added non-negative edge capacities check
+%  2008-09-23: Fixed "check" changing the input (Bug #273796)
+%%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if full2sparse && ~issparse(A)
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('algname', 'push_relabel');
-if ~isempty(varargin)
-    options = merge_structs(varargin{1}, options);
-end;
+if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
 
-if check
-    % the matrix cannot have nonnegative capacities
-    check_matlab_bgl(A,struct('noneg',1));
-end
-
+% no negative capacities and no diagonal entries allowed
+if check, check_matlab_bgl(A,struct('noneg',1,'nodiag',1)); end 
 
 % max_flow will transpose the data inside
-if ~trans
-    % but that means they are passing the transposed data, so we need to
-    % pre-transpose... 
-    A = A';
-end
 
-if (check)
-    % remove any non-zero diagonals
-    A = A - diag(diag(A));
-end
+% but ~trans means the input is already transposed, so pre-transpose
+if ~trans, A = A'; end
 
 n = size(A,1);
-
 
 if nargout == 2
     [flowval cut] = max_flow_mex(A,u,v,lower(options.algname));

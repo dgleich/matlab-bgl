@@ -28,10 +28,12 @@ function [path P] = path_from_pred(pred,d,varargin)
 %
 % See also BFS, DFS, SHORTEST_PATHS
 
-%
 % David Gleich
-% 17 April 2007
-%
+% Copyright, Stanford University, 2007-2008
+
+%% History
+%  2007-04-17: Initial coding
+%%
 
 % TODO handle the case of a matrix of predecessors from all_shortest_paths
 

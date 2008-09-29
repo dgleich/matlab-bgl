@@ -23,23 +23,15 @@ function max_card_match=test_matching(A,m,varargin)
 % Copyright, Stanford University, 2007
 %
 
-%
-% 12 July 2007
-% Initial version
-%
+%% History
+%  2007-07-12: Initial version
+%%
 
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
+if check, check_matlab_bgl(A,struct('sym',1)); end % ensure input is symmetric
+% no trans check because the input is symmetric
 
-% input must be symmetric, so no need to transpose
-% if trans
-% end
-
-if check
-    % make sure the matrix is symmetric
-    check_matlab_bgl(A,struct('sym',1));
-end
 
 max_card_match = test_matching_mex(A,m);
-
