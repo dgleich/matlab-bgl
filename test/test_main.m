@@ -79,6 +79,7 @@ X = circle_graph_layout(sparse([]));
 X = random_graph_layout(sparse([]));
 X = kamada_kawai_spring_layout(sparse([]));
 X = fruchterman_reingold_force_directed_layout(sparse([]));
+X = gursoy_atun_layout(sparse([]));
 
 %% Code examples
 
@@ -211,6 +212,16 @@ gplot(G,X);
 [A xy] = grid_graph(5,10);
 gplot(A,xy);
 A = grid_graph(2*ones(1,10)); % compute 10d hypercube
+
+% gursoy_atun_layout
+G1 = cycle_graph(5000,struct('directed',0));
+X1 = gursoy_atun_layout(G1,'topology','heart');
+G2 = grid_graph(50,50);
+X2 = gursoy_atun_layout(G2,'topology','square');
+G3 = grid_graph(50,50);
+X3 = gursoy_atun_layout(G3,'topology','circle');
+subplot(1,3,1); gplot(G1,X1,'k'); subplot(1,3,2); gplot(G2,X2,'k');
+subplot(1,3,3); gplot(G3,X3,'k');
      
 % indexed_sparse
 
@@ -476,6 +487,11 @@ end
 
 %% cycle_graph
 G = cycle_graph(10,struct('directed',0));
+G = cycle_graph(10,'directed',0);
+[A,xy] = cycle_graph(0); assert(all(size(A)==[0 0]));
+[A,xy] = cycle_graph(1); assert(all(size(A)==[1 1])); assert(nnz(A)==1);
+for i=0:10, [A,xy] = cycle_graph(i); end
+for i=50:50:250, [A,xy] = cycle_graph(i); end
 
 %% dfs
 
@@ -656,7 +672,7 @@ G = cycle_graph(10);
 try
   G = fruchterman_reingold_force_directed_layout(G);
   error(msgid, 'fruchterman_reingold failed to throw on a directed graph');
-catch, end
+catch end
 G = grid_graph(5,6);
 X = fruchterman_reingold_force_directed_layout(G);
 for i=0:10, X = fruchterman_reingold_force_directed_layout(sparse(i,i)); end
@@ -667,6 +683,26 @@ X2 = fruchterman_reingold_force_directed_layout(G,...
   struct('progressive',circle_graph_layout(G)));
 if norm(X1-X2,'fro')>1e-10, error(msgid, 'fruchterman_reingold options failed'); end
 
+%% gursoy_atun_layout
+check_layout = @(X) all(all(isfinite(X)));
+for i=0:10, X=gursoy_atun_layout(sparse(i,i)); assert(check_layout(X)); end
+for i=0:10, X=gursoy_atun_layout(grid_graph(i,i)); assert(check_layout(X)); end
+for i=0:10, for j=2:10,
+        X=gursoy_atun_layout(wheel_graph(i),'topology',sprintf('cube%i',j));
+        assert(check_layout(X)); 
+        X=gursoy_atun_layout(wheel_graph(i),'topology',sprintf('ball%i',j));
+        assert(check_layout(X));         
+end, end
+
+try
+    X=gursoy_atun_layout(sparse(10,10),'topology','ball');
+    error(msgid,'gursoy_atun_layout did not throw on invalid topology(ball)');
+catch end
+
+try
+    X=gursoy_atun_layout(sparse(10,10),'topology','cube');
+    error(msgid,'gursoy_atun_layout did not throw on invalid topology(cube)');
+catch end
 
 %% kamada_kawai_spring_layout
 % TODO: Expand these test cases
@@ -676,10 +712,7 @@ try
 catch
 end
 X = kamada_kawai_spring_layout(grid_graph(1,2));
-Y = [0 0; -1 0];
-if norm(X-Y,'fro')>5e-6, error(msgid,'kamada_kawai_spring_layout incorrect'); end
-
-for i=0:10, X=kamada_kawai_spring_layout(grid_graph(i,i)); check_layout(X); end
+for i=0:10, X=kamada_kawai_spring_layout(grid_graph(i,i)); assert(check_layout(X)); end
 
 %% matching
 load('../graphs/dfs_example.mat');
@@ -767,6 +800,12 @@ if ~all(all(X==0))
 end
 %% shortest_paths
 
+%% star_graph
+[A,xy] = star_graph(0); assert(all(size(A)==[0 0]));
+[A,xy] = star_graph(1); assert(all(size(A)==[1 1])); assert(nnz(A)==0);
+for i=0:10, [A,xy] = star_graph(i); end
+for i=50:50:250, [A,xy] = star_graph(i); end
+
 %% test_dag
 % Test the dag_test function, which also tests topological order
 A = sparse(6,6);
@@ -807,7 +846,11 @@ if any(p - (1:n)')
     error(msgid, 'topological_order failed on simple case');
 end
 
-
+%% wheel_graph
+[A,xy] = wheel_graph(0); assert(all(size(A)==[0 0]));
+[A,xy] = wheel_graph(1); assert(all(size(A)==[1 1])); assert(nnz(A)==0);
+for i=0:10, [A,xy] = wheel_graph(i); end
+for i=50:50:250, [A,xy] = wheel_graph(i); end
 
 %%
 % ***** end test_main *****
@@ -836,7 +879,3 @@ end
       end
       breadth_first_search(A,u,struct('tree_edge',@on_tree_edge));
     end
-
-function check_layout(X)
-if ~all(all(isfinite(X))), error('invalid layout'); end
-end
