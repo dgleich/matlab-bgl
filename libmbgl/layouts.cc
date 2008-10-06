@@ -44,9 +44,9 @@
  * @param progressive a binary value (0 or 1) if we should reuse the positions
  * @param positions an array of positions, length nverts*2
  * @param spring_strength a matrix of spring strengths between vertices,
- *       size nverts-by-nverts
+ *           size nverts-by-nverts
  * @param distance a matrix of distances between vertices,
- *       size nverts-by-nverts
+ *           size nverts-by-nverts
  */
 int kamada_kawai_spring_layout(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight,
@@ -116,6 +116,7 @@ int kamada_kawai_spring_layout(
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
  * @param iterations the number of iterations to run
+ * @param initial_temp the initial temperature of the system
  * @param grid_force_pairs a binary value (0 or 1) if the alg should use
  *   a grid to compute the force between pairs
  * @param width the total width of the layout
@@ -151,12 +152,6 @@ int fruchterman_reingold_force_directed_layout(
       position_vec[i].y = positions[i+1*n];
     }
   }
-  /*std::cout << "iterations " << iterations << std::endl;
-  std::cout << "width " << width << std::endl;
-  std::cout << "height " << height << std::endl;
-  for (mbglIndex i = 0; i < std::min BOOST_PREVENT_MACRO_SUBSTITUTION ((mbglIndex)5,nverts); i++) {
-    std::cout << "p[" << i << "]=("<<position_vec[i].x<<","<<position_vec[i].y<<")" << std::endl;
-  }*/
   if (grid_force_pairs) {
     fruchterman_reingold_force_directed_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
@@ -169,39 +164,6 @@ int fruchterman_reingold_force_directed_layout(
         cooling(linear_cooling<double>(iterations, initial_temp)).
           force_pairs(all_force_pairs()));
   }
-  /*std::vector<simple_point<double> > displacement_vec(nverts);
-  if (grid_force_pairs) {
-    std::cout << "gridded" << std::endl;
-    fruchterman_reingold_force_directed_layout(
-      g,
-      make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-      width,
-      height,
-      square_distance_attractive_force(),
-      square_distance_repulsive_force(),
-      make_grid_force_pairs(width, height,
-        make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        g),
-      linear_cooling<double>(iterations),
-      make_iterator_property_map(displacement_vec.begin(),get(vertex_index,g), simple_point<double>())
-      );
-  } else {
-    std::cout << "all" << std::endl;
-    fruchterman_reingold_force_directed_layout(
-      g,
-      make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-      width,
-      height,
-      square_distance_attractive_force(),
-      square_distance_repulsive_force(),
-      all_force_pairs(),
-      linear_cooling<double>(iterations),
-      make_iterator_property_map(displacement_vec.begin(),get(vertex_index,g), simple_point<double>())
-      );
-  }
-  for (mbglIndex i = 0; i < std::min BOOST_PREVENT_MACRO_SUBSTITUTION ((mbglIndex)5,nverts); i++) {
-      std::cout << "d[" << i << "]=("<<displacement_vec[i].x<<","<<displacement_vec[i].y<<")" << std::endl;
-    }*/
   // copy the positions over
   mbglIndex n = num_vertices(g);
   for (mbglIndex i = 0; i<n; i++) {
@@ -248,7 +210,6 @@ const int gursoy_atun_dim_too_large = -11;
 const int gursoy_atun_max_dim = 10;
 
 /** Compute a topologically uniform layout
- *
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
@@ -262,7 +223,6 @@ const int gursoy_atun_max_dim = 10;
  * @param learning_constant_f the final learning constant
  * @param positions an array of positions, length nverts*topology_dim
  */
-
 int gursoy_atun_layout(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight,
     gursoy_atun_layout_topology_t topology, int topology_dim,

@@ -35,6 +35,8 @@
 
 #include "libmbgl_util.hpp"
 
+/** Copy an edge iterator to a pair of arrays
+ */
 template <typename Graph, typename Iterator>
 mbglIndex copy_to_ij(Graph& g, Iterator oi,
                    Iterator oi_end, mbglIndex* i, mbglIndex* j)
@@ -51,6 +53,8 @@ mbglIndex copy_to_ij(Graph& g, Iterator oi,
   return (ei);
 }
 
+/** Translate the boost embedding information to the libmbgl embedding output
+ */
 template <typename Graph, typename PlanarEmbedding>
 void copy_embedding(Graph& g, PlanarEmbedding e, mbglIndex *eip, mbglIndex *eie)
 {
@@ -83,19 +87,21 @@ void copy_embedding(Graph& g, PlanarEmbedding e, mbglIndex *eip, mbglIndex *eie)
   eip[num_vertices(g)] = curi;
 }
 
-/** Test if a graph is planar and extra some planar properties.
+/** Test if a graph is planar, compute a planar embedding, or get a Kuratowski
+ * subgraph
  *
- * eis, eil, and ele form a data structure
- * ele[2*eis[i]]
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
- * @param is_planar on output, will be 1 if the graph is planar
- * @param i an array for the edges of a kuratowski subgraph, length ia[nverts]
- * @param j an array for the edges of a kuratowski subgraph, length ia[nverts]
- * @param nedges the final edge count of the kuratowski subgraph
- * @param eis starting points for each vertex in ele, length nverts+1
- * @param ele planar embedding edge order, length ia[nverts]
+ * @param is_planar set to 0 if the graph is not planar, else the graph is
+ *   planar
+ * @param i the source vertex of any edge in the Kuratowski subgraph, length 3*n-6
+ * @param j the dest vertex of any edge in the Kuratowski subgraph, length 3*n-6
+ * @param nedges set to the number of edges in i and j actually used
+ * @param eip the embedding information edge pointer to eie, length nverts+1
+ *   eip[eie[v]] to eip[eie[v+1]] gives the embedding order for vertex v
+ * @param eie the embedding information destination list, length ia[nverts]
+ *   see eip for a description.
  */
 int boyer_myrvold_planarity_test(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
@@ -191,9 +197,14 @@ struct upper_triangle_edge_filter {
 };
 
 
-/** Test is a subgraph is kuratowski (i.e. contracts to K_3,3 or K_5
- *
- *
+/** Test is a graph is Kuratowski (i.e. contracts to K_3,3 or K_5)
+ * This function only uses the upper triangular set of edges.  It will
+ * silently report incorrect ouput if there are too many parallel edges,
+ * so beware.
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param is_ksubgraph set to 1 if the graph is Kuratowski
  */
 int is_kuratowski_subgraph(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
@@ -216,8 +227,17 @@ int is_kuratowski_subgraph(
   return (0);
 }
 
-/**
- * All the elements of X must be positive.
+/** Test if a given set of positions is a straight line drawing of the graph.
+ * This function uses a bucket-sort, and so large positions may cause out
+ * of memory errors.
+ *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param X The set of positions.  These are rounded to size_t variables and so
+ *   all the elements of X must be positive.
+ * @param is_sldrawing set to 1 if the positions are a straight line drawing,
+ *   otherwise set to 0
  */
 int is_straight_line_drawing(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
@@ -246,6 +266,8 @@ int is_straight_line_drawing(
   return (0);
 }
 
+/** Copy a crs_graph to a mutable boost graph
+ */
 template <typename Graph>
 void copy_crs_to_graph(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
@@ -273,7 +295,8 @@ void copy_crs_to_graph(
  *   in the new edge pair
  * EdgeDstOutIterator - the type of the out iterator for the destination vertex
  *   in the new edge pair
- *
+ * TODO Make this function update the edge_index parameter too!  This will avoid
+ * O(E) work in a few cases.
  */
 template <typename EdgeSrcOutIterator, typename EdgeDstOutIterator>
 struct record_add_edge_visitor {
@@ -299,6 +322,7 @@ struct record_add_edge_visitor {
   }
 };
 
+/** Helper to abstract the details of the triangulation */
 template <typename Graph, typename RecordAddEdgeVisitor>
 int triangulate_bgl_graph(
   Graph& g, int make_conn, int make_biconnected, int make_maximal,
@@ -360,6 +384,17 @@ int triangulate_bgl_graph(
 
 /** Compute extra edges that are needed for a straight line embedding.
  *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param make_connected if set (!=0), compute edges to make a single
+ *   connected component
+ * @param make_biconnected If set (!=0), compute edges to make a single
+ *   biconnected component (requires a planar input graph).  If only this
+ *   parameter is set, then we assume the graph is already connected.
+ * @param make_maximal If set (!=0), compute edges to make the maximal
+ *   planar graph (requires a planar input graph). If only this
+ *   parameter is set, then we assume the graph is already biconnected.
  * @param i source of all edges added in the triangulation, length 3*nverts-6
  * @param j dest of all edges added in the triangulation, length 3*nverts-6
  * @param nedges the number of edges in i and j actually used
@@ -383,8 +418,8 @@ int triangulate_graph(
       g, make_connected, make_biconnected, make_maximal, add_edge_visitor);
 }
 
-/** Abstract some d
- *
+/** Abstract some details between the csr_graph and the adjacency_list graph
+ * for the straight line drawing
  */
 template <typename Graph>
 int chrobak_payne_straight_line_drawing_on_maximal_graph(const Graph& g,
@@ -457,14 +492,19 @@ int chrobak_payne_straight_line_drawing_on_maximal_graph(const Graph& g,
   return 0;
 }
 
-/**
+/** Compute a straight line embedding of a graph or a canonical planar
+ * ordering
+ *
  * This function must copy the graph unless is_maximal is set.
  *
- * @param just_ordering if set (>0), then just compute the ordering permutation
- * @param is_maximal if set (!=0), then don't compute a maximal planar graph
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param just_ordering if set (!=0), then just compute the ordering permutation
+ * @param is_maximal if set (!=0), assume the input is a maximal planar graph
  * @param i source edges for the maximal planar graph, length 3n-6
  * @param j dest edges for the maximal planar graph, length 3n-6
- * @param nedges the number of edges in i,j actually used, length 1
+ * @param nedges the number of entries in i,j actually used, length 1
  * @param p the ordering permutation, length nverts
  * @param X the positions, length 2*nverts
  */
