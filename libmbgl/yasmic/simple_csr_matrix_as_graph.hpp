@@ -1,28 +1,23 @@
 #ifndef YASMIC_SIMPLE_CSR_MATRIX_AS_GRAPH_HPP
 #define YASMIC_SIMPLE_CSR_MATRIX_AS_GRAPH_HPP
 
-/**
- * @file simple_csr_matrix.hpp
+/** @file simple_csr_matrix.cpp
+ * @author David F. Gleich
+ * @date 2008-09-29
+ * @copyright Stanford University, 2007-2008
  * This file implements a simple compressed sparse row matrix wrapper
  * that assumes that the underlying datastore is a series of pointers.
  */
 
-/*
- * David Gleich
- * Copyright, Stanford University, 2006-2007
- */
-
-/*
- * 9 July 2007
- * Initial version
- *
- * 22 July 2007
- * Added remove_signedness struct to make the size_types in
- * the graph_traits correct unsigned types.
- * 
- * 29 August 2007
- * Added get function for edge_index_property_map to the boost::detail 
- * namespace to fix a compile bug on g++-4.1
+/** History
+ *  2007-07-09: Initial version
+ *  2007-07-22: Added remove_signedness struct to make the size_types in
+ *    the graph_traits correct unsigned types.
+ *  2007-07-29: Added get function for edge_index_property_map
+ *    to the boost::detail namespace to fix a compile bug on g++-4.1
+ *  2008-10-01: Fixed const csr_graph graph_traits issue.
+ *  2008-10-06: Fixed bug with adjacency iterator
+ *    (this bug did not impact any algorithms, as no algorithms called it)
  */
 
 #include <yasmic/simple_csr_matrix.hpp>
@@ -45,14 +40,14 @@ namespace yasmic {
     namespace impl {
         template <typename Integer>
         struct remove_signedness {
-            typedef typename boost::mpl::if_< boost::is_unsigned<Integer>, 
+            typedef typename boost::mpl::if_< boost::is_unsigned<Integer>,
                 Integer, unsigned>::type type;
         };
         template <> struct remove_signedness<long> { typedef unsigned long type; };
         template <> struct remove_signedness<int> { typedef unsigned int type; };
         template <> struct remove_signedness<short> { typedef unsigned short type; };
         template <> struct remove_signedness<char> { typedef unsigned char type; };
-        
+
         template <typename Index, typename EdgeIndex>
         class simple_csr_edge {
         public:
@@ -63,10 +58,10 @@ namespace yasmic {
             bool operator==(const simple_csr_edge& e) const {return i == e.i;}
             bool operator!=(const simple_csr_edge& e) const {return i != e.i;}
         }; // end simple_csr_edge
-        struct simple_csr_graph_traversal : 
+        struct simple_csr_graph_traversal :
             public boost::vertex_list_graph_tag,
 		    public boost::incidence_graph_tag,
-		    public boost::edge_list_graph_tag, 
+		    public boost::edge_list_graph_tag,
             public boost::adjacency_graph_tag { };
         template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
         class simple_csr_edge_iterator;
@@ -87,7 +82,7 @@ public:
     typedef value_type reference;
     // required due to "bug" in InputIterator concept, it is unused
     typedef typename boost::int_t<CHAR_BIT * sizeof(EdgeIndex)>::fast difference_type;
-   
+
     simple_csr_edge_iterator() : ai(NULL), current_edge(), end_of_this_vertex(0) {}
 
     simple_csr_edge_iterator(
@@ -141,7 +136,7 @@ private:
     typedef yasmic::impl::simple_csr_edge<Index,EdgeIndex> edge_descriptor;
 
 public:
-    typedef typename boost::int_t<CHAR_BIT * sizeof(EdgeIndex)>::fast 
+    typedef typename boost::int_t<CHAR_BIT * sizeof(EdgeIndex)>::fast
         difference_type;
 
     simple_csr_out_edge_iterator() {}
@@ -169,8 +164,8 @@ private:
 };
 
 namespace boost {
-    
-    // 
+
+    //
     // implement the graph traits
     //
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
@@ -190,7 +185,7 @@ namespace boost {
         typedef counting_iterator<Index> vertex_iterator;
         // requirements for EdgeListGraph
         typedef typename yasmic::impl::remove_signedness<EdgeIndex>::type edges_size_type;
-        typedef yasmic::impl::simple_csr_edge_iterator<Index,Value,EdgeIndex> 
+        typedef yasmic::impl::simple_csr_edge_iterator<Index,Value,EdgeIndex>
             edge_iterator;
         // requirements for IncidenceGraph
         typedef edges_size_type degree_size_type;
@@ -201,11 +196,14 @@ namespace boost {
         // requirements for various bugs
         typedef void in_edge_iterator;
     };
+    template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
+        struct graph_traits<const YASMIC_SIMPLE_CSR_GRAPH_TYPE>
+        : graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE> {};
     //
     // implement the requirements for VertexListGraph
     //
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
-    inline typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::vertices_size_type 
+    inline typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::vertices_size_type
         num_vertices(const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
             return g.nrows;
     }
@@ -215,25 +213,25 @@ namespace boost {
             return std::make_pair(counting_iterator<Index>(0),
                                   counting_iterator<Index>(num_vertices(g)));
     }
-    // 
+    //
     // implement the requirements for EdgeListGraph
     //
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     inline Index source(
-        typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e, 
+        typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e,
         const YASMIC_SIMPLE_CSR_GRAPH_TYPE&)
     {
         return e.r;
     }
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     inline Index target(
-        typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e, 
+        typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e,
         const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g)
     {
         return g.aj[e.i];
     }
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
-    inline typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edges_size_type 
+    inline typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edges_size_type
         num_edges(const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
             return g.nnz;
     }
@@ -241,7 +239,7 @@ namespace boost {
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     inline std::pair< typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_iterator,
                       typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_iterator >
-        edges(const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) { 
+        edges(const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
             typedef typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_iterator ei;
             typedef typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e;
             if (g.nnz == 0) {
@@ -258,17 +256,17 @@ namespace boost {
     // implement the requirements for IncidenceGraph
     //
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
-    inline typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::degree_size_type 
+    inline typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::degree_size_type
         out_degree(Index u, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
             return g.ai[u+1] - g.ai[u];
     }
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     inline std::pair< typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::out_edge_iterator,
                       typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::out_edge_iterator >
-        out_edges(Index v, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) { 
+        out_edges(Index v, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
             typedef typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::out_edge_iterator ei;
             typedef typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e;
-            
+
             return std::make_pair(ei(e(v,g.ai[v])),ei(e(v+1,g.ai[v+1])));
     }
     //
@@ -277,13 +275,13 @@ namespace boost {
     template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     inline std::pair< typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::adjacency_iterator,
                       typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::adjacency_iterator >
-        adjacent_vertices(Index v, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) { 
-            return std::make_pair(&g.aj[v],&g.aj[v+1]);
+        adjacent_vertices(Index v, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
+            return std::make_pair(&g.aj[g.ai[v]],&g.aj[g.ai[v+1]]);
     }
     //
     // implement the functions for property maps
     // vertex_index, edge_index, edge_weight
-    // 
+    //
     namespace detail {
         // add an index map for the edge type
         template<typename EdgeIndex, typename Edge>
@@ -293,14 +291,14 @@ namespace boost {
           typedef Edge key_type;
           typedef readable_property_map_tag category;
         }; // end simple_csr_edge_index_map
-        
+
         template<typename EdgeIndex, typename Edge>
         inline EdgeIndex
             get(const detail::simple_csr_edge_index_map<EdgeIndex, Edge>&,
                 const typename detail::simple_csr_edge_index_map<EdgeIndex, Edge>::key_type& key)
         { return key.i; }
     } // end namespace boost::detail
-	  
+
 	template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS, typename Tag>
     struct property_map<YASMIC_SIMPLE_CSR_GRAPH_TYPE, Tag> {
     private:
@@ -367,12 +365,12 @@ namespace boost {
 
     template<YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     inline Value
-    get(edge_weight_t, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g, 
+    get(edge_weight_t, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g,
         typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::edge_descriptor e)
     {
         return g.a[e.i];
     }
-    
+
     template<YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS>
     struct edge_property_type< YASMIC_SIMPLE_CSR_GRAPH_TYPE >  {
         typedef void type;
@@ -382,7 +380,7 @@ namespace boost {
     struct vertex_property_type< YASMIC_SIMPLE_CSR_GRAPH_TYPE >  {
         typedef void type;
     };
-	
+
 } // end namespace boost
 
 #undef YASMIC_SIMPLE_CSR_GRAPH_TYPE
