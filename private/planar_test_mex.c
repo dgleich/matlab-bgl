@@ -31,6 +31,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   load_graph_arg(nrhs, prhs, 0, -1, -1, 0, &n, &nz, &ia, &ja, NULL);
   test_type = (int)load_scalar_double_arg(nrhs, prhs, 1);
 
+  /* [is_planar ksubgraph embedding] = planar_test_mex(A,0)
+   * [is_kuratowski] = planar_test_mex(A,1)
+   * [is_straight_line] = planar_test_mex(A,2,X)
+   */
+
   plhs[0]= mxCreateDoubleMatrix(1,1,mxREAL);
 
   if (test_type == 0)
@@ -98,10 +103,4 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
         "The libmbgl call failed with rval=%i", rval);
   }
-
-
 }
-  /* [is_planar ksubgraph embedding] = planar_test_mex(A,0)
-   * [is_kuratowski] = planar_test_mex(A,1)
-   * [is_straight_line] = planar_test_mex(A,2,X)
-   */
