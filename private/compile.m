@@ -4,8 +4,8 @@ function compile(varargin)
 %              sparse matrices.
 %%
 
-debug = 0;
-if strmatch('-debug',varargin), debug=1; end
+debug = 0; if strmatch('-debug',varargin), debug=1; end
+verbose = 0; if strmatch('-verbose',varargin), verbose=1; end
 clear mex
 
 mbglfiles = {'astar_search_mex.c', 'bfs_mex.c', 'dfs_mex.c', 'biconnected_components_mex.c', ...
@@ -23,7 +23,8 @@ mbglfiles = {'astar_search_mex.c', 'bfs_mex.c', 'dfs_mex.c', 'biconnected_compon
          'path_from_pred_mex.c', ...
          'kamada_kawai_spring_layout_mex.c', ...
          'fruchterman_reingold_mex.c', ...
-         'gursoy_atun_mex.c'};
+         'gursoy_atun_mex.c', ...
+         'planar_test_mex.c', 'planar_edges_mex.c', 'planar_drawing_mex.c'};
      
 c = computer;
 
@@ -65,24 +66,26 @@ end
 
 mexflags = '';
 
+if verbose, mexflags = [mexflags ' -v ']; end
 if debug, mexflags = [mexflags ' -D_DEBUG -g ']; 
 else mexflags = [mexflags ' -O '];
 end
 
-if (large_arrays)
+if large_arrays
     mexflags = [mexflags ' -largeArrayDims -DMATLAB_BGL_LARGE_ARRAYS '];
 end
          
-if (ispc)
+if ispc
     % must change /MD to /ML in mexopts.bat
     %mexflags = '-O -I..\libmbgl\include LINKFLAGS#''$LINKFLAGS -libpath:..\libmbgl\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST libmbgl.lib''';
     mexflags = [mexflags sprintf('-I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
     %mexflags = [mexflags sprintf('-g -I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Debug'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
-elseif (mac)
+elseif mac
     % mac specific options
-elseif (isunix)
+elseif isunix
     % 
-    if (solaris)
+    mexflags = [mexflags ' CFLAGS="\$CFLAGS -Wall" '];
+    if solaris
     else
         mexflags = [mexflags '-I../libmbgl/include -L../libmbgl '];
     end
