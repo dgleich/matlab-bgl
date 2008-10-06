@@ -1,23 +1,16 @@
-/*
- * ==============================================================
- * bfs_dfs_vis_mex.c The mex interface to the matlab bgl
- * wrapper for bfs and dfs with a visitor.
- *
- * David Gleich
- * 30 May 2006
- * =============================================================
+/** @file bfs_dfs_vis_mex.c
+ * @author David F. Gleich
+ * @date 2008-09-29
+ * @copyright Stanford University, 2006-2008
+ * The mex interface to the matlab bgl wrapper for bfs and dfs with a visitor.
  */
 
-/*
- * 19 February 2007
- * Updated to use Matlab 2006b sparse matrix interface
- *
- * 22 February 2007
- * Updated to use large graph libmbgl array
- *
- * 19 April 2007
- * Fixed error with invalid vertex by checking the input to make sure the
- * start vertex is valid.
+/** History
+ *  2006-05-30: Initial version
+ *  2007-02-19: Updated to use Matlab 2006b sparse matrix interface
+ *  2007-02-22: Updated to use large graph libmbgl array
+ *  2007-04-19: Fixed error with invalid vertex by checking the
+ *    input to make sure the start vertex is valid.
  */
 
 
@@ -51,25 +44,25 @@ void bfs_vis(mwIndex n, mwIndex *ja, mwIndex *ia, mwIndex u,
     const mxArray *vis)
 {
     bfs_visitor_funcs_t bfs_vis = {0};
-    
+
     /* Check the visitor and construct the visitor structure. */
     bfs_vis.pdata = (void*)vis;
-    
+
     CHECK_AND_SET_VISITOR_FUNCTION(vis,initialize_vertex,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,discover_vertex,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,examine_vertex,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,finish_vertex,bfs_vis);
-    
+
     CHECK_AND_SET_VISITOR_FUNCTION(vis,examine_edge,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,tree_edge,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,non_tree_edge,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,gray_target,bfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,black_target,bfs_vis);
-    
+
     #ifdef _DEBUG
     mexPrintf("bfs...");
-    #endif 
-    
+    #endif
+
     breadth_first_search_visitor(n, ja, ia, u, bfs_vis);
 }
 
@@ -77,23 +70,23 @@ void dfs_vis(mwIndex n, mwIndex *ja, mwIndex *ia, mwIndex u,
     int full, const mxArray *vis)
 {
     dfs_visitor_funcs_t dfs_vis = {0};
-    
+
     /* Check the visitor and construct the visitor structure. */
     dfs_vis.pdata = (void*)vis;
     CHECK_AND_SET_VISITOR_FUNCTION(vis,initialize_vertex,dfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,discover_vertex,dfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,start_vertex,dfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,finish_vertex,dfs_vis);
-    
+
     CHECK_AND_SET_VISITOR_FUNCTION(vis,examine_edge,dfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,tree_edge,dfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,back_edge,dfs_vis);
     CHECK_AND_SET_VISITOR_FUNCTION(vis,forward_or_cross_edge,dfs_vis);
-    
+
     #ifdef _DEBUG
     mexPrintf("dfs...");
-    #endif 
-    
+    #endif
+
     depth_first_search_visitor(n, ja, ia, u, full, dfs_vis);
 }
 
@@ -103,23 +96,20 @@ void dfs_vis(mwIndex n, mwIndex *ja, mwIndex *ia, mwIndex u,
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
 {
-    mwIndex i;
-    
     mwIndex mrows, ncols;
-    
     mwIndex n,nz;
-    
+
     /* sparse matrix */
     mwIndex *ia, *ja;
-    
+
     /* start */
     mwIndex u;
-    
+
     const mxArray *vis;
-    
+
     int call;
-    
-    if (nrhs != 4) 
+
+    if (nrhs != 4)
     {
         mexErrMsgTxt("2 inputs required.");
     }
@@ -128,55 +118,55 @@ void mexFunction(int nlhs, mxArray *plhs[],
     mrows = mxGetM(prhs[0]);
     ncols = mxGetN(prhs[0]);
     if (mrows != ncols ||
-        !mxIsSparse(prhs[0])) 
+        !mxIsSparse(prhs[0]))
     {
         mexErrMsgTxt("Input must be a square sparse matrix.");
     }
-    
+
     n = mrows;
-        
+
     /* The second input must be a scalar. */
     if (mxGetNumberOfElements(prhs[1]) > 1 || !mxIsDouble(prhs[1]))
     {
         mexErrMsgTxt("Invalid scalar.");
     }
-    
+
     /* The third input must be a structure. */
     if (!mxIsStruct(prhs[2]))
     {
         mexErrMsgTxt("Invalid structure.");
     }
-    
-    
+
+
     /* The fourth input must be a scalar. */
     if (mxGetNumberOfElements(prhs[3]) > 1 || !mxIsDouble(prhs[3]))
     {
         mexErrMsgTxt("Invalid scalar.");
     }
-    
-    
+
+
     /* Get the sparse matrix */
-    
+
     /* recall that we've transposed the matrix */
     ja = mxGetIr(prhs[0]);
     ia = mxGetJc(prhs[0]);
-    
+
     nz = ia[n];
-    
+
     /* Get the scalar */
     u = (mwIndex)mxGetScalar(prhs[1]);
     u = u-1;
-    
-    if (u < 0 || u >= n) 
+
+    if (u < 0 || u >= n)
     {
-        mexErrMsgIdAndTxt("matlab_bgl:invalidParameter", 
+        mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
             "start vertex (%i) not a valid vertex.", u+1);
     }
-    
+
     vis = prhs[2];
-    
+
     call = (int)mxGetScalar(prhs[3]);
-    
+
     if (call == 101)
     {
         bfs_vis(n, ja, ia, u, vis);
@@ -197,12 +187,12 @@ void mexFunction(int nlhs, mxArray *plhs[],
     }
     #ifdef _DEBUG
     mexPrintf("done!\n");
-    #endif 
-    
-    
+    #endif
+
+
     #ifdef _DEBUG
     mexPrintf("return\n");
-    #endif 
+    #endif
 }
 
 

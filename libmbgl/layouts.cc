@@ -58,6 +58,7 @@ int kamada_kawai_spring_layout(
   using namespace boost;
   typedef undir_simple_csr_matrix<mbglIndex,double> crs_graph;
   crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+  assert(positions);
   if (tol < 0 || spring_strength == NULL || distance == NULL) { return -1; }
   std::vector<simple_point<double> > position_vec(nverts);
   std::vector<std::pair<double,double> > partial_deriv_vec(nverts);
@@ -133,6 +134,7 @@ int fruchterman_reingold_force_directed_layout(
   using namespace boost;
   typedef simple_csr_matrix<mbglIndex,double> crs_graph;
   crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
+  assert(positions);
   std::vector<simple_point<double> > position_vec(nverts);
   if (width <= 0 || height <= 0 || iterations <= 0) { return -1; }
   if (!progressive) {
@@ -232,11 +234,13 @@ int gursoy_atun_layout_helper(const Graph& g, bool weighted,
   }
   // copy the positions over
   mbglIndex n = num_vertices(g);
+  mbglIndex numdim = (mbglIndex)space_dim;
   for (mbglIndex i = 0; i<n; i++) {
-    for (mbglIndex d = 0; d<space_dim; d++) {
+    for (mbglIndex d = 0; d<numdim; d++) {
       positions[i+d*n] = position_map[i][d];
     }
   }
+  return 0;
 }
 
 const int gursoy_atun_invalid_dim = -10;
@@ -271,6 +275,7 @@ int gursoy_atun_layout(
 
   typedef simple_csr_matrix<mbglIndex,double> crs_graph;
   crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+  assert(positions);
 
   switch (topology) {
   case BALL_LAYOUT_TOPOLOGY:

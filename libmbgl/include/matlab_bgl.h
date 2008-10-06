@@ -508,6 +508,49 @@ int gursoy_atun_layout(
 		double learning_constant_i, double learning_constant_f,
 		double *positions);
 
+
+/** Test if a graph is planar
+ *
+ */
+int boyer_myrvold_planarity_test(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    int *is_planar,
+    mbglIndex *i, mbglIndex *j, mbglIndex* nedges, /* kuratowski subgraph output */
+    mbglIndex *eip, mbglIndex *eie); /* embedding information */
+
+/**
+ * This function must copy the graph.
+ *
+ * @param just_ordering if set (>0), then just compute the ordering permutation
+ *
+ * @param p the ordering permutation
+ * @param
+ */
+int chrobak_payne_straight_line_drawing(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    int just_ordering, int is_maximal,
+    mbglIndex *i, mbglIndex *j, mbglIndex* nedges, /* extra edges */
+    mbglIndex *p, /* ordering permutation */
+    mbglDegreeType *X);
+
+int is_kuratowski_subgraph(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    int *is_ksubgraph);
+
+int is_straight_line_drawing(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    double *X, int *is_sldrawing);
+
+/** Compute extra edges that are needed for a straight line embedding.
+ *
+ */
+int triangulate_graph(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    int make_connected, int make_biconnected, int make_maximal,
+    mbglIndex *i, mbglIndex *j, mbglIndex* nedges /* extra edges */);
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

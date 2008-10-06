@@ -1,19 +1,13 @@
-/*
- * David Gleich
- * Copyright, Stanford University, 2006-2007
- */
- 
- /**
- * @file components.cc
+/** @file components.cc
+ * @author David F. Gleich
+ * @date 2006-04-19
+ * @copyright Stanford University, 2006-2008
  * Implement wrappers for connected component functions
  */
- 
-/*
- * 19 April 2006
- * Initial version
- * 
- * 9 July 2007
- * Updated to use simple_csr_matrix graph type
+
+/** History
+ *  2006-04-19: Initial version
+ *  2007-07-09: Updated to use simple_csr_matrix graph type
  */
 
 #include "include/matlab_bgl.h"
@@ -27,52 +21,41 @@ int strong_components(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex* ci)
 {
-    using namespace yasmic;
-    using namespace boost;
-    
-    typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);           
-                    
-    strong_components(g,
-        make_iterator_property_map(
-            ci, get(vertex_index,g)));
+  using namespace yasmic;
+  using namespace boost;
 
-    return (0);
+  typedef simple_csr_matrix<mbglIndex, double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
+
+  strong_components(g, make_iterator_property_map(ci, get(vertex_index, g)));
+
+  return 0;
 }
 
 int biconnected_components(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex* a, mbglIndex* ci)
 {
-    using namespace yasmic;
-    using namespace boost;
+  using namespace yasmic;
+  using namespace boost;
 
-    typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
+  typedef simple_csr_matrix<mbglIndex, double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
-    if (a)
-    {
-        if (ci)
-        {
-            std::size_t num_bicomps;
-            mbglIndex *oi;
-            boost::tie(num_bicomps, oi) =
-                biconnected_components(g, 
-                    make_iterator_property_map(ci, get(edge_index,g)),
-                    a);
-        }
-        else
-        {
-            articulation_points(g, a);
-        }
+  if (a) {
+    if (ci) {
+      std::size_t num_bicomps;
+      mbglIndex *oi;
+      boost::tie(num_bicomps, oi) = biconnected_components(g,
+          make_iterator_property_map(ci, get(edge_index, g)), a);
+    } else {
+      articulation_points(g, a);
     }
-    else
-    {
-        std::size_t num_bicomps = 
-            biconnected_components(g, 
-                    make_iterator_property_map(ci, get(edge_index,g)));
-    }
+  } else {
+    biconnected_components(g,
+        make_iterator_property_map(ci, get(edge_index, g)));
+  }
 
-    return (0);
+  return 0;
 }
 

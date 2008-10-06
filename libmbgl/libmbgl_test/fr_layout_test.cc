@@ -9,9 +9,9 @@ int main(int argc, char **argv) {
 
     fruchterman_reingold_force_directed_layout(
 		30, ci, rp,
-		100, 1,
-        50.0, 50.0, 0, positions);    
+		100, 10.0, 1,
+        50.0, 50.0, 0, positions);
     for (int i = 0; i < 30; i++) {
         std::cout << positions[i] << " " << positions[i+30] << std::endl;
-    }       
+    }
 }

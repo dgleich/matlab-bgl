@@ -1,14 +1,16 @@
 #ifndef VISITOR_MACROS_H
 #define VISITOR_MACROS_H
 
-/*
- * ==============================================================
- * visitor_macros.h A set of macros to define various commands 
- * to work with visitors and MatlabBGL
- *
- * David Gleich
- * 31 May 2006
- * =============================================================
+/** @file visitor_macros.h
+ * @author David F. Gleich
+ * @date 2008-09-29
+ * @copyright Stanford University, 2006-2008
+ * Macros to define various commands to work with visitors and MatlabBGL.
+ */
+
+/** History
+ *  2006-05-31: Initial version
+ *  2008-10-02: Modified to correctly use vis variable.  (Fixed -Wall warning)
  */
 
 #define PROTOTYPE_VISITOR_VERTEX_FUNCTION(FUNC) \
@@ -35,7 +37,7 @@ int call_matlab_## FUNC (void *pdata, mbglIndex ei, mbglIndex u, mbglIndex v);
                 VISSTR .FUNC  = NULL; \
                 break; \
         } \
-    } 
+    }
 
 #define CALL_MATLAB_VERTEX_VISITOR_FUNCTION(NAME) \
 int call_matlab_## NAME  (void *pdata, mbglIndex u) \
@@ -46,7 +48,7 @@ int call_matlab_## NAME  (void *pdata, mbglIndex u) \
     mxArray* prhs[2]; \
     mxArray* plhs[1]; \
      \
-    func = mxGetField(pdata,0,#NAME);  \
+    func = mxGetField(vis,0,#NAME);  \
      \
     prhs[0] = func; \
     prhs[1] = mxCreateDoubleScalar((double)(u+1)); \
@@ -85,7 +87,7 @@ int call_matlab_## NAME  (void *pdata, mbglIndex ei, mbglIndex u, mbglIndex v) \
     mxArray* prhs[4]; \
     mxArray* plhs[1]; \
      \
-    func = mxGetField(pdata,0,#NAME);  \
+    func = mxGetField(vis,0,#NAME);  \
      \
     prhs[0] = func; \
     prhs[1] = mxCreateDoubleScalar((double)(ei+1)); \
