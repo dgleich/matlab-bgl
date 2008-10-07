@@ -112,7 +112,7 @@ double* load_vector_double_arg(int nrhs, const mxArray *prhs[], int arg,
   return mxGetPr(a);
 }
 
-double* load_double_matrix_arg(int nrhs, const mxArray *prhs[],
+double* load_matrix_double_arg(int nrhs, const mxArray *prhs[],
     int arg, const char* argname,
     int empty_okay, mwSize *mrows, mwSize *ncols,
     int exact_size, mwSize m, mwSize n)

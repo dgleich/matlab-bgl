@@ -39,9 +39,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   make_biconnected = (int)load_scalar_double_arg(nrhs, prhs, 2);
   make_maximal = (int)load_scalar_double_arg(nrhs, prhs, 3);
 
-  plhs[0]= oi= mxCreateDoubleMatrix(3*n-6,1,mxREAL); i= mxGetPr(oi);
-  plhs[1]= oj= mxCreateDoubleMatrix(3*n-6,1,mxREAL); j= mxGetPr(oj);
+  nedges= n>4 ? 3*n-6 : 6;
+  plhs[0]= oi= mxCreateDoubleMatrix(nedges,1,mxREAL); i= mxGetPr(oi);
+  plhs[1]= oj= mxCreateDoubleMatrix(nedges,1,mxREAL); j= mxGetPr(oj);
 
+  nedges= 0;
   rval= triangulate_graph(n, ja, ia, make_connected, make_biconnected, make_maximal,
       (mbglIndex*)i, (mbglIndex*)j, &nedges );
   if (rval == 1) {
@@ -51,8 +53,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
         "The libmbgl call failed with rval=%i", rval);
   }
-  expand_index_to_double((mwIndex*)i, i, 3*n-6, 1.0);
-  expand_index_to_double((mwIndex*)j, j, 3*n-6, 1.0);
+  expand_index_to_double((mwIndex*)i, i, nedges, 1.0);
+  expand_index_to_double((mwIndex*)j, j, nedges, 1.0);
   mxSetM(oi, nedges);
   mxSetM(oj, nedges);
 }

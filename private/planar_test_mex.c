@@ -50,28 +50,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     } else if (nlhs <= 3) {
       /* test for the planar graph and the kuratowski subgraph */
       double *ki, *kj;
-      plhs[1]= mxCreateDoubleMatrix(nz,1,mxREAL); ki=mxGetPr(plhs[1]);
-      plhs[2]= mxCreateDoubleMatrix(nz,1,mxREAL); kj=mxGetPr(plhs[2]);
-      mwIndex nedges= 0;
+      mwIndex nedges= n>4 ? 3*n-6 : 6;
+      plhs[1]= mxCreateDoubleMatrix(nedges,1,mxREAL); ki=mxGetPr(plhs[1]);
+      plhs[2]= mxCreateDoubleMatrix(nedges,1,mxREAL); kj=mxGetPr(plhs[2]);
+      nedges= 0;
       rval= boyer_myrvold_planarity_test(n, ja, ia, &is_planar,
           (mwIndex*)ki, (mwIndex*)kj, &nedges, NULL, NULL);
-      expand_index_to_double((mwIndex*)ki, ki, nz, 1.0);
-      expand_index_to_double((mwIndex*)kj, kj, nz, 1.0);
+      expand_index_to_double((mwIndex*)ki, ki, nedges, 1.0);
+      expand_index_to_double((mwIndex*)kj, kj, nedges, 1.0);
       mxSetM(plhs[1], nedges);
       mxSetM(plhs[2], nedges);
     } else if (nlhs > 3) {
       /* test for the planar graph and the edge order */
       double *eip, *eie;
       double *ki, *kj;
-      plhs[1]= mxCreateDoubleMatrix(nz,1,mxREAL); ki= mxGetPr(plhs[1]);
-      plhs[2]= mxCreateDoubleMatrix(nz,1,mxREAL); kj= mxGetPr(plhs[2]);
+      mwIndex nedges= n>4 ? 3*n-6 : 6;
+      plhs[1]= mxCreateDoubleMatrix(nedges,1,mxREAL); ki=mxGetPr(plhs[1]);
+      plhs[2]= mxCreateDoubleMatrix(nedges,1,mxREAL); kj=mxGetPr(plhs[2]);
+      nedges= 0;
       plhs[3]= mxCreateDoubleMatrix(n+1,1,mxREAL); eip= mxGetPr(plhs[3]);
       plhs[4]= mxCreateDoubleMatrix(nz,1,mxREAL); eie= mxGetPr(plhs[4]);
-      mwIndex nedges= 0;
       rval= boyer_myrvold_planarity_test(n, ja, ia, &is_planar,
           (mwIndex*)ki, (mwIndex*)kj, &nedges, (mwIndex*)eip, (mwIndex*)eie);
-      expand_index_to_double((mwIndex*)ki, ki, nz, 1.0);
-      expand_index_to_double((mwIndex*)kj, kj, nz, 1.0);
+      expand_index_to_double((mwIndex*)ki, ki, nedges, 1.0);
+      expand_index_to_double((mwIndex*)kj, kj, nedges, 1.0);
       mxSetM(plhs[1], nedges);
       mxSetM(plhs[2], nedges);
       expand_index_to_double((mwIndex*)eip, eip, n+1, 1.0);
@@ -90,7 +92,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   {
     /** Test for a straight line embedding */
     int is_sldrawing= 0;
-    double* X= load_double_matrix_arg(nrhs,prhs,2,"X",0,NULL,NULL,1,n,2);
+    double* X= load_matrix_double_arg(nrhs,prhs,2,"X",1,NULL,NULL,1,n,2);
     rval= is_straight_line_drawing(n, ja, ia, X, &is_sldrawing);
     if (rval==-11) {
       mexErrMsgIdAndTxt("matlab_bgl:callFailed",

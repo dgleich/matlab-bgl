@@ -43,7 +43,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   just_ordering= (int)load_scalar_double_arg(nrhs, prhs, 2);
 
   if (is_maximal) { nedges= 0; }
-  else { nedges= 3*n-6; }
+  else { nedges= n>4 ? 3*n-6 : 6; }
   plhs[0]= oi= mxCreateDoubleMatrix(nedges,1,mxREAL); i= mxGetPr(oi);
   plhs[1]= oj= mxCreateDoubleMatrix(nedges,1,mxREAL); j= mxGetPr(oj);
 
@@ -51,10 +51,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   if (just_ordering) { npos=0; } else { npos=2; }
   plhs[3]= oX= mxCreateDoubleMatrix(n,npos,mxREAL); X= mxGetPr(oX);
 
-  rval= chrobak_payne_straight_line_drawing(n, ja, ia,
-      just_ordering, is_maximal,
-      (mbglIndex*)i, (mbglIndex*)j, &nedges,
-      (mbglIndex*)p, (mbglDegreeType*)X);
+  nedges= 0;
+  if (n==0) {
+    rval= 0;
+    nedges= 0;
+  } else if (n==1) {
+    rval= 0;
+    nedges= 0;
+    p[0]= 0;
+    X[0]= 0; X[1]= 0;
+  } else {
+    rval= chrobak_payne_straight_line_drawing(n, ja, ia,
+        just_ordering, is_maximal,
+        (mbglIndex*)i, (mbglIndex*)j, &nedges,
+        (mbglIndex*)p, (mbglDegreeType*)X);
+  }
 
   if (rval == 1) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
