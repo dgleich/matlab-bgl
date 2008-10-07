@@ -69,7 +69,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   if (rval == 1) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
-      "triangular_graph with biconnected or maximal requires a planar graph");
+      "triangulate_graph with biconnected or maximal requires a planar graph");
   } else if (rval != 0) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
         "The libmbgl call failed with rval=%i", rval);
