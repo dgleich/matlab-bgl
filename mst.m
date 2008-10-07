@@ -15,8 +15,9 @@ function [out1 out2 out3] = mst(A,varargin)
 %
 % This method works on undirected graphs.
 %
-% ... = mst(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = mst(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.algname: the minimum spanning tree algorithm
 %       ['prim' | {'kruskal'}]
 %   options.edge_weight: a double array over the edges with an edge

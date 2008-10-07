@@ -49,7 +49,7 @@ if symmetric, Ei = min(Ei,Ei'); end
 A = sparse(i, j, v, m, n);
 As = spones(Ei);
 
-if trans, eil = nonzeros(Ei');
+if trans, eil = nonzeros(Ei'); 
 else eil = nonzeros(Ei);
 end
 
@@ -62,7 +62,8 @@ if check
     end
     
     if symmetric
-        if ~isequal(A,sparse(i,j,v(eil),m,n))
+        [ei ej] = find(As');
+        if ~isequal(A,sparse(ei,ej,v(eil),m,n))
             warning('matlab_bgl:indexed_sparse', ...
                 'the output matrix failed a symmetry test.  This indicates a non-symmetric value array v.');
         end

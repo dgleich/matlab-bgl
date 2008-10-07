@@ -9,8 +9,9 @@ function ccfs = clustering_coefficients(A,varargin)
 % This method works on directed or undirected graphs.
 % The runtime is O(nd^2) where d is the maximum vertex degree.
 %
-% ... = clustering_coefficients(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = clustering_coefficients(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.undirected: enable optimizations for undirected graphs [{0} | 1]
 %   options.unweighted: an optional switch to perform the weighted 
 %       computation [{0} | 1], see Note

@@ -13,7 +13,7 @@ function [is_planar ksubgraph EI]=boyer_myrvold_planarity_test(A,varargin)
 % sparse row representation of the matrix A with the order of the column
 % indices permuted to the planar graph embedding order.)
 %
-% ... = boyer_myrvold_planaity_test(A) takes a set of
+% ... = boyer_myrvold_planaity_test(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
 % for the standard options. 
 %   No additional options for this function

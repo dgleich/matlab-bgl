@@ -16,17 +16,19 @@ function [flowval cut R F] = max_flow(A,u,v,varargin)
 % the maximum flow.  For reference, the push relabel method is likely the 
 % best general purpose algorithm.  The Edmunds-Karp algorithm 
 %
-% ... = max_flow(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = max_flow(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.algname: the max flow/min cut algorithm
-%   [{'push_relabel'} | 'edmunds_karp' | 'kolmogorov']
+%     [{'push_relabel'} | 'edmunds_karp' | 'kolmogorov']
+%   options.fix_diag: remove any diagonal entries [0 | {1}]
 %
 % Note: the values on A are interpreted as integers, please round them
 % yourself to get the best interpretation.  The code uses the floor of 
 % the values in A.
 %
 % Example:
-%    load graphs/max_flow_example.mat
+%    load('graphs/max_flow_example.mat')
 %    max_flow(A,1,8)
 
 % David Gleich
@@ -41,15 +43,17 @@ function [flowval cut R F] = max_flow(A,u,v,varargin)
 %  2007-07-09: Added non-negative edge capacities check
 %  2008-09-23: Fixed "check" changing the input (Bug #273796)
 %  2008-10-07: Changed options parsing
+%    Added fix_diag option
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
-options = struct('algname', 'push_relabel');
+options = struct('algname', 'push_relabel','fix_diag',1);
 options = merge_options(options, varargin{:});
 
 % no negative capacities and no diagonal entries allowed
+if options.fix_diag, A = A - diag(diag(A)); end
 if check, check_matlab_bgl(A,struct('noneg',1,'nodiag',1)); end 
 
 % max_flow will transpose the data inside

@@ -18,8 +18,8 @@ function perm=topological_order(A,varargin)
 % only uses the non-zero structure of A.
 %
 % Example:
-%    load graphs/bfs_example.mat
-%    d = bfs(A,1)
+%   n = 10; A = sparse(1:n-1, 2:n, 1, n, n); % construct a simple dag
+%   p = topological_order(A);
 %
 % See also TEST_DAG
 
@@ -28,6 +28,7 @@ function perm=topological_order(A,varargin)
 
 %% History
 %  2008-09-23: Reformatted common section. 
+%  2008-10-07: Fixed example.
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});

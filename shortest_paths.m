@@ -5,8 +5,9 @@ function [d pred] = shortest_paths(A,u,varargin)
 % (pred) for each of the vertices along the shortest path from u to every
 % other vertex in the graph.  
 % 
-% ... = shortest_paths(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = shortest_paths(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.algname: the algorithm to use 
 %       [{'auto'} | 'dijkstra' | 'bellman_ford' | 'dag']
 %   options.inf: the value to use for unreachable vertices 
