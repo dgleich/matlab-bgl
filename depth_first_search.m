@@ -30,8 +30,9 @@ function depth_first_search(A,u,dfs_visitor,varargin)
 % Realistically, this function must be used with the
 % pass-by-reference/in-place modification library.  
 %
-% ... = depth_first_search(A,u,vis,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = depth_first_search(A,u,vis,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.full: compute the full dfs instead of the dfs of
 %      the current component (see Note 1) [{0} | 1]
 %

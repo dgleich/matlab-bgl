@@ -18,8 +18,9 @@ function [cn rt] = core_numbers(A,varargin)
 %
 % To get the out-degree core_numbers, call core_numbers(A') instead;
 %
-% ... = core_numbers(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = core_numbers(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.unweighted: an optional switch to perform the weighted 
 %       computation [0 | {1}]  
 %   options.edge_weight: a double array over the edges with an edge

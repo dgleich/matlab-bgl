@@ -13,8 +13,9 @@ function [d pred] = dag_sp(A,u,varargin)
 % This algorithm works on weighted directed acyclic graphs.
 % The runtime is O(V+E)
 %
-% ... = clustering_coefficients(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = clustering_coefficients(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %    There are no additional options for this function.
 %
 % Example:

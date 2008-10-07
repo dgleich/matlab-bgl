@@ -10,8 +10,9 @@ function [d dt pred] = bfs(A,u,varargin)
 % This method works on directed graphs.
 % The runtime is O(V+E).
 %
-% ... = bfs(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = bfs(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.target: a special vertex that will stop the search when hit
 %       [{'none'} | any vertex number besides the u]
 %

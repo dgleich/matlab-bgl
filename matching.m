@@ -42,8 +42,9 @@ function [m,max_card_matching]=matching(A,varargin)
 % The runtime is O(mn*alpha(m,n)).  The alpha function is the inverse
 % Ackermann function and is <= 4 for all valid Matlab inputs.
 %
-% ...=matching(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ...=matching(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.initial_match: choice of initial matching 
 %     ['none' | 'greedy' | {'extra_greedy'}]
 %   options.augmenting_path: [{'edmonds'} | 'none']

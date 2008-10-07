@@ -8,8 +8,9 @@ function [d dt ft pred] = dfs(A,u,varargin)
 % pred is the predecessor array.  pred(i) = 0 if vertex (i)  
 % is in a component not reachable from u and i != u.
 % 
-% ... = dfs(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = dfs(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.full: compute the full dfs instead of the dfs of
 %      the current component (see Note 1) [{0} | 1]
 %   options.target: a special vertex that will stop the search when hit

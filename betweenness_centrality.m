@@ -12,8 +12,9 @@ function [bc,E] = betweenness_centrality(A,varargin)
 % For unweighted graphs (options.unweighted=1), the runtime is O(VE).
 % For weighted graphs, the runtime is O(VE + V(V+E)log(V)).
 %
-% ... = betweenness_centrality(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = betweenness_centrality(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.unweighted: use the slightly more efficient unweighted
 %     algorithm in the case where all edge-weights are equal [{0} | 1]  
 %   options.ec_list: do not form the sparse matrix with edge [{0} | 1]

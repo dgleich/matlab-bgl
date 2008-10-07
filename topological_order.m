@@ -10,8 +10,9 @@ function perm=topological_order(A,varargin)
 % This method works on directed graphs.
 % The runtime is O(V+E).
 %
-% ... = topological_order(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = topological_order(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   There are no additional options for this function.
 %
 % Note: this function does not depend upon the non-zero values of A, but

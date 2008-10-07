@@ -11,8 +11,9 @@ function [d pred f]=astar_search(A,s,h,varargin)
 % This method works on non-negatively weighted directed graphs.
 % The runtime is O((E+V)log(V)).
 %
-% ... = astar_search(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = astar_search(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.visitor: a visitor to use with the A* search (see Note)
 %   options.inf: the value to use for unreachable vertices 
 %       [double > 0 | {Inf}]

@@ -31,8 +31,9 @@ function breadth_first_search(A,u,bfs_visitor,varargin)
 % Realistically, this function must be used with the
 % pass-by-reference/in-place modification library.  
 %
-% ... = breadth_first_search(A,u,vis,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = breadth_first_search(A,u,vis,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   There are no additional options for this function.
 %
 % Note: this function does not depend upon the non-zero values of A, but

@@ -12,8 +12,9 @@ function [D,P] = all_shortest_paths(A,varargin)
 % i to j.  To build the path between (i,j), use the commands
 %   p=[]; while j~=0, p(end+1)=j; j=P(i,j); end; p=fliplr(p);
 % 
-% ... = all_shortest_paths(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = all_shortest_paths(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.algname: the algorithm to use 
 %       [{'auto'} | 'johnson' | 'floyd_warshall']
 %   options.inf: the value to use for unreachable vertices 

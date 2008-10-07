@@ -10,8 +10,9 @@ function [ci sizes] = components(A,varargin)
 % This method works on directed graphs.
 % The runtime is O(V+E), the algorithm is just depth first search.
 %
-% ... = components(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = components(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   There are no additional options for this function.
 %
 % Note: this function does not depend upon the non-zero values of A, but

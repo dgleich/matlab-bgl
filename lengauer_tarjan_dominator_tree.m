@@ -14,8 +14,9 @@ function pred=lengauer_tarjan_dominator_tree(A,u,varargin)
 % The runtime is O((V+E) log (V+E)) and the algorithm works on unweighted,
 % directed graphs.
 %
-% ... = lengauer_tarjan_dominator_tree(A,options) sets optional parameters 
-% (see set_matlab_bgl_options) for the standard options.
+% ... = lengauer_tarjan_dominator_tree(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   There are no additional options for this function.
 %
 % Note: this function does not depend upon the non-zero values of A, but

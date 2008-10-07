@@ -16,8 +16,9 @@ function [As,A,eil,Ei] = indexed_sparse(i,j,v,m,n,varargin)
 %  
 % See the examples reweighted_edges for more information.
 %
-% ... = indexed_sparse(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = indexed_sparse(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %    options.undirected: output edge indices for an undirected graph [{0} | 1]
 %      See the note about undirected inputs.
 %
