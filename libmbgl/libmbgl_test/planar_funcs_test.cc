@@ -68,6 +68,73 @@ int test_2() {
   return 0;
 }
 
+int test_3() {
+  const mbglIndex n = 5;
+  mbglIndex rp[] = {0,4,8,12,16,20};
+  mbglIndex ci[] = {1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3};
+  mbglIndex i[3*n-6];
+  mbglIndex j[3*n-6];
+  int is_planar= 0;
+  mbglIndex nedges= 0;
+
+  int rval;
+  rval= boyer_myrvold_planarity_test(n, ci, rp, &is_planar,
+      NULL, NULL, NULL, NULL, NULL);
+  if (is_planar!=0) {
+    errstr = "K5 is not planar";
+    return -1;
+  }
+  if (rval != 0) {
+    errstr = "function error";
+    return -1;
+  }
+  rval= boyer_myrvold_planarity_test(n, ci, rp, &is_planar,
+      i, j, &nedges, NULL, NULL);
+  if (is_planar!=0) {
+    errstr = "K5 is not planar";
+    return -1;
+  }
+  if (rval != 0) {
+    errstr = "function error";
+    return -1;
+  }
+  return 0;
+}
+
+int test_4() {
+  int rval;
+  const mbglIndex n = 2;
+  mbglIndex rp[] = {0,0,0};
+  mbglIndex ci[] = {};
+  mbglIndex i[6];
+  mbglIndex j[6];
+
+  int is_planar= 0;
+  mbglIndex nedges= 0;
+
+  rval= boyer_myrvold_planarity_test(n, ci, rp, &is_planar, i, j, &nedges, NULL, NULL);
+  if (rval != 0) {
+    errstr = "function error";
+    return -1;
+  }
+  rval= triangulate_graph(n, ci, rp, 1, 0, 0, i, j, &nedges);
+  if (rval != 0) {
+    errstr = "function error";
+    return -1;
+  }
+  rval= triangulate_graph(n, ci, rp, 1, 1, 0, i, j, &nedges);
+  if (rval != 0) {
+    errstr = "function error";
+    return -1;
+  }
+  rval= triangulate_graph(n, ci, rp, 1, 1, 1, i, j, &nedges);
+  if (nedges!=1) {
+    errstr = "invalid extra edges";
+    return -1;
+  }
+  return 0;
+}
+
 int main(int argc, char **argv) {
   int nfail = 0, ntotal = 0;
   int rval;
@@ -80,7 +147,17 @@ int main(int argc, char **argv) {
   else { printf("%20s  success\n", name); }
 
   name= "straight_line";
-  rval= test_1(); ntotal++;
+  rval= test_2(); ntotal++;
+  if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
+  else { printf("%20s  success\n", name); }
+
+  name= "planarity_test";
+  rval= test_3(); ntotal++;
+  if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
+  else { printf("%20s  success\n", name); }
+
+  name= "empty_graphs";
+  rval= test_4(); ntotal++;
   if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
   else { printf("%20s  success\n", name); }
 

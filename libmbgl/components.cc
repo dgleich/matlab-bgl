@@ -32,6 +32,25 @@ int strong_components(
   return 0;
 }
 
+/**
+ * Wrap a boost graph library call to biconnected_components.
+ *
+ * the ja and ia arrays specify the connectivity of the underlying graph,
+ * ia is a length (nverts+1) array with the indices in ja that start the
+ * nonzeros in each row.  ja is a length (ia(nverts)) array with the
+ * columns of the connectivity.
+ *
+ * if a or ci is NULL, then that parameter is not computed.
+ *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param a an array which will store the articulaion points of the graph
+ *     the array length should be n
+ * @param ci the component index array which is length (nnz)
+ * @return an error code if possible
+ */
+
 int biconnected_components(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex* a, mbglIndex* ci)

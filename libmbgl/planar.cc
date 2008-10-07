@@ -95,8 +95,10 @@ void copy_embedding(Graph& g, PlanarEmbedding e, mbglIndex *eip, mbglIndex *eie)
  * @param ia the row connectivity points into ja
  * @param is_planar set to 0 if the graph is not planar, else the graph is
  *   planar
- * @param i the source vertex of any edge in the Kuratowski subgraph, length 3*n-6
- * @param j the dest vertex of any edge in the Kuratowski subgraph, length 3*n-6
+ * @param i the source vertex of any edge in the Kuratowski subgraph,
+ *   length max(3*nverts-6,6)
+ * @param j the dest vertex of any edge in the Kuratowski subgraph,
+ *   length max(3*nverts-6,6)
  * @param nedges set to the number of edges in i and j actually used
  * @param eip the embedding information edge pointer to eie, length nverts+1
  *   eip[eie[v]] to eip[eie[v+1]] gives the embedding order for vertex v
@@ -395,8 +397,10 @@ int triangulate_bgl_graph(
  * @param make_maximal If set (!=0), compute edges to make the maximal
  *   planar graph (requires a planar input graph). If only this
  *   parameter is set, then we assume the graph is already biconnected.
- * @param i source of all edges added in the triangulation, length 3*nverts-6
- * @param j dest of all edges added in the triangulation, length 3*nverts-6
+ * @param i source of all edges added in the triangulation,
+ *   length max(3*nverts-6,6)
+ * @param j dest of all edges added in the triangulation,
+ *   length max(3*nverts-6,6)
  * @param nedges the number of edges in i and j actually used
  */
 int triangulate_graph(
@@ -410,8 +414,9 @@ int triangulate_graph(
         property<edge_index_t, mbglIndex> > graph;
   assert(i != NULL); assert(j != NULL); assert(nedges != NULL);
   *nedges = 0;
+  size_t endedges= nverts>4 ? 3*nverts-6 : 6;
   record_add_edge_visitor<mbglIndex*,mbglIndex*> add_edge_visitor(
-      i, i+(3*nverts-6), j, j+(3*nverts-6), nedges);
+      i, i+endedges, j, j+endedges, nedges);
   graph g(nverts);
   copy_crs_to_graph(nverts, ja, ia, g);
   return triangulate_bgl_graph(
@@ -450,8 +455,8 @@ int chrobak_payne_straight_line_drawing_on_maximal_graph(const Graph& g,
    return 1;
   }
   // TODO convert this to use p directly
-  assert(p);
   mbglIndex n = num_vertices(g);
+  assert(n == 0 || p);
   std::vector< typename graph_traits<Graph>::vertex_descriptor > ordering;
   planar_canonical_ordering(g, embedding,
      std::back_inserter(ordering), get(vertex_index,g));
@@ -465,7 +470,7 @@ int chrobak_payne_straight_line_drawing_on_maximal_graph(const Graph& g,
        >
        straight_line_drawing_t;
 
-    assert(X);
+    assert(n == 0 || X);
     // compute the straight line embedding
     straight_line_drawing_storage_t straight_line_drawing_storage
      (num_vertices(g));
@@ -473,12 +478,19 @@ int chrobak_payne_straight_line_drawing_on_maximal_graph(const Graph& g,
      (straight_line_drawing_storage.begin(),
       get(vertex_index,g)
       );
-    chrobak_payne_straight_line_drawing(g,
-                                       embedding,
-                                       ordering.begin(),
-                                       ordering.end(),
-                                       straight_line_drawing
-                                       );
+    if (n == 2) {
+      straight_line_drawing_storage[0].x = 0;
+      straight_line_drawing_storage[0].y = 0;
+      straight_line_drawing_storage[1].x = 1;
+      straight_line_drawing_storage[1].y = 0;
+    } else {
+      chrobak_payne_straight_line_drawing(g,
+                                         embedding,
+                                         ordering.begin(),
+                                         ordering.end(),
+                                         straight_line_drawing
+                                         );
+    }
     // copy all the data
     for (mbglIndex i= 0; i<n; i++) {
       X[i+0*n] = straight_line_drawing_storage[i].x;
@@ -534,15 +546,17 @@ int chrobak_payne_straight_line_drawing(
     int rval=0;
     if (i != NULL && j != NULL && nedges != NULL) {
       *nedges = 0;
+      size_t endedges= nverts>4 ? 3*nverts-6 : 6;
       record_add_edge_visitor<mbglIndex*,mbglIndex*> add_edge_visitor(
-            i, i+(3*nverts-6), j, j+(3*nverts-6), nedges);
+            i, i+endedges, j, j+endedges, nedges);
       rval= triangulate_bgl_graph(g, 1, 1, 1, add_edge_visitor);
     } else {
-      mbglIndex cval1;
+      mbglIndex cval1= 0;
+      mbglIndex extra_edges= 0;
       typedef yasmic::constant_iterator<mbglIndex> dummy_iterator;
       dummy_iterator di(&cval1);
       record_add_edge_visitor<dummy_iterator,dummy_iterator> add_edge_visitor(
-            di, di, di, di, nedges);
+            di, di, di, di, &extra_edges);
       rval= triangulate_bgl_graph(g, 1, 1, 1, add_edge_visitor);
     }
     if (rval != 0) { return rval; } // return on error
