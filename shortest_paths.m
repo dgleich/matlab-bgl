@@ -53,7 +53,7 @@ if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('algname', 'auto', 'inf', Inf, 'edge_weight', 'matrix', ...
     'target', 'none');
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options,varargin{:});    
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.

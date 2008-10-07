@@ -23,6 +23,9 @@ function perm=topological_order(A,varargin)
 %
 % See also TEST_DAG
 
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
 %% History
 %  2008-09-23: Reformatted common section. 
 %%

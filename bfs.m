@@ -31,21 +31,16 @@ function [d dt pred] = bfs(A,u,varargin)
 %  2006-04-19: Initial version
 %  2006-05-31: Added full2sparse check
 %  2007-04-19: Added target option
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('target', 'none');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+options = merge_options(options,varargin{:});
 
-if (check) 
-    check_matlab_bgl(A,struct()); 
-end
+if check, check_matlab_bgl(A,struct()); end
 
 if strcmp(options.target,'none')
     target = 0; % a flag used to denote "no target" to the mex

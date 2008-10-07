@@ -33,5 +33,4 @@ if full2sparse && ~issparse(A), A = sparse(A); end
 if check, check_matlab_bgl(A,struct('sym',1)); end % ensure input is symmetric
 % no trans check because the input is symmetric
 
-
 max_card_match = test_matching_mex(A,m);

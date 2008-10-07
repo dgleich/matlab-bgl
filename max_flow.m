@@ -40,13 +40,14 @@ function [flowval cut R F] = max_flow(A,u,v,varargin)
 %    Fixed documentation bug
 %  2007-07-09: Added non-negative edge capacities check
 %  2008-09-23: Fixed "check" changing the input (Bug #273796)
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('algname', 'push_relabel');
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options, varargin{:});
 
 % no negative capacities and no diagonal entries allowed
 if check, check_matlab_bgl(A,struct('noneg',1,'nodiag',1)); end 

@@ -1,4 +1,4 @@
-function [d pred] = bellman_ford_sp(A,u,options)
+function [d pred] = bellman_ford_sp(A,u,varargin)
 % BELLMAN_FORD_SP Compute the weighted single source shortest path problem.
 %
 % The Bellman-Ford algorithm for the single source shortest path problem
@@ -38,12 +38,14 @@ function [d pred] = bellman_ford_sp(A,u,options)
 
 %% History
 %  2006-04-23: Initial version
+%  2008-10-07: Changed options parsing
 %%
 
 algname = 'bellman_ford';
-
-if nargin > 2, options.algname = algname;
-else options = struct('algname',algname);
+if ~isempty(varargin), 
+    options = merge_options(struct(),varargin{:}); 
+    options.algname= algname;
+else options = struct('algname',algname); 
 end
 
 [d pred] = shortest_paths(A,u,options);

@@ -41,14 +41,11 @@ function [a,C] = biconnected_components(A,varargin)
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
-if (trans)
-end;
+if trans, end
 
-if (check)
+if check
     % make sure the matrix is symmetric
     check_matlab_bgl(A,struct('sym',1));
 end;

@@ -1,4 +1,4 @@
-function [varargout] = kruskal_mst(A,options)
+function [varargout] = kruskal_mst(A,varargin)
 % KRUSKAL_MST Compute a minimum spanning with Kruskal's algorithm.
 %
 % The Kruskal MST algorithm computes a minimum spanning tree for a graph.
@@ -24,8 +24,10 @@ function [varargout] = kruskal_mst(A,options)
 %%
 
 algname = 'kruskal';
-if nargin > 1, options.algname = algname;
-else options = struct('algname',algname);
+if ~isempty(varargin), 
+    options = merge_options(struct(),varargin{:}); 
+    options.algname= algname;
+else options = struct('algname',algname); 
 end
 
 varargout = cell(1,max(nargout,1));

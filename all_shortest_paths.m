@@ -47,13 +47,14 @@ function [D,P] = all_shortest_paths(A,varargin)
 %  2007-07-12: Fixed edge_weight documentation.
 %  2007-07-21: Fixed divide by 0 error in check for algorithm type
 %  2008-04-02: Added documenation for predecessor matrix
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('algname', 'auto', 'inf', Inf, 'edge_weight', 'matrix');
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.

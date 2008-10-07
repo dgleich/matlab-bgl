@@ -62,6 +62,7 @@ function depth_first_search(A,u,dfs_visitor,varargin)
 %  2006-05-21: Initial version
 %  2006-05-31: Added full2sparse check
 %  2007-07-24: Fixed example
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
@@ -77,7 +78,7 @@ if trans, A = A'; end
 % parse the optional parameters
 full = 0;
 if ~isempty(varargin)
-    optionsu = varargin{1};
+    optionsu = merge_options(struct(),varargin{:});
     if (isfield(optionsu,'full'))
         full = optionsu.full;
     end

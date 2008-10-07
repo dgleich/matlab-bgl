@@ -1,4 +1,4 @@
-function [varargout] = prim_mst(A,options)
+function [varargout] = prim_mst(A,varargin)
 % PRIM_MST Compute a minimum spanning with Prims's algorithm.
 %
 % Prim's MST algorithm computes a minimum spanning tree for a graph.
@@ -26,10 +26,14 @@ function [varargout] = prim_mst(A,options)
 %  2006-04-23: Initial version
 %  2007-04-23: Fixed bug with output without parameters
 %  2007-07-08: Fixed documentation typo
-%% 
+%  2008-10-07: Changed options parsing
+%%
 
-if nargin > 1, options.algname = 'prim';
-else options = struct('algname','prim');
+algname = 'prim';
+if ~isempty(varargin), 
+    options = merge_options(struct(),varargin{:}); 
+    options.algname= algname;
+else options = struct('algname',algname); 
 end
 
 varargout = cell(1,max(nargout,1));

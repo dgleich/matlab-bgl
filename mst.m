@@ -57,6 +57,7 @@ function [out1 out2 out3] = mst(A,varargin)
 %  2007-07-12: Fixed edge_weight documentation
 %    Added note about symmetric edge weights
 %  2007-12-14: Added rooted option for prim's algorithm
+%  2008-10-07: Changed options parsing
 %%
 
 
@@ -66,9 +67,7 @@ if full2sparse && ~issparse(A), A = sparse(A); end
 if trans, end % no trans check
 
 options = struct('algname', 'kruskal', 'edge_weight', 'matrix', 'root', 'none');
-if ~isempty(varargin)
-    options = merge_structs(varargin{1}, options);
-end;
+options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.

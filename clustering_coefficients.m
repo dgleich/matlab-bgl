@@ -38,15 +38,14 @@ function ccfs = clustering_coefficients(A,varargin)
 %  2006-05-31: Added full2sparse check
 %  2007-07-11: Added directed and weighted options
 %  2007-07-12: Added non-negative edge check
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('edge_weight', 'matrix', 'undirected', 0, 'unweighted', 0);
-if ~isempty(varargin)
-    options = merge_structs(varargin{1}, options);
-end
+options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.

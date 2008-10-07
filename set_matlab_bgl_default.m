@@ -1,4 +1,4 @@
-function old_default = set_matlab_bgl_default(options)
+function old_default = set_matlab_bgl_default(varargin)
 % SET_MATLAB_BGL_DEFAULT Sets a default option for the Matlab BGL interface
 %
 % old_default = set_matlab_bgl_default(options)
@@ -42,6 +42,6 @@ if (nargin == 0)
     old_default = default_options;
 else
     old_default = default_options;
-    default_options = merge_structs(options, default_options);
+    default_options = merge_options(default_options,varargin{:});
 end;
    

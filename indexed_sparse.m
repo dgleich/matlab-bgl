@@ -33,12 +33,13 @@ function [As,A,eil,Ei] = indexed_sparse(i,j,v,m,n,varargin)
 
 %% History
 %  2007-07-13: Changed input options to use undirected as the option name.
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check]  = get_matlab_bgl_options(varargin{:});
 
 options = struct('undirected', 0);
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options, varargin{:});
 
 symmetric = options.undirected;
 

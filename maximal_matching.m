@@ -1,4 +1,4 @@
-function m=maximal_matching(A,options)
+function m=maximal_matching(A,varargin)
 % MAXIMAL_MATCHING Compute a maximal matching
 %
 % A maximal matching is a subset of edges where each vertex is incident on
@@ -39,16 +39,13 @@ function m=maximal_matching(A,options)
 
 %% History
 %  2007-07-09: Initial coding
+%  2008-10-07: Changed options parsing
 %%
 
-if nargin > 1
-    options.augmenting_path = 'none';
-    options.initial_match = options.algname;
-    options.verify = 0;
-else
-    options = struct('initial_match', 'extra_greedy', ...
-        'augmenting_path', 'none', ...
-        'verify', 0);
-end
+options = merge_options(struct(),varargin{:});
+options.augmenting_path = 'none';
+options.verify = 0;
+if isfield(options,'algname'), options.initial_match = options.algname; 
+else options.initial_match='extra_greedy'; end
 
 m = matching(A,options);
