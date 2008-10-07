@@ -32,11 +32,11 @@
 % push_relabel_max_flow     - Goldberg's push-relabel max flow algorithm
 %
 % Layouts
-% circle_graph_layout       - 
-% random_graph_layout       -
-% kamada_kawai_spring_layout-
-% gursoy_atun_layout        -
-% fruchterman_reingold_force_directed_layout -
+% circle_graph_layout       - Simple layout of vertices on a circle
+% random_graph_layout       - Random layout of vertices in plane or lattice
+% kamada_kawai_spring_layout- Spring based graph layout
+% gursoy_atun_layout        - Topology based graph layout
+% fruchterman_reingold_force_directed_layout - Force directed graph layout
 %
 % Matchings
 % matching                  - Compute a maximum cardinality matching
@@ -55,6 +55,7 @@
 % test_dag                  - Test if a graph is directed and acyclic
 %
 % Graphs 
+% clique_graph              - Generates a clique or bipartite clique
 % cycle_graph               - Generates a cycle graph
 % erdos_reyni               - Generates an erdos_reyni, or Gnp, graph
 % grid_graph                - Generate a grid or hypergrid graph
@@ -66,6 +67,7 @@
 %
 % Utilities
 % edge_weight_index         - Convert between graphs and edge indices
+% edge_weight_vector        - Generate edge_weight vectors from matrices
 % indexed_sparse            - Generate a sparse matrix with edge indices
 % path_from_pred            - Convert a predecessor array to a path
 % tree_from_pred            - Convert predecessor array to a tree
@@ -75,6 +77,10 @@
 % examples/record_alg       - Use visitors to show how an algorithm works
 % examples/reweighted_graphs    - Show how reweighted graphs work
 % examples/core_numbers_example - Demonstrate core numbers
+% examples/planar_graph     - A few planar graph examples
+% examples/new_in_3_0       - New features in version 3.0 
+% examples/new_in_4_0       - New features in version 4.0
+% examples/layouts          - Simple demonstrations of layout algorithms
 %
 % Options
 % set_matlab_bgl_default    - Set default options
