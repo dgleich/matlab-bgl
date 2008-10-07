@@ -1,6 +1,31 @@
 function is_sldrawing = is_straight_line_drawing(A,X,varargin)
+% IS_STRAIGHT_LINE_DRAWING Test if coordinates are a straight line drawing
 %
-%   options.fix_negative: automatically adjust negative layouts
+% is_sldrawing = is_straight_line_drawing(A,X) determines if the
+% coordinates of each vertex in X allow the graph A to be drawn with
+% straight lines and no edges crossings.  is_sldrawing=1 if this is true
+% and =0 otherwise.
+%
+% Internally, the coordinates X cannot be negative and must be integers,
+% the default options automatically adjust the coordinates.
+%
+% This function uses a bucket-sort and may take large amounts of memory if
+% the coordinates in X are not well-placed.
+%
+% ... = is_straight_line_drawing(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
+%   options.fix_negative: automatically adjust negative layouts [0 | {1}]
+%
+% Example:
+%   X = [0 1; 1 0];
+%   is_straight_line_drawing(clique_graph(2),X)
+%   X = [0 1; 1 0; 0 -1; -1 0];
+%   is_straight_line_drawing(clique_graph(4),X)
+%   % Oops, some version of the BGL have an error than doesn't correctly
+%   % detect the second case.
+
+
 
 % David Gleich
 % Copyright, Stanford University, 2008
@@ -17,8 +42,10 @@ options = struct('fix_negative',1);
 options = merge_options(options,varargin{:});
 if check
     check_matlab_bgl(A,struct('sym',1)); 
-    if ~isequal(floor(X),X), warning('matlab_bgl:roundWarning',...
-        'after rounding, the values in X changed, possible incorrect output');
+    floorerr = max(max(abs(floor(X)-X)));
+    if floorerr>eps(1), warning('matlab_bgl:roundWarning',...
+      'after floor, the values in X changed by %g, possible incorrect output',...
+      floorerr);
     end
 end
 

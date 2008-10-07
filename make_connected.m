@@ -1,4 +1,21 @@
 function varargout= make_connected(A,varargin)
+% MAKE_CONNECTED Add edges to construct a connected graph
+%
+% C = make_connected(A) generates a new graph C with additional edges
+% to make C connected.  
+%
+% [ei,ej] = make_connected(A) returns the additional edges instead.
+%
+% ... = make_connected(A) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
+%   No additional options for this function
+%
+% Example:
+%   G = sparse(2,2); % empty 2 node graph with 2 components
+%   C = make_connected(G)
+%   max(components(C))
+%   
 
 % David Gleich
 % Copyright, Stanford University, 2008
