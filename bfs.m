@@ -10,8 +10,9 @@ function [d dt pred] = bfs(A,u,varargin)
 % This method works on directed graphs.
 % The runtime is O(V+E).
 %
-% ... = bfs(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = bfs(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.target: a special vertex that will stop the search when hit
 %       [{'none'} | any vertex number besides the u]
 %
@@ -31,21 +32,16 @@ function [d dt pred] = bfs(A,u,varargin)
 %  2006-04-19: Initial version
 %  2006-05-31: Added full2sparse check
 %  2007-04-19: Added target option
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('target', 'none');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+options = merge_options(options,varargin{:});
 
-if (check) 
-    check_matlab_bgl(A,struct()); 
-end
+if check, check_matlab_bgl(A,struct()); end
 
 if strcmp(options.target,'none')
     target = 0; % a flag used to denote "no target" to the mex

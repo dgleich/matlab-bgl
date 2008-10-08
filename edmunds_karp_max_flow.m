@@ -1,4 +1,4 @@
-function [varargout]=edmunds_karp_max_flow(A,u,v,options)
+function [varargout]=edmunds_karp_max_flow(A,u,v,varargin)
 % EDMUNDS_KARP_MAX_FLOW Edmunds-Karp max flow algorithm
 %
 % The Edmunds-Karp algorithm implements the augmenting path idea
@@ -17,10 +17,15 @@ function [varargout]=edmunds_karp_max_flow(A,u,v,options)
 
 %% History
 %  2007-07-07: Initial version
+%  2008-10-07: Changed options parsing
 %%
 
-if nargin > 1, options.algname = 'edmunds_karp';
-else options = struct('algname','edmunds_karp');
+algname = 'edmunds_karp';
+
+if ~isempty(varargin), 
+    options = merge_options(struct(),varargin{:}); 
+    options.algname= algname;
+else options = struct('algname',algname); 
 end
 
 varargout = cell(1,max(nargout,1));

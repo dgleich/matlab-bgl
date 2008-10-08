@@ -30,8 +30,9 @@ function depth_first_search(A,u,dfs_visitor,varargin)
 % Realistically, this function must be used with the
 % pass-by-reference/in-place modification library.  
 %
-% ... = depth_first_search(A,u,vis,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = depth_first_search(A,u,vis,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.full: compute the full dfs instead of the dfs of
 %      the current component (see Note 1) [{0} | 1]
 %
@@ -62,6 +63,7 @@ function depth_first_search(A,u,dfs_visitor,varargin)
 %  2006-05-21: Initial version
 %  2006-05-31: Added full2sparse check
 %  2007-07-24: Fixed example
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
@@ -77,7 +79,7 @@ if trans, A = A'; end
 % parse the optional parameters
 full = 0;
 if ~isempty(varargin)
-    optionsu = varargin{1};
+    optionsu = merge_options(struct(),varargin{:});
     if (isfield(optionsu,'full'))
         full = optionsu.full;
     end

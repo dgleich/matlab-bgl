@@ -1,4 +1,4 @@
-function [varargout]=edmonds_maximum_cardinality_matching(A,options)
+function [varargout]=edmonds_maximum_cardinality_matching(A,varargin)
 % EDMONDS_MAXIMUM_CARDINALITY_MATCHING Compute a maximum cardinality matching
 %
 % Edmonds' maximum cardinality matching algorithm begins with an extra
@@ -29,15 +29,10 @@ function [varargout]=edmonds_maximum_cardinality_matching(A,options)
 %  2007-07-09: Initial version
 %%
 
-if nargin > 1
-    options.augmenting_path = 'edmonds';
-    options.initial_match = 'extra_greedy';
-    options.verify = 1;
-else
-    options = struct('initial_match', 'extra_greedy', ...
-        'augmenting_path', 'edmonds', ...
-        'verify', 1);
-end
+options = merge_options(struct(),varargin{:});
+options.augmenting_path = 'edmonds';
+options.initial_match = 'extra_greedy';
+options.verify = 1;
 
 varargout = cell(1,max(nargout,1));
 

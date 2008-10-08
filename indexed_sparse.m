@@ -16,8 +16,9 @@ function [As,A,eil,Ei] = indexed_sparse(i,j,v,m,n,varargin)
 %  
 % See the examples reweighted_edges for more information.
 %
-% ... = indexed_sparse(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = indexed_sparse(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %    options.undirected: output edge indices for an undirected graph [{0} | 1]
 %      See the note about undirected inputs.
 %
@@ -33,12 +34,13 @@ function [As,A,eil,Ei] = indexed_sparse(i,j,v,m,n,varargin)
 
 %% History
 %  2007-07-13: Changed input options to use undirected as the option name.
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check]  = get_matlab_bgl_options(varargin{:});
 
 options = struct('undirected', 0);
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options, varargin{:});
 
 symmetric = options.undirected;
 
@@ -48,7 +50,7 @@ if symmetric, Ei = min(Ei,Ei'); end
 A = sparse(i, j, v, m, n);
 As = spones(Ei);
 
-if trans, eil = nonzeros(Ei');
+if trans, eil = nonzeros(Ei'); 
 else eil = nonzeros(Ei);
 end
 
@@ -61,7 +63,8 @@ if check
     end
     
     if symmetric
-        if ~isequal(A,sparse(i,j,v(eil),m,n))
+        [ei ej] = find(As');
+        if ~isequal(A,sparse(ei,ej,v(eil),m,n))
             warning('matlab_bgl:indexed_sparse', ...
                 'the output matrix failed a symmetry test.  This indicates a non-symmetric value array v.');
         end

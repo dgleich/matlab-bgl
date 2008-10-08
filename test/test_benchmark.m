@@ -10,6 +10,34 @@ function out=test_benchmark
 % Initial version
 %
 
+%% History
+
+%% 
+%  2008-10-07, Version 2.1, Matlab 2007b, boost 1.33.0, 
+%    g++-3.4 (lib), gcc-? (mex)
+%         airfoil       west    cs-stan    minneso      tapir   
+%  large   0.223 s    0.024 s    0.390 s    0.073 s    0.046 s  
+%    med     NaN s    0.955 s      NaN s      NaN s    6.621 s  
+%  small     NaN s    0.758 s      NaN s      NaN s      NaN s  
+
+%% 
+%  2008-10-07: Version 3.0, Matlab 2007b, boost 1.34.1, 
+%    g++-4.0 (lib), gcc-? (mex)
+%
+%         airfoil       west    cs-stan    minneso      tapir   
+%  large   0.183 s    0.017 s    0.222 s    0.048 s    0.037 s  
+%    med     NaN s    0.593 s      NaN s      NaN s    3.901 s  
+%  small     NaN s    0.543 s      NaN s      NaN s      NaN s  
+
+%% 
+%  2008-10-07: Version 4.0, Matlab 2007b, Boost 1.36.0,
+%    g++-3.4 (lib) and gcc-4.1 (mex)
+%
+%         airfoil       west    cs-stan    minneso      tapir   
+%  large   0.151 s    0.019 s    0.260 s    0.054 s    0.031 s  
+%    med     NaN s    0.673 s      NaN s      NaN s    4.459 s  
+%  small     NaN s    0.665 s      NaN s      NaN s      NaN s 
+
 %% Benchmarks for MatlabBGL
 % This function computes a series of benchmarks 
 

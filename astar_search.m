@@ -11,8 +11,9 @@ function [d pred f]=astar_search(A,s,h,varargin)
 % This method works on non-negatively weighted directed graphs.
 % The runtime is O((E+V)log(V)).
 %
-% ... = astar_search(A,u,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = astar_search(A,u,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.visitor: a visitor to use with the A* search (see Note)
 %   options.inf: the value to use for unreachable vertices 
 %       [double > 0 | {Inf}]
@@ -55,13 +56,14 @@ function [d pred f]=astar_search(A,s,h,varargin)
 %% History 
 %  2007-04-20: Added edge weight option
 %  2007-07-12: Fixed edge_weight documentation.
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('inf', Inf, 'edge_weight', 'matrix', 'target', 'none');
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options,varargin{:});
 
 edge_weight_opt = 'matrix';
 

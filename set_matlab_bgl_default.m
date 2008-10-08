@@ -1,7 +1,8 @@
-function old_default = set_matlab_bgl_default(options)
+function old_default = set_matlab_bgl_default(varargin)
 % SET_MATLAB_BGL_DEFAULT Sets a default option for the Matlab BGL interface
 %
-% old_default = set_matlab_bgl_default(options)
+% old_default = set_matlab_bgl_default(options) or
+% old_default = set_matlab_bgl_default(...) for key-value pair version
 % options.istrans: the input matrices are already transposed [{0} | 1]
 % options.nocheck: skip the input checking [{0} | 1]
 % options.full2sparse: convert full matrices to sparse [{0} | 1]
@@ -33,15 +34,15 @@ function old_default = set_matlab_bgl_default(options)
 %%
 
 persistent default_options;
-if (~isa(default_options,'struct'))
+if ~isa(default_options,'struct')
     % initial default options
     default_options = struct('istrans', 0, 'nocheck', 0, 'full2sparse', 0);
-end;
+end
 
-if (nargin == 0)
+if nargin == 0
     old_default = default_options;
 else
     old_default = default_options;
-    default_options = merge_structs(options, default_options);
-end;
+    default_options = merge_options(default_options,varargin{:});
+end
    

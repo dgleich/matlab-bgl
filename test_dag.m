@@ -12,6 +12,9 @@ function dag = test_dag(A,varargin)
 %   A(10,1) = 1; % complete the cycle
 %   test_dag(A)
 
+% David Gleich
+% Copyright, Stanford University, 2007-2008
+
 %% History
 %%
 

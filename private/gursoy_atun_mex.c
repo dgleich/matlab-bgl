@@ -26,15 +26,15 @@ typedef int mwSize;
 /** Parse the string topology arguments
  *  [{'square'} | 'heart' | 'sphere' | 'ballN'* | 'cubeN'*]
  */
-void parse_topology_arg(const char* topology, 
+void parse_topology_arg(const char* topology,
     gursoy_atun_layout_topology_t *topo_opt, int *topo_dim)
 {
   int check_strlen = 0;
   if (strstr(topology,"heart")==topology) {
-    *topo_dim = 2;      
+    *topo_dim = 2;
     *topo_opt = HEART_LAYOUT_TOPOLOGY;
   } else if (strstr(topology,"square")==topology) {
-    *topo_dim = 2;      
+    *topo_dim = 2;
     *topo_opt = CUBE_LAYOUT_TOPOLOGY;
   } else if (strstr(topology,"sphere")==topology) {
     *topo_dim = 3;
@@ -43,7 +43,7 @@ void parse_topology_arg(const char* topology,
     *topo_dim = 2;
     *topo_opt = BALL_LAYOUT_TOPOLOGY;
   } else if (strstr(topology,"ball")==topology) {
-    check_strlen = 4;      
+    check_strlen = 4;
     *topo_dim = atoi(topology+4);
     *topo_opt = BALL_LAYOUT_TOPOLOGY;
   } else if (strstr(topology,"cube")==topology) {
@@ -62,14 +62,12 @@ void parse_topology_arg(const char* topology,
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  mwIndex mrows, ncols, n, nz;
-  mwIndex *ia, *ja; /* sparse matrix */
+  mwIndex n, nz, *ia, *ja; /* sparse matrix */
   double *a = NULL;
-  int reweighted = 0; /* true if this function is reweighted */
   double *X; /* output data */
   const char *topology;
   gursoy_atun_layout_topology_t topology_opt;
-  double d_i, d_f, lr_i, lr_f;
+  double d_i=0., d_f=0., lr_i=0., lr_f=0.;
   int maxiter, progressive = 0, topology_dim;
   int rval = 0;
 
@@ -77,56 +75,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
    * gursoy_atun_mex(A,topology,maxiters,diam_i,diam_f,lr_i,lr_f,
    *   progressive_opt, edge_weights, edge_weight_opt)
    */
-  const mxArray* arg_matrix;
   const mxArray* arg_topology, *arg_maxiter;
   const mxArray* arg_diam_i, *arg_diam_f, *arg_lr_i, *arg_lr_f;
   const mxArray* arg_progressive_opt;
-  const mxArray* arg_ews, *arg_ewopt;
   if (nrhs != 10) {
-    mexErrMsgIdAndTxt("matlab_bgl:invalidCall","7 inputs required.");
+    mexErrMsgIdAndTxt("matlab_bgl:invalidCall","10 inputs required.");
   }
-  arg_matrix= prhs[0];
   arg_topology= prhs[1]; arg_maxiter= prhs[2];
   arg_diam_i= prhs[3]; arg_diam_f= prhs[4];
   arg_lr_i= prhs[5]; arg_lr_f= prhs[6];
-  arg_progressive_opt= prhs[7]; 
-  arg_ews= prhs[8]; arg_ewopt=prhs[9];
-  if ((int)mxGetScalar(arg_ews)!=0) { reweighted=1; }
-  /* The first input must be a sparse matrix. */
-  mrows = mxGetM(arg_matrix);
-  ncols = mxGetN(arg_matrix);
-  if (mrows != ncols || !mxIsSparse(arg_matrix)) {
-    mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
-        "The graph must be square and sparse.");
-  }
-  if (!reweighted && (!mxIsDouble(arg_matrix) || mxIsComplex(arg_matrix))) {
-    mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
-        "The graph must have type double.");
-  }
+  arg_progressive_opt= prhs[7];
 
-  /* Get the sparse matrix, and recall that we've transposed the matrix */
-  n = mrows;
-  ja = mxGetIr(arg_matrix);
-  ia = mxGetJc(arg_matrix);
-  nz = ia[n];
-  if ((int)mxGetScalar(arg_ews)==0) { a = mxGetPr(arg_matrix); }
-  else if ((int)mxGetScalar(arg_ews)==1) {
-    if (mxGetNumberOfElements(arg_ewopt) < nz) {
-      mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
-          "The reweight array must have length at least nnz(A)");
-    }
-    if (!mxIsDouble(arg_ewopt) < nz) {
-      mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
-          "The reweight array must be of type double");
-    }
-    a= mxGetPr(arg_ewopt);
-  }
+  load_graph_arg(nrhs, prhs, 0, 8, 9, 1, &n, &nz, &ia, &ja, &a);
+
   /* get the parameters */
   topology= load_string_arg(arg_topology,1);
   parse_topology_arg(topology, &topology_opt, &topology_dim);
-  
-  if (isscalardouble(arg_maxiter) 
-      && isscalardouble(arg_diam_i) && isscalardouble(arg_diam_f) 
+
+  if (isscalardouble(arg_maxiter)
+      && isscalardouble(arg_diam_i) && isscalardouble(arg_diam_f)
       && isscalardouble(arg_lr_i) && isscalardouble(arg_lr_f)) {
     maxiter = mxGetScalar(arg_maxiter);
     d_i = mxGetScalar(arg_diam_i); d_f = mxGetScalar(arg_diam_f);
@@ -134,10 +101,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   } else {
     mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
         "The scalar parameters must be scalars of type double");
+    return;
   }
   /* check if they want to reuse old positions */
   if (!mxIsEmpty(arg_progressive_opt)) {
-    if (mxGetM(arg_progressive_opt) != n 
+    if (mxGetM(arg_progressive_opt) != n
         || mxGetN(arg_progressive_opt) != topology_dim) {
       mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
           "The progressive call requires an %i-by-%i input matrix of positions",
@@ -149,13 +117,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     plhs[0]= mxCreateDoubleMatrix(n,topology_dim,mxREAL);
   }
   X= mxGetPr(plhs[0]);
-  if (n==1) { return; } /* special case singleton graph */  
+  if (n==1) { return; } /* special case singleton graph */
   rval= gursoy_atun_layout(n, ja, ia, a, topology_opt, topology_dim,
     maxiter, d_i, d_f, lr_i, lr_f, X);
   if (rval == gursoy_atun_invalid_dim) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
       "The topology dimension %i was larger than the precompiled code allows",
-      topology_dim);  
+      topology_dim);
   } else if (rval == gursoy_atun_invalid_dim) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
       "The topology dimension %i is not valid (maybe too small?)",

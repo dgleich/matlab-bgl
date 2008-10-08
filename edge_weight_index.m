@@ -22,8 +22,9 @@ function [ei Ei] = edge_weight_index(A,varargin)
 % See the examples reweighted_edges and edge_index_visitor for more
 % information.
 %
-% ... = edge_weight_index(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = edge_weight_index(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %    options.undirected: output edge indices for an undirected graph [{0} | 1]
 %        see Note 1.
 %
@@ -49,13 +50,14 @@ function [ei Ei] = edge_weight_index(A,varargin)
 %% History
 %  2007-07-13: Changed input options to use undirected as the option name.
 %  2007-07-24: Fixed example
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('undirected', 0);
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options, varargin{:});
 if check, check_matlab_bgl(A,struct('sym',options.undirected == 0)); end
 
 if options.undirected

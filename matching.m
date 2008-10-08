@@ -42,8 +42,9 @@ function [m,max_card_matching]=matching(A,varargin)
 % The runtime is O(mn*alpha(m,n)).  The alpha function is the inverse
 % Ackermann function and is <= 4 for all valid Matlab inputs.
 %
-% ...=matching(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ...=matching(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.initial_match: choice of initial matching 
 %     ['none' | 'greedy' | {'extra_greedy'}]
 %   options.augmenting_path: [{'edmonds'} | 'none']
@@ -61,7 +62,8 @@ function [m,max_card_matching]=matching(A,varargin)
 % Copyright, Stanford University, 2007-2008
 
 %% History
-% 2007-07-08: % Initial version
+%  2007-07-08: Initial version
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
@@ -72,8 +74,8 @@ options = struct('initial_match', 'extra_greedy', ...
     'augmenting_path', 'edmonds', ...
     'verify', 1, ...
     'matrix_output', 0);
-    
-if ~isempty(varargin), options = merge_structs(varargin{1}, options); end
+options = merge_options(options, varargin{:});    
+
 if check, check_matlab_bgl(A,struct('sym',1)); end % make sure the matrix is symmetric
 
 [m,max_card_matching] = matching_mex(A, ...

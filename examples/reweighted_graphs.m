@@ -9,12 +9,17 @@
 % optional 'weights' parameter.  Using the 'weights' parameter correctly
 % can be difficult due to issues with how edges are indexed in MatlabBGL.
 
+%% Disclaimer
+% The details of this section are complicated.  This means their
+% implementation is error-prone.  If you get strange behavior, please let
+% me know.
+
 %% "I just want the simpliest solution..."
+% *new in version 4.0*
 % In this section, we'll see the really-easy but somewhat expensive way of
 % reweighting a graph.  I'll run through all the cases detailed below with
 % the simple code.  If you just need something to work and don't
 % necessarily need to know about all the details, this section is for you!
-
 
 %%
 % Let's compute shortest paths in a cycle graph with only one weighted
@@ -59,7 +64,7 @@ d(v)
 %% 
 % The right way to compute shortest paths.
 
-[d pred] = shortest_paths(A,u,struct('edge_weight',edge_weight_vector(As,A)));
+[d pred] = shortest_paths(As,u,struct('edge_weight',edge_weight_vector(As,A)));
 d(v)
 
 %%
@@ -67,6 +72,7 @@ d(v)
 
 
 %% A first attempt
+% * Correct for version 3.0 *
 % A trivial example graph to illustrate the problem that occurs with 0
 % weighted graphs occurs even with a simple cycle.  Suppose that the graph
 % corresponding to adjacency matrix A is a symmetric cycle where all edges
@@ -218,8 +224,31 @@ path_from_pred(pred,v)
 % (i,j) and (j,i), respectively.  
 %
 % Again, the edge_weight_index function provides a solution to this
-% problem.
+% problem.  We just have to tell edge_weight_index we have an undirected
+% graph.
 
+%%
+% Let's start with the same sparse matrix
+
+As = sparse(E(:,1), E(:,2), 1, n, n)
+
+%%
+% Here we use the edge_weight_index 
+
+[ei Ei] = edge_weight_index(As,struct('undirected',1));
+full(Ei) % look at the matrix
+
+%%
+% Let's create the edge weight vector
+ew = zeros(nnz(As)/2,1); % only half as many zeros here.
+ew(Ei(u,v)) = 1; % and we only needed to set one entry to 0
+
+[d pred] = shortest_paths(As,u,struct('edge_weight', ew(ei)));
+
+path_from_pred(pred,v)
+
+%%
+% And we get the same output as before!
 
 %% The undirected simplification
 % You can probably guess that the simplification for undirected graphs will
@@ -244,9 +273,6 @@ disp(full(Ei))
 
 path_from_pred(pred,v)
 
-%% Computing the weight of a path
-%
-
 %% Summary
 % The functions that support reweighted edges as of MatlabBGL 3.0 are 
 % shortest_paths, all_shortest_paths, dijkstra_sp, bellman_ford_sp, dag_sp,
@@ -256,4 +282,5 @@ path_from_pred(pred,v)
 
 %%
 % The functions that assist working with the edge indices for the
-% edge_weight vector are edge_weight_index and zero_weighted_matrix
+% edge_weight vector are edge_weight_index, indexed_sparse, and
+% edge_weight_vector.

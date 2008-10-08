@@ -596,7 +596,6 @@ bool matching_help(const Graph& g, MateMap mate, VertexIndexMap vm,
     }
 }
 
-
 /** Wrap a boost graph library call to matching.
  *
  * A matching is a subset of edges with no common vertices in an undirected
@@ -736,12 +735,12 @@ int core_numbers(
     return (0);
 }
 
-/** Compute the core_numbers of a graph
+/** Compute the weighted core numbers of a graph
  *
  * For an undirected graph, this function computes the core number of each
  * vertex.  The core number is the minimum number such that removing all
- * vertices of degree <= cn[k] removes vertex k.  For a directed graph
- * we compute the in-degree core number.
+ * vertices of weighted in-degree <= cn[k] removes vertex k.  For a
+ * directed graph we compute the weighted in-degree core number.
  *
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex

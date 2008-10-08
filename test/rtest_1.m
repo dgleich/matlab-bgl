@@ -18,6 +18,8 @@ catch
 end;
 
 try
+    A(1,2)= -1; 
+    A(2,1)= -1; 
     T = prim_mst(A);
     rval = 0;
 catch

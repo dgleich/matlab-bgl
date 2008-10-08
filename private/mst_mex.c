@@ -4,7 +4,6 @@
  * The mex interface to the matlab bgl wrapper.
  */
 
-
 /** History
  * 2006-04-20: Initial version
  * 2006-11-10: Altered the code to produce the correct number of edges

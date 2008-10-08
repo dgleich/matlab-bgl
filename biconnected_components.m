@@ -16,8 +16,9 @@ function [a,C] = biconnected_components(A,varargin)
 % This method works on undirected graphs.
 % The runtime is O(V+E), the algorithm is just depth first search.
 %
-% ... = biconnected_components(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = biconnected_components(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   There are no additional options for this function.
 %
 % Note: the input to this function must be symmetric, so this function
@@ -41,14 +42,11 @@ function [a,C] = biconnected_components(A,varargin)
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
-if (trans)
-end;
+if trans, end
 
-if (check)
+if check
     % make sure the matrix is symmetric
     check_matlab_bgl(A,struct('sym',1));
 end;

@@ -9,8 +9,9 @@ function ccfs = clustering_coefficients(A,varargin)
 % This method works on directed or undirected graphs.
 % The runtime is O(nd^2) where d is the maximum vertex degree.
 %
-% ... = clustering_coefficients(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = clustering_coefficients(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.undirected: enable optimizations for undirected graphs [{0} | 1]
 %   options.unweighted: an optional switch to perform the weighted 
 %       computation [{0} | 1], see Note
@@ -38,15 +39,14 @@ function ccfs = clustering_coefficients(A,varargin)
 %  2006-05-31: Added full2sparse check
 %  2007-07-11: Added directed and weighted options
 %  2007-07-12: Added non-negative edge check
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('edge_weight', 'matrix', 'undirected', 0, 'unweighted', 0);
-if ~isempty(varargin)
-    options = merge_structs(varargin{1}, options);
-end
+options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.

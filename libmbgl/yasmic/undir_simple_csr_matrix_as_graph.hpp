@@ -9,6 +9,8 @@
 
 /** History
  *  2008-09-26: Initial coding
+ *  2008-10-06: Fixed bug with adjacency iterator
+ *    (this bug did not impact any algorithms, as no algorithms called it)
  */
 
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
@@ -244,7 +246,7 @@ namespace boost {
     inline std::pair< typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::adjacency_iterator,
                       typename graph_traits<YASMIC_SIMPLE_CSR_GRAPH_TYPE>::adjacency_iterator >
         adjacent_vertices(Index v, const YASMIC_SIMPLE_CSR_GRAPH_TYPE& g) {
-            return std::make_pair(&g.aj[v],&g.aj[v+1]);
+            return std::make_pair(&g.aj[g.ai[v]],&g.aj[g.ai[v+1]]);
     }
 
 	template <YASMIC_SIMPLE_CSR_TEMPLATE_PARAMS, typename Tag>

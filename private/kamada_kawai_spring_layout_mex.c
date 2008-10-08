@@ -87,6 +87,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   } else {
     mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
         "The scalar parameters must be scalars of type double");
+    return;
   }
   /* create the output vectors */
   plhs[1]= mxCreateDoubleMatrix(n,n,mxREAL);
@@ -108,7 +109,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   }
   X= mxGetPr(plhs[0]);
   if (n==0) { return; } /* special case empty graph */
-  if (n==1) { return; } /* special case singleton graph */  
+  if (n==1) { return; } /* special case singleton graph */
   rval= kamada_kawai_spring_layout(n, ja, ia, a, tol, k, progressive, edgelen,
           X, S, D);
   if (rval == -2) {

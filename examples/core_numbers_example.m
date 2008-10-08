@@ -102,6 +102,7 @@ while ~isempty(d2v)
     d2v=find(sum(A,2)==2);
 end
 max(core_numbers(A))
+
 %%
 % The highest core is still two!  I think that's pretty amazing.  There
 % aren't subnetworks of the Minnesota highways where you always have at

@@ -25,7 +25,7 @@ typedef int mwSize;
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  mwIndex mrows, ncols, n, nz;
+  mwIndex mrows, ncols, n;
   mwIndex *ia, *ja; /* sparse matrix */
   double *X;
   int maxiter, fptype;
@@ -71,6 +71,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   } else {
     mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
         "The scalar parameters must be scalars of type double");
+    return;
   }
 
   /* check if they want to reuse old positions */

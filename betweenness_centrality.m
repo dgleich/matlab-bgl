@@ -12,8 +12,9 @@ function [bc,E] = betweenness_centrality(A,varargin)
 % For unweighted graphs (options.unweighted=1), the runtime is O(VE).
 % For weighted graphs, the runtime is O(VE + V(V+E)log(V)).
 %
-% ... = betweenness_centrality(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = betweenness_centrality(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.unweighted: use the slightly more efficient unweighted
 %     algorithm in the case where all edge-weights are equal [{0} | 1]  
 %   options.ec_list: do not form the sparse matrix with edge [{0} | 1]
@@ -45,17 +46,14 @@ function [bc,E] = betweenness_centrality(A,varargin)
 %  2007-04-20: Added edge weight option
 %  2007-07-09: Restricted input to positive edge weights
 %  2007-07-12: Fixed edge_weight documentation.
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
-if (full2sparse && ~issparse(A)) 
-    A = sparse(A); 
-end
+if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('unweighted', 0, 'ec_list', 0, 'edge_weight', 'matrix');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end;
+options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.
@@ -69,7 +67,7 @@ else
     edge_weight_opt = options.edge_weight;
 end
 
-if (check)
+if check
     % check the values
     if options.unweighted ~= 1 && edge_weights ~= 1
         check_matlab_bgl(A,struct('values',1,'noneg',1));

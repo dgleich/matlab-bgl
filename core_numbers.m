@@ -18,8 +18,9 @@ function [cn rt] = core_numbers(A,varargin)
 %
 % To get the out-degree core_numbers, call core_numbers(A') instead;
 %
-% ... = core_numbers(A,options) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = core_numbers(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.unweighted: an optional switch to perform the weighted 
 %       computation [0 | {1}]  
 %   options.edge_weight: a double array over the edges with an edge
@@ -47,15 +48,14 @@ function [cn rt] = core_numbers(A,varargin)
 %    Added check to not compute size if it isn't used.
 %  2007-07-30: Removed size option from output
 %    Added removal time output
+%  2008-10-07: Changed options parsing
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 options = struct('unweighted', 1, 'edge_weight', 'matrix');
-if (~isempty(varargin))
-    options = merge_structs(varargin{1}, options);
-end
+options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.

@@ -13,10 +13,10 @@
  * 18 April 2007
  * Added src/dst pairs to all algorithms to stop searches early.
  * Corrected small documentation bugs.
- * 
+ *
  * 9 July 2007
  * Switched to simple_csr_matrix graph type
- * 
+ *
  * 29 August 2007
  * Switched to make_iterator_property_map in astar_search* functions
  * to fix compile bugs on g++-4.1
@@ -37,6 +37,27 @@
 
 struct stop_bfs {}; // stop bfs exception
 
+/**
+ * Wrap a boost graph library call to bfs.
+ *
+ * the ja and ia arrays specify the connectivity of the underlying graph,
+ * ia is a length (nverts+1) array with the indices in ja that start the
+ * nonzeros in each row.  ja is a length (ia(nverts)) array with the
+ * columns of the connectivity.
+ *
+ * if d, dt, or pred is NULL, then that parameter is not computed.
+ *   (currently not implemented)
+ *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param src the source vertex for the search
+ * @param dst a target vertex unless src=dst
+ * @param d the distance array
+ * @param dt the discover time array
+ * @param pred the predecessor array
+ * @return an error code if possible
+ */
 int breadth_first_search(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex src, mbglIndex dst, /* problem data */
@@ -48,7 +69,7 @@ int breadth_first_search(
     using namespace std;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
     if (!d || !dt || !pred)
     {
@@ -72,7 +93,7 @@ int breadth_first_search(
                         make_pair(stamp_times(dt, time, on_discover_vertex()),
                                   record_predecessors(pred, on_tree_edge()))))));
     }
-    else 
+    else
     {
         // this case means we do stop the search
         try {
@@ -114,7 +135,7 @@ int breadth_first_search_visitor(
 {
     /*
      * History
-     * 
+     *
      * 2007-04-17
      * Added try-catch for stop_bfs exception
      */
@@ -124,15 +145,15 @@ int breadth_first_search_visitor(
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-    
+
     c_bfs_visitor<crs_graph> visitor;
-    visitor.vis = &vis; 
+    visitor.vis = &vis;
 
     try {
         boost::breadth_first_search(g, src,
             boost::visitor(visitor));
     }
-    catch (stop_bfs) 
+    catch (stop_bfs)
     {
     }
 
@@ -142,6 +163,31 @@ int breadth_first_search_visitor(
 
 struct stop_dfs {}; // stop dfs exception
 
+/**
+ * Wrap a boost graph library call to dfs.
+ *
+ * the ja and ia arrays specify the connectivity of the underlying graph,
+ * ia is a length (nverts+1) array with the indices in ja that start the
+ * nonzeros in each row.  ja is a length (ia(nverts)) array with the
+ * columns of the connectivity.
+ *
+ * if dt, ft, or pred is NULL, then that parameter is not computed.
+ *   (currently not implemented)
+ *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param src the source vertex for the flow
+ * @param full if full is non-zero, then compute the full dfs over all
+ *    vertices, not just the connected component.
+ * @param dst the target vertex if n < nverts and src != dst which
+ *    stops the dfs if it is reached
+ * @param d
+ * @param dt the discover time array
+ * @param ft the finish time array
+ * @param pred the predecessor array
+ * @return an error code if possible
+ */
 int depth_first_search(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex src, int full, mbglIndex dst, /* problem data */
@@ -153,7 +199,7 @@ int depth_first_search(
     using namespace std;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
     if (!d || !dt || !ft || !pred)
     {
@@ -172,7 +218,7 @@ int depth_first_search(
     {
         std::vector<default_color_type> color_vec(num_vertices(g));
         default_color_type c = white_color; // avoid warning about un-init
-        
+
         //
         // call visit because they don't want the full dfs
         //
@@ -205,7 +251,7 @@ int depth_first_search(
     else
     {
         // call search because they want the full dfs
-        boost::depth_first_search(g, 
+        boost::depth_first_search(g,
                     boost::visitor(make_dfs_visitor(
                         make_pair(record_distances(d, on_tree_edge()),
                         make_pair(stamp_times(dt, time, on_discover_vertex()),
@@ -240,7 +286,7 @@ int depth_first_search_visitor(
     using namespace std;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL); 
+    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
     c_dfs_visitor<crs_graph> visitor;
     visitor.vis = &vis;
@@ -251,7 +297,7 @@ int depth_first_search_visitor(
         {
             std::vector<default_color_type> color_vec(num_vertices(g));
             default_color_type c = white_color; // avoid warning about un-init
-            
+
             // call visit because they don't want the full dfs
             boost::depth_first_visit(g, src,
                 visitor,
@@ -261,12 +307,12 @@ int depth_first_search_visitor(
         else
         {
             // call search because they want the full dfs
-            boost::depth_first_search(g, 
+            boost::depth_first_search(g,
                         boost::visitor(visitor)
                         );
         }
     }
-    catch (stop_dfs) 
+    catch (stop_dfs)
     {
     }
 
@@ -322,28 +368,28 @@ public:
 int astar_search(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     mbglIndex src, mbglIndex dst, /* start, end vertex */
-    double *d, mbglIndex *pred, double *f, /* output */ 
+    double *d, mbglIndex *pred, double *f, /* output */
     double *h /* heuristic function value for all vertices */, double dinf)
 {
     using namespace yasmic;
     using namespace boost;
-   
+
     // create the graph g
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     astar_heuristic_data<crs_weighted_graph,double> hdata(h);
 
     if (dst == nverts)
     {
-        astar_search(g, src, hdata, 
+        astar_search(g, src, hdata,
             distance_inf(dinf).
             predecessor_map(make_iterator_property_map(pred, get(vertex_index,g))).
             rank_map(make_iterator_property_map(f, get(vertex_index,g))).
             distance_map(make_iterator_property_map(d, get(vertex_index,g))));
     } else {
         try {
-            astar_search(g, src, hdata, 
+            astar_search(g, src, hdata,
                 distance_inf(dinf).
                 predecessor_map(make_iterator_property_map(pred, get(vertex_index,g))).
                 rank_map(make_iterator_property_map(f, get(vertex_index,g))).
@@ -359,27 +405,27 @@ int astar_search(
 int astar_search_hfunc(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     mbglIndex src, mbglIndex dst, /* start vertex */
-    double *d, mbglIndex *pred, double *f, 
+    double *d, mbglIndex *pred, double *f,
     double (*hfunc)(void* pdata, mbglIndex u) /* heuristic function */, void* pdata, double dinf)
 {
     using namespace yasmic;
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     astar_heuristic_func<crs_weighted_graph,double> h(hfunc, pdata);
 
     if (dst == nverts)
     {
-        astar_search(g, src, h, 
+        astar_search(g, src, h,
             distance_inf(dinf).
             predecessor_map(make_iterator_property_map(pred, get(vertex_index,g))).
             rank_map(make_iterator_property_map(f, get(vertex_index,g))).
             distance_map(make_iterator_property_map(d, get(vertex_index,g))));
     } else {
         try {
-            astar_search(g, src, h, 
+            astar_search(g, src, h,
                 distance_inf(dinf).
                 predecessor_map(make_iterator_property_map(pred, get(vertex_index,g))).
                 rank_map(make_iterator_property_map(f, get(vertex_index,g))).
@@ -395,15 +441,15 @@ int astar_search_hfunc(
 int astar_search_hfunc_visitor(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     mbglIndex src, /* start vertex */
-    double *d, mbglIndex *pred, double *f, 
-    double (*hfunc)(void* pdata, mbglIndex u) /* heuristic function */, void* pdata, double dinf, 
+    double *d, mbglIndex *pred, double *f,
+    double (*hfunc)(void* pdata, mbglIndex u) /* heuristic function */, void* pdata, double dinf,
     astar_visitor_funcs_t vis)
 {
     using namespace yasmic;
     using namespace boost;
 
     typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight); 
+    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     astar_heuristic_func<crs_weighted_graph,double> h(hfunc, pdata);
 
@@ -412,14 +458,14 @@ int astar_search_hfunc_visitor(
 
     try
     {
-        astar_search(g, src, h, 
+        astar_search(g, src, h,
             distance_inf(dinf).
             predecessor_map(make_iterator_property_map(pred, get(vertex_index,g))).
             rank_map(make_iterator_property_map(f, get(vertex_index,g))).
             distance_map(make_iterator_property_map(d, get(vertex_index,g))).
             visitor(visitor_impl));
     }
-    catch (stop_astar) 
+    catch (stop_astar)
     {
     }
 

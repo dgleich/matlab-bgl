@@ -15,8 +15,9 @@ function [out1 out2 out3] = mst(A,varargin)
 %
 % This method works on undirected graphs.
 %
-% ... = mst(A,optionsu) sets optional parameters (see 
-% set_matlab_bgl_options) for the standard options.
+% ... = mst(A,...) takes a set of
+% key-value pairs or an options structure.  See set_matlab_bgl_options
+% for the standard options. 
 %   options.algname: the minimum spanning tree algorithm
 %       ['prim' | {'kruskal'}]
 %   options.edge_weight: a double array over the edges with an edge
@@ -26,6 +27,9 @@ function [out1 out2 out3] = mst(A,varargin)
 %   options.root: specify the root or starting vertex for the algorithm
 %       This option only applies to prim's algorithm. 
 %       [{'none'} | any vertex number]
+%   options.fix_diag: remove any diagonal entries to get correct output
+%       from Prim's algorithm [0 | {1}]; beware this option with the
+%       edge_weight option too.
 %
 % Note: the input to this function must be symmetric, so this function
 % ignores the 'notrans' default option and never transposes the input.
@@ -57,18 +61,21 @@ function [out1 out2 out3] = mst(A,varargin)
 %  2007-07-12: Fixed edge_weight documentation
 %    Added note about symmetric edge weights
 %  2007-12-14: Added rooted option for prim's algorithm
+%  2008-10-07: Changed options parsing
+%    Addressed issue with incorrect prim output and fixed matrix diagonal
 %%
-
-
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});
 if full2sparse && ~issparse(A), A = sparse(A); end
 if trans, end % no trans check
 
-options = struct('algname', 'kruskal', 'edge_weight', 'matrix', 'root', 'none');
-if ~isempty(varargin)
-    options = merge_structs(varargin{1}, options);
-end;
+options = struct('algname', 'kruskal', 'edge_weight', 'matrix', ...
+    'root', 'none', 'fix_diag', 1);
+options = merge_options(options,varargin{:});
+
+fixed_diag= 0; 
+if options.fix_diag && strcmp(options.algname,'prim') ... 
+    && any(diag(A)), A = A - diag(diag(A)); fixed_diag= 1; end
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
 % passed on the command line or 0 if we are using the matrix.
@@ -80,9 +87,12 @@ if strcmp(options.edge_weight, 'matrix')
 else
     edge_weights = 1;
     edge_weight_opt = options.edge_weight;
+    if fixed_diag, warning('matlab_bgl:fix_diag',...
+        'the diagonal was adjusted, the edge_weight option may be incorrect'); 
+    end
 end
 
-if (check)
+if check
     % make sure the matrix is symmetric
     if ~edge_weights
         check_matlab_bgl(A,struct('sym',1,'values',1,...
@@ -109,7 +119,8 @@ if (check)
                  'on a disconnected graph is only a partial spanning tree.']);
         end
     end
-end;
+    
+end
 
 % old temporary fix for incorrect number of edges
 % num_components = max(components(A));

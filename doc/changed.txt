@@ -1,3 +1,12 @@
+% Version 4.0
+% -- added graph layout algorithms
+% -- added planar graph algorithms
+% -- improved testing code
+% -- upgraded to boost 1.36.0
+% -- added edge_weight_vector function
+% -- new option syntax
+% -- fixed bugs with graph generation routines
+%
 % Version 3.1:
 % -- fixed bug with predecessor return from floyd_warshall_all_sp
 % -- updated documentation for all_shortest_paths for predecessor return

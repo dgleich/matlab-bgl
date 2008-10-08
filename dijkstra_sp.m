@@ -1,4 +1,4 @@
-function [d pred] = dijkstra_sp(A,u,options)
+function [d pred] = dijkstra_sp(A,u,varargin)
 % DIJKSTRA_SP Compute the weighted single source shortest path problem.
 %
 % Dijkstra's algorithm for the single source shortest path problem only
@@ -39,12 +39,14 @@ function [d pred] = dijkstra_sp(A,u,options)
 
 %% History
 %  2006-04-23: Initial version
+%  2008-10-07: Changed options parsing
 %%
 
 algname = 'dijkstra';
-
-if nargin > 2, options.algname = algname;
-else options = struct('algname',algname);
+if ~isempty(varargin), 
+    options = merge_options(struct(),varargin{:}); 
+    options.algname= algname;
+else options = struct('algname',algname); 
 end
 
 [d pred] = shortest_paths(A,u,options);
