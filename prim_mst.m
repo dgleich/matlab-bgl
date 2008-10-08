@@ -7,10 +7,16 @@ function [varargout] = prim_mst(A,varargin)
 % weights.
 % The runtime is O(E log (V)).
 %
+% In Boost 1.36.0 and prior versions, Prim's algorithm has a problem with
+% incorrect output and diagonal entries.  
+%
 % See MST for calling information.  This function just calls
 % mst(...,struct('algname','prim'));
 %   options.root: specify the root vertex for prim's algorithm
 %       [{'none'} | any vertex number]
+%   options.fix_diag: remove any diagonal entries to get correct output
+%       from Prim's algorithm [0 | {1}]; beware this option with the
+%       edge_weight option too.
 %
 % Example:
 %    load graphs/clr-24-1.mat
