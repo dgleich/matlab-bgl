@@ -119,49 +119,47 @@ int kruskal_mst(
     return (0);
 }
 
-int prim_mst_rooted(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+int prim_mst_rooted(mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    double *weight, /* connectivity params */
     mbglIndex* i, mbglIndex* j, double* val, mbglIndex *nedges, /* tree output */
     mbglIndex root /* tree root */)
 {
-    using namespace yasmic;
-    using namespace boost;
+  using namespace yasmic;
+  using namespace boost;
 
-    typedef simple_csr_matrix<mbglIndex,double> crs_weighted_graph;
-    crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+  typedef simple_csr_matrix<mbglIndex, double> crs_weighted_graph;
+  crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
-    std::vector<mbglIndex> pred(nverts);
+  std::vector<mbglIndex> pred(nverts);
 
-    prim_minimum_spanning_tree(g,
-        make_iterator_property_map(
-           pred.begin(), get(vertex_index,g)),
-        root_vertex(root));
+  prim_minimum_spanning_tree(g, make_iterator_property_map(pred.begin(), get(
+      vertex_index, g)), root_vertex(root));
 
-    mbglIndex edge_num = 0;
-    for (mbglIndex pi = 0; pi < nverts; pi++)
-    {
-        if (pred[pi] == pi)
-        {
-            // this edge isn't present
+  mbglIndex edge_num = 0;
+  for (mbglIndex pi = 0; pi < nverts; pi++) {
+    if (pred[pi] == pi) {
+      // this edge isn't present
+    } else {
+      assert(edge_num<nverts-1);
+
+      i[edge_num] = pi;
+      j[edge_num] = pred[pi];
+      val[edge_num] = 0.0;
+
+      for (mbglIndex k = ia[pred[pi]]; k < ia[pred[pi] + 1]; k++) {
+        if (ja[k] == pi) {
+          val[edge_num] = weight[k];
+          break;
         }
-        else
-        {
-            i[edge_num] = pi;
-            j[edge_num] = pred[pi];
-            val[edge_num] = 0.0;
+      }
 
-            for (mbglIndex k=ia[pred[pi]]; k < ia[pred[pi]+1]; k++)
-            {
-                if (ja[k] == pi) { val[edge_num] = weight[k]; break; }
-            }
-
-            edge_num++;
-        }
+      edge_num++;
     }
+  }
 
-    *nedges = edge_num;
+  *nedges = edge_num;
 
-    return (0);
+  return (0);
 }
 
 /**
