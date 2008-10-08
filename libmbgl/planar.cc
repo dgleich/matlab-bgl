@@ -24,7 +24,8 @@
 #include <boost/graph/make_biconnected_planar.hpp>
 #include <boost/graph/make_maximal_planar.hpp>
 #include <boost/graph/simple_point.hpp>
-#include <boost/graph/is_straight_line_drawing.hpp>
+//#include <boost/graph/is_straight_line_drawing.hpp>
+#include <yasmic/boost_mod/is_straight_line_drawing.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
 #include <vector>

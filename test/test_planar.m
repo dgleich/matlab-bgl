@@ -93,11 +93,15 @@ assert(is_straight_line_drawing(A,X)==1,'matlab_bgl:testFailed',...
     'the two vertex graph has a straight line drawing');
 % is_straight_line_drawing doesn't work right now
 
-% A = clique_graph(4);
-% X = [0 1; 1 0; 0 -1; -1 0];
-% is_straight_line_drawing(A,X)
-% assert(is_straight_line_drawing(A,X)==0,'matlab_bgl:testFailed',...
-%     'K_4 on a square is not a straight line drawing');
+A = clique_graph(4);
+X = [0 1; 1 0; 0 -1; -1 0];
+if is_straight_line_drawing(A,X)==1
+    warning('matlab_bgl:bglError',...
+    'is_straight_line_drawing failed, old versions of Boost have this problem');
+else
+    assert(is_straight_line_drawing(A,X)==0,'matlab_bgl:testFailed',...
+        'K_4 on a square is not a straight line drawing');
+end
 
 %% make_connected
 [ei ej] = make_connected(grid_graph(5));
