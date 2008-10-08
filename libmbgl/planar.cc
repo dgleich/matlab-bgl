@@ -308,7 +308,7 @@ struct record_add_edge_visitor {
   mbglIndex* count; // incremented for each additional edge
 
   record_add_edge_visitor(EdgeSrcOutIterator soi_, EdgeSrcOutIterator soi_end_,
-      EdgeDstOutIterator doi_, EdgeDstOutIterator doi_end_, size_t* count_)
+      EdgeDstOutIterator doi_, EdgeDstOutIterator doi_end_, mbglIndex* count_)
   : soi(soi_), soi_end(soi_end_), doi(doi_), doi_end(doi_end_), count(count_)
   {}
 
