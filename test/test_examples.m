@@ -351,23 +351,3 @@ end
       breadth_first_search(A,u,struct('tree_edge',@on_tree_edge));
     end
 
-    function dv=dist_uv_bfs(A,u,v)
-      vstar = v;
-      dmap = ipdouble(zeros(size(A,1),1));
-      function stop=on_tree_edge(ei,u,v)
-        dmap(v) = dmap(u)+1;
-        stop = (v ~= vstar);
-      end
-      breadth_first_search(A,u,struct('tree_edge',@on_tree_edge));
-      dv = dmap(v);
-    end
-    
-    function dist_uv_dfs(A,u,v)
-      vstar = v;
-      dmap = ipdouble(zeros(size(A,1),1));
-      function stop=on_tree_edge(ei,u,v)
-        dmap(v) = dmap(u)+1;
-        stop = (v ~= vstar);
-      end
-      breadth_first_search(A,u,struct('tree_edge',@on_tree_edge));
-    end

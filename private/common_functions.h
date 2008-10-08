@@ -90,6 +90,7 @@ double load_scalar_double_arg(int nrhs, const mxArray *prhs[], int arg) {
 double* load_vector_double_arg(int nrhs, const mxArray *prhs[], int arg,
     mwIndex minlen, mwIndex maxlen, int check_min, int check_max) {
   const mxArray *a;
+  mwSize numel;
   if (nrhs <= arg) {
     mexErrMsgIdAndTxt("matlab_bgl:invalidCall",
         "load_vector on arg %i failed because only %i args given",
@@ -100,7 +101,7 @@ double* load_vector_double_arg(int nrhs, const mxArray *prhs[], int arg,
     mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
         "vector arg=%i must have type double.", arg);
   }
-  mwSize numel = mxGetNumberOfElements(a);
+  numel = mxGetNumberOfElements(a);
   if (check_min && numel<minlen) {
     mexErrMsgIdAndTxt("matlab_bgl:invalidParameter",
       "vector arg=%i must have numel() at least %i", arg, minlen);
