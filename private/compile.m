@@ -77,9 +77,13 @@ end
          
 if ispc
     % must change /MD to /ML in mexopts.bat
-    %mexflags = '-O -I..\libmbgl\include LINKFLAGS#''$LINKFLAGS -libpath:..\libmbgl\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST libmbgl.lib''';
-    mexflags = [mexflags sprintf('-I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
-    %mexflags = [mexflags sprintf('-g -I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Debug'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
+    %mexflags = '-O -I..\libmbgl\include LINKFLAGS#''$LINKFLAGS
+    %-libpath:..\libmbgl\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST libmbgl.lib''';
+    if debug
+      mexflags = [mexflags sprintf('-I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Debug'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
+    else
+      mexflags = [mexflags sprintf('-I..\\libmbgl\\include LINKFLAGS#''$LINKFLAGS -libpath:..\\libmbgl\\Release'' LINKFLAGSPOST#''$LINKFLAGSPOST lib%s.lib''', libname)];
+    end
 elseif mac
     % mac specific options
 elseif isunix

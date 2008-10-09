@@ -32,6 +32,19 @@ cl %CFLAGS% searches.cc
 cl %CFLAGS% shortest_path.cc
 cl %CFLAGS% spanning_trees.cc
 cl %CFLAGS% statistics.cc
-lib %LIBFLAGS% %OUTDIR%\components.obj 	%OUTDIR%\max_flow.obj %OUTDIR%\orderings.obj %OUTDIR%\searches.obj %OUTDIR%\shortest_path.obj %OUTDIR%\spanning_trees.obj %OUTDIR%\statistics.obj
+cl %CFLAGS% layouts.cc
+cl %CFLAGS% planar.cc
+
+lib %LIBFLAGS% ^
+  %OUTDIR%\components.obj ^
+  %OUTDIR%\max_flow.obj ^
+  %OUTDIR%\orderings.obj ^
+  %OUTDIR%\searches.obj ^
+  %OUTDIR%\shortest_path.obj ^
+  %OUTDIR%\spanning_trees.obj ^
+  %OUTDIR%\statistics.obj ^
+  %OUTDIR%\layouts.obj ^
+  %OUTDIR%\planar.obj 
+
 
 

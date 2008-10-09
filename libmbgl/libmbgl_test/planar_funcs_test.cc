@@ -150,10 +150,6 @@ int test_5() {
   }
 
   for (mbglIndex i= 0; i < nverts; i++ ) {
-    printf("pos[%i] = %i,%i\n", i, X[i], X[i+nverts]);
-  }
-
-  for (mbglIndex i= 0; i < nverts; i++ ) {
     if ( (X[i] > 2*nverts-4) || (X[i+nverts] > nverts-2) ) {
       errstr = "out of range";
       return -1;

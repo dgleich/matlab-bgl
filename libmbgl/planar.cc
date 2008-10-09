@@ -17,7 +17,8 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/planar_canonical_ordering.hpp>
-#include <boost/graph/chrobak_payne_drawing.hpp>
+//#include <boost/graph/chrobak_payne_drawing.hpp>
+#include <yasmic/boost_mod/chrobak_payne_drawing.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include <boost/graph/is_kuratowski_subgraph.hpp>
 #include <boost/graph/make_connected.hpp>
@@ -332,6 +333,15 @@ int triangulate_bgl_graph(
   RecordAddEdgeVisitor add_edge_visitor)
 {
   using namespace boost;
+  typedef std::vector< std::vector<
+            typename graph_traits<Graph>::edge_descriptor > >
+  embedding_storage_t;
+  typedef boost::iterator_property_map
+    < typename embedding_storage_t::iterator,
+      typename property_map<Graph, vertex_index_t>::type
+    >
+    embedding_t;
+
   if (make_conn) {
     make_connected(g, get(vertex_index,g), add_edge_visitor);
   }
@@ -341,8 +351,8 @@ int triangulate_bgl_graph(
     typename graph_traits<Graph>::edge_iterator ei, ei_end;
 
     // compute a planar embedding
-    typedef std::vector< typename graph_traits<Graph>::edge_descriptor > vec_t;
-    std::vector<vec_t> embedding(num_vertices(g));
+    embedding_storage_t embedding_storage(num_vertices(g));
+    embedding_t embedding(embedding_storage.begin(), get(vertex_index,g));
 
     if (make_biconnected) {
       // compute the edge index
@@ -353,10 +363,10 @@ int triangulate_bgl_graph(
       // compute a planar embedding
       if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = g,
                                        boyer_myrvold_params::embedding =
-                                           &embedding[0]
+                                           embedding
                                        )
           ) {
-        make_biconnected_planar(g, &embedding[0], get(edge_index,g),
+        make_biconnected_planar(g, embedding, get(edge_index,g),
             add_edge_visitor);
       } else {
         return 1;
@@ -371,10 +381,10 @@ int triangulate_bgl_graph(
       // compute a planar embedding
       if (boyer_myrvold_planarity_test(boyer_myrvold_params::graph = g,
                                        boyer_myrvold_params::embedding =
-                                           &embedding[0]
+                                           embedding
                                        )
           ) {
-        make_maximal_planar(g, &embedding[0], get(vertex_index,g),
+        make_maximal_planar(g, embedding, get(vertex_index,g),
             get(edge_index,g), add_edge_visitor);
       } else {
         return 1;

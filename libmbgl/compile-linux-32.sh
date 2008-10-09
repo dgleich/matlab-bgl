@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 BOOST_DIR=${HOME}/dev/lib/boost_1_36_0/
-YASMIC_DIR=${HOME}/dev/yasmic
+YASMIC_DIR=.
 
 source ccfiles.sh
 OFILES=`echo ${CCFILES} | sed -e 's/\.cc/\.o/g'`
@@ -14,7 +14,7 @@ function echocmd {
 }
 
 for file in ${CCFILES}; do
-	echocmd g++ $CFLAGS $file
+	echocmd g++-3.4 $CFLAGS $file
 done
 
 echocmd ar rc libmbgl-linux-32.a ${OFILES} 

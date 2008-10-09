@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="e:\dev\yasmic;e:\dev\lib\boost_1_34_0"
+				AdditionalIncludeDirectories="e:\dev\lib\boost_1_36_0;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="1"
@@ -109,7 +109,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="e:\dev\yasmic;e:\dev\lib\boost_1_33_0"
+				AdditionalIncludeDirectories="e:\dev\lib\boost_1_36_0;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="1"
@@ -174,7 +174,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="e:\dev\yasmic;e:\dev\lib\boost_1_34_0"
+				AdditionalIncludeDirectories="e:\dev\lib\boost_1_36_0;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -193,6 +193,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\$(ProjectName)-pcwin32.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -237,7 +238,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="e:\dev\yasmic;e:\dev\lib\boost_1_34_0"
+				AdditionalIncludeDirectories="e:\dev\lib\boost_1_36_0;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;MATLAB_BGL_LARGE_ARRAYS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -288,11 +289,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\layouts.cc"
+				>
+			</File>
+			<File
 				RelativePath=".\max_flow.cc"
 				>
 			</File>
 			<File
 				RelativePath=".\orderings.cc"
+				>
+			</File>
+			<File
+				RelativePath=".\planar.cc"
 				>
 			</File>
 			<File
