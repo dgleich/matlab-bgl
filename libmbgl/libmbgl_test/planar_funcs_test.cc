@@ -135,6 +135,34 @@ int test_4() {
   return 0;
 }
 
+int test_5() {
+  const mbglIndex nverts= 7;
+  mbglDegreeType X[nverts*2];
+  mbglIndex p[nverts];
+  mbglIndex ai[]={0, 3, 9, 12, 18, 22, 26, 30};
+  mbglIndex aj[]={1,3,4,0,2,3,4,5,6,1,3,6,0,1,2,4,5,6,0,1,3,5,1,3,4,6,1,2,3,5};
+  int rval;
+  rval= chrobak_payne_straight_line_drawing(nverts, aj, ai, 
+          0, 1, NULL, NULL, NULL, p, X);
+  if (rval != 0) {
+    errstr = "function error";
+    return -1;
+  }
+
+  for (mbglIndex i= 0; i < nverts; i++ ) {
+    printf("pos[%i] = %i,%i\n", i, X[i], X[i+nverts]);
+  }
+
+  for (mbglIndex i= 0; i < nverts; i++ ) {
+    if ( (X[i] > 2*nverts-4) || (X[i+nverts] > nverts-2) ) {
+      errstr = "out of range";
+      return -1;
+    }
+  } 
+
+  return 0;
+} 
+
 int main(int argc, char **argv) {
   int nfail = 0, ntotal = 0;
   int rval;
@@ -158,6 +186,11 @@ int main(int argc, char **argv) {
 
   name= "empty_graphs";
   rval= test_4(); ntotal++;
+  if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
+  else { printf("%20s  success\n", name); }
+  
+  name= "is_maximal=1";
+  rval= test_5(); ntotal++;
   if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
   else { printf("%20s  success\n", name); }
 

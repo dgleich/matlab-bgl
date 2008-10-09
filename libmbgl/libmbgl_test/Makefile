@@ -2,11 +2,12 @@
 BOOST_DIR := /home/dgleich/dev/lib/boost_1_36_0
 YASMIC_DIR := ../
 LIBDIR := ..
-LIBNAME := mbgl-linux-64-large
+LIBNAME ?= mbgl-linux-64-large
+DEFINES ?= -DMATLAB_BGL_LARGE_ARRAYS
 
 #CXXFLAGS := $(CXXFLAGS) -g -Wall -I../ -I$(BOOST_DIR) -I$(YASMIC_DIR) -DMATLAB_BGL_LARGE_ARRAYS
 
-CXXFLAGS := $(CXXFLAGS) -g -Wall -I../ -I$(BOOST_DIR) -I$(YASMIC_DIR) -L../ -DMATLAB_BGL_LARGE_ARRAYS
+CXXFLAGS := $(CXXFLAGS) -g -Wall -I../ -I$(BOOST_DIR) -I$(YASMIC_DIR) -L../ $(DEFINES)
 LOADLIBES = -l$(LIBNAME)
 
 all : planar_funcs_test \
