@@ -67,13 +67,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         (mbglIndex*)p, (mbglDegreeType*)X);
   }
 
+#if _DEBUG
   if (npos>0) {
-    mbglDegreeType* pos= (mbglDegreeType*)X;
-    int i, end= n>10?10:n;
-    for (i=0; i<end; i++) {
-      mexPrintf("p[%i] = (%u,%u)\n", i, pos[i], pos[i+n]);
-    }
+    mbglDegreeType* pos= (mbglDegreeType*)X; int i, end= n>10?10:n;
+    for (i=0; i<end; i++) { mexPrintf("p[%i]=(%u,%u)\n",i,pos[i],pos[i+n]); }
   }
+#endif 
 
   if (rval == 1) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
