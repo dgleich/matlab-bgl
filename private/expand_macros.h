@@ -22,6 +22,15 @@ void expand_int_to_double(int* src, double* dst, mwSize len, double offset)
   }
 }
 
+void expand_degree_to_double(mbglDegreeType* src, double* dst, mwSize len,
+     double offset) 
+{
+  while (len>0) {
+    --len;
+    dst[len] = (double) src[len] + offset;
+  }
+}
+
 void expand_index_to_double(mwIndex* src, double* dst, mwSize len,
     double offset)
 {
