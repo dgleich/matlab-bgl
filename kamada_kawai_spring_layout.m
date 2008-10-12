@@ -16,6 +16,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % key-value pairs or an options structure.  See set_matlab_bgl_options
 % for the standard options. 
 %   options.tol: stopping tolerance of layout change [double | {0.0001}]
+%   options.maxiter: the maximum number of layout iterations [100]
 %   options.spring_constant: energy of the system [double | {1}]
 %   options.progressive: if you want to start from an existing layout,
 %     provide the coordinates of the layout [{0} | position matrix X]
@@ -30,8 +31,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 %   X = kamada_kawai_spring_layout(G);
 %   gplot(G,X);
 %
-% See also FRUCHTERMAN_REINGOLD_FORCE_DIRECTED_LAYOUT, GURSOY_ATUN_LAYOUT, 
-% LAYOUT
+% See also FRUCHTERMAN_REINGOLD_FORCE_DIRECTED_LAYOUT, GURSOY_ATUN_LAYOUT
 
 % David F. Gleich
 % Copyright, Stanford University, 2008
@@ -44,8 +44,8 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 n = num_vertices(A);
-options = struct('tol',0.0001,'spring_constant',1,'progressive',0,...
-    'edge_length',1,'edge_weight','matrix');
+options = struct('tol',0.0001,'maxiter',100,'spring_constant',1,...
+    'progressive',0,'edge_length',1,'edge_weight','matrix');
 options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
@@ -79,7 +79,7 @@ progressive_opt = [];
 if ~isscalar(options.progressive), progressive_opt = options.progressive; end
 
 [X,spring,distance]=kamada_kawai_spring_layout_mex(...
-    A, options.tol, options.spring_constant, progressive_opt, ...
-    options.edge_length, edge_weights, edge_weight_opt);
+    A, options.tol, options.maxiter, options.spring_constant, ...
+    progressive_opt, options.edge_length, edge_weights, edge_weight_opt);
 
 if nargout>1, data.spring_strength = spring; data.distances = distance; end

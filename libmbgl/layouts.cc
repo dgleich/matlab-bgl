@@ -37,12 +37,42 @@
 
 #include "libmbgl_util.hpp"
 
+/** Monitor tolerance for Kamada-Kawai layout with a maximum iteration limit
+ */
+template <typename T = double>
+class layout_and_iteration_tolerance
+: public boost::layout_tolerance<T>
+{
+public:
+  layout_and_iteration_tolerance(const T& tolerance=0.001, int maxiter = 100)
+    : boost::layout_tolerance<T>(tolerance), maxiter(maxiter), iter(0) {}
+    
+  template<typename Graph>
+  bool 
+  operator()(T delta_p, 
+              typename boost::graph_traits<Graph>::vertex_descriptor p,
+              const Graph& g,
+              bool global)
+  {
+    bool done = boost::layout_tolerance<T>::run(delta_p, p, g, global);
+    if (!done && global) {
+      iter++;
+      done = iter>maxiter;
+    }
+    return done;
+  }
+              
+private:
+  int maxiter, iter;   
+};
+
 /** Compute a spring layout of a graph
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
  * @param weight the weight of each edge (can be NULL for unweighted graphs)
  * @param tol the stopping tolerance in terms of layout change
+ * @param iterations the maximum number of global layout iterations
  * @param spring_constant the spring constant
  * @param progressive a binary value (0 or 1) if we should reuse the positions
  * @param positions an array of positions, length nverts*2
@@ -53,7 +83,8 @@
  */
 int kamada_kawai_spring_layout(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight,
-    double tol, double spring_constant, int progressive, double edge_length,
+    double tol, int iterations, double spring_constant, int progressive, 
+    double edge_length,
     double *positions,
     double *spring_strength, double *distance)
 {
