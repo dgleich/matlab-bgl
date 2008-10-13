@@ -38,14 +38,18 @@
 #include "libmbgl_util.hpp"
 
 /** Monitor tolerance for Kamada-Kawai layout with a maximum iteration limit
+ * This class fixes problems with the boost layout_tolerance code.
  */
 template <typename T = double>
 class layout_and_iteration_tolerance
-: public boost::layout_tolerance<T>
 {
 public:
   layout_and_iteration_tolerance(const T& tolerance=0.001, int maxiter = 100)
-    : boost::layout_tolerance<T>(tolerance), maxiter(maxiter), iter(0) {}
+  : maxiter(maxiter), iter(0), tolerance(tolerance), 
+    first_energy((std::numeric_limits<T>::max)()),
+    last_energy((std::numeric_limits<T>::max)()),
+    first_local_energy((std::numeric_limits<T>::max)()),
+    last_local_energy((std::numeric_limits<T>::max)()) { }
     
   template<typename Graph>
   bool 
@@ -54,7 +58,31 @@ public:
               const Graph& g,
               bool global)
   {
-    bool done = boost::layout_tolerance<T>::operator()(delta_p, p, g, global);
+    bool done = false;
+    if (global) {
+      if (first_energy == (std::numeric_limits<T>::max)()) {
+        first_energy = delta_p;
+        last_energy = delta_p;
+        return delta_p < (std::numeric_limits<T>::epsilon)();
+      }
+      T diff = last_energy - delta_p;
+      if (diff < T(0)) diff = -diff;
+      done = (delta_p < (std::numeric_limits<T>::epsilon)() 
+              || diff/first_energy < tolerance);
+      last_energy = delta_p;
+    } else {
+      if (first_local_energy == (std::numeric_limits<T>::max)()) {
+        first_local_energy = delta_p;
+        last_local_energy = delta_p;
+        return delta_p < (std::numeric_limits<T>::epsilon)();
+      }
+      T diff = last_local_energy - delta_p;
+      // uncommenting the following line causes the layout to cycle
+      // if (diff < T(0)) diff = -diff; 
+      done = (delta_p < (std::numeric_limits<T>::epsilon)() 
+              || diff/first_local_energy < tolerance);
+      last_local_energy = delta_p;
+    }
     if (!done && global) {
       iter++;
       done = iter>maxiter;
@@ -64,6 +92,11 @@ public:
               
 private:
   int maxiter, iter;   
+  T tolerance;
+  T first_energy;
+  T last_energy;
+  T first_local_energy;
+  T last_local_energy;
 };
 
 /** Compute a spring layout of a graph

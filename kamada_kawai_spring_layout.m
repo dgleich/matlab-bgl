@@ -15,8 +15,8 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % ... = kamada_kawai_spring_layout(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
 % for the standard options. 
-%   options.tol: stopping tolerance of layout change [double | {0.0001}]
-%   options.maxiter: the maximum number of layout iterations [100]
+%   options.tol: stopping tolerance of layout change [double | {1e-6}]
+%   options.maxiter: the maximum number of layout iterations [500]
 %   options.spring_constant: energy of the system [double | {1}]
 %   options.progressive: if you want to start from an existing layout,
 %     provide the coordinates of the layout [{0} | position matrix X]
@@ -44,7 +44,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 n = num_vertices(A);
-options = struct('tol',0.0001,'maxiter',100,'spring_constant',1,...
+options = struct('tol',1e-6,'maxiter',500,'spring_constant',1,...
     'progressive',0,'edge_length',1,'edge_weight','matrix');
 options = merge_options(options,varargin{:});
 
