@@ -2,8 +2,7 @@
 
 #include <include/matlab_bgl.h>
 #include <stdio.h>
-
-const char* errstr = "";
+#include "libmbgl_funcs_test.h"
 
 int test_1() {
   // line graph
@@ -159,7 +158,7 @@ int test_5() {
   return 0;
 } 
 
-int main(int argc, char **argv) {
+int planar_funcs_test() {
   int nfail = 0, ntotal = 0;
   int rval;
 
