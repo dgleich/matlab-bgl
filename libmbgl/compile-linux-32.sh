@@ -7,7 +7,7 @@ source ccfiles.sh
 OFILES=`echo ${CCFILES} | sed -e 's/\.cc/\.o/g'`
 
 CFLAGS="-O2 -c -I${BOOST_DIR} -I${YASMIC_DIR}"
-CFLAGS="-g -c -I${BOOST_DIR} -I${YASMIC_DIR}"
+#CFLAGS="-g -c -I${BOOST_DIR} -I${YASMIC_DIR}"
 function echocmd {
 	echo $@
 	$@
