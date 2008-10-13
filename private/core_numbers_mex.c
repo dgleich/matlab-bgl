@@ -1,4 +1,4 @@
-/*/** @file core_numbers_mex.c
+/** @file core_numbers_mex.c
  * @copyright Stanford University, 2007-2008
  * @author David F. Gleich
  * Wrap a call to the libmbgl core_numbers function.

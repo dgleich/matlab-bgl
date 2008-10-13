@@ -54,7 +54,7 @@ public:
               const Graph& g,
               bool global)
   {
-    bool done = boost::layout_tolerance<T>::run(delta_p, p, g, global);
+    bool done = boost::layout_tolerance<T>::operator()(delta_p, p, g, global);
     if (!done && global) {
       iter++;
       done = iter>maxiter;
@@ -115,7 +115,7 @@ int kamada_kawai_spring_layout(
       make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
       boost::detail::constant_value_property_map<double>(1.0), // edge_weight
       boost::edge_length(edge_length), // edge_or_side_length
-      layout_tolerance<double>(tol), // done
+      layout_and_iteration_tolerance<double>(tol,iterations), // done
       spring_constant,
       get(vertex_index,g),
       row_matrix<double>(distance,nverts,nverts),
@@ -126,7 +126,7 @@ int kamada_kawai_spring_layout(
       make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
       get(edge_weight,g), // edge_weight
       boost::edge_length(edge_length), // edge_or_side_length
-      layout_tolerance<double>(tol), // done
+      layout_and_iteration_tolerance<double>(tol,iterations), // done
       spring_constant,
       get(vertex_index,g),
       row_matrix<double>(distance,nverts,nverts),

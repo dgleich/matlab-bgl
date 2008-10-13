@@ -7,14 +7,14 @@ source ccfiles.sh
 OFILES=`echo ${CCFILES} | sed -e 's/\.cc/\.o/g'`
 
 CFLAGS="-O2 -c -I${BOOST_DIR} -I${YASMIC_DIR}"
-
+CFLAGS="-g -c -I${BOOST_DIR} -I${YASMIC_DIR}"
 function echocmd {
 	echo $@
 	$@
 }
 
 for file in ${CCFILES}; do
-	echocmd g++-3.4 $CFLAGS $file
+	echocmd g++-3.3 $CFLAGS $file
 done
 
 echocmd ar rc libmbgl-linux-32.a ${OFILES} 
