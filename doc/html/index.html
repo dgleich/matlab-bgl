@@ -30,7 +30,8 @@
 		    <li><a href="index.html#examples">Examples</a></li>
 		    <li><a href="changes.html">Change Log</a></li>
 		    <li><a href="matlab_bgl_v2.1.pdf">Documentation</a></li>
-            <li><a href="old.html">Older Versions</a></li>
+          <li><a href="old.html">Older Versions</a></li>
+          <li><a href="http://launchpad.net/matlab-bgl/">Launchpad page</a></li>
 		    <li><a href="http://www.mathworks.com/matlabcentral/fileexchange/loadFile.do?objectId=10922&objectType=file">Download</a></li>
 	    </ul>
     	
@@ -64,7 +65,7 @@
         <p>
             2006-05-09: Version 1.01 released. Fixes minor bugs. <a href="changes.html">
                 <br />MatlabBGL Changelog.</a></p>
-        <h2>Getting MatlabBGL (Latest Version: 2.1)</h2>
+        <h2>Getting MatlabBGL (Latest Version: 4.0)</h2>
         <p>
             The files for MatlabBGL reside on the Mathworks Matlab Central File Exchange.&nbsp;
             The lastest version is always there.</p>
@@ -96,10 +97,14 @@
         <p>
             If the above steps do not work, please send me an email with any error messages
             you get and your system configuration.</p>
-            
+           
         <h2>
             Documentation
         </h2>
+        <p>
+            The documentation file is out of date.  I apologize.  The help
+            commands are up to date.  Also, the examples are up to date. 
+            </p>
         <p>
             Shortcut: <a href="matlab_bgl_v2.1.pdf">MatlabBGL 2.1 Documentation</a></p>
         <p>
@@ -112,10 +117,29 @@
         <p>
             Right now, the library only works with Matlab 7.0 and above.&nbsp;
         </p>
+        <h3>Testing matrix</h3>
+        <p>I have tested MatlabBGL 4.0 with every system in green.  
+        Entries in blue have been tested but require recompiling libmbgl.</p>
+<table>
+   <tr><th></th>               <th>Win32</th>           <th>Win64</th>           <th>Linux32</th>         <th>Linux64</th>         <th>MacPPC</th>          <th>Maci386</th></tr>
+	<tr><th>Matlab 7.0</th>     <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+	<tr><th>Matlab 7.1 SP3</th> <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="green"></td><td bgcolor="blue" ></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+	<tr><th>Matlab R2006a</th>  <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="blue" ></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+	<tr><th>Matlab R2006b</th>  <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="green"></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+	<tr><th>Matlab R2007a</th>  <td bgcolor="green"></td><td bgcolor="green"></td><td bgcolor="white"></td><td bgcolor="green"></td><td bgcolor="green"></td><td bgcolor="green"></td bgcolor="green"></tr>
+	<tr><th>Matlab R2007b</th>  <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="green"></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+	<tr><th>Matlab R2008a</th>  <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="green"></td><td bgcolor="green"></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+	<tr><th>Matlab R2008b</th>  <td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td><td bgcolor="white"></td bgcolor="white"></tr>
+</table>
         <h2>
             Have Questions?</h2>
         <p>
             See the <a href="faq.html">MatlabBGL FAQ</a>, it may have answers!&nbsp;
+        </p>
+        <p>
+        		Alternatively, you should contribute a 
+        		<a href="https://answers.launchpad.net/matlab-bgl">
+        		matlab-bgl question on Launchpad</a>.
         </p>
         <a name="examples" />
         <h2>
@@ -141,13 +165,16 @@
             the error.&nbsp;</p>
         <p>
             Send both of these to the address <a href="mailto:mithandor+mbglerrors@gmail.com">mithandor+mbglerrors@gmail.com</a>.</p>
+		  <h2>
+            Contributing</h2>
+        <p> Checkout the <a href="https://launchpad.net/matlab-bgl">
+        		matlab-bgl Launchpad page</a> to get all the code! </p>        
         <h2>
             Acknowledgements</h2>
         <p>
             Thanks to the Boost Graph Library team for a useful and helpful product.&nbsp; Also,
             the ICME Students who helped me test the software and Amin Saberi for giving me
-            a little while to work on it.  Thanks to Vladimir Itskov for compiling
-            the most recent version for the Matlab 2007a on an Intel Mac.  Many
+            a little while to work on it.  Many
             thanks to all the folks who sent in bugs with the library.</p>
     </div>
 </div>
