@@ -74,7 +74,8 @@ if check
     else
         if nnz(A) ~= length(edge_weight_opt)
             error('matlab_bgl:invalidParameter', ...
-             'the vector of edge weights must have length nnz(A)'); end
+             'the vector of edge weights must have length nnz(A)'); 
+        end
     end
 end
 

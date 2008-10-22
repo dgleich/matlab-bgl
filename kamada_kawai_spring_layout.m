@@ -66,9 +66,11 @@ if check
     else
         if nnz(A) ~= length(edge_weight_opt)
             error('matlab_bgl:invalidParameter', ...
-             'the vector of edge weights must have length nnz(A)'); end
+             'the vector of edge weights must have length nnz(A)'); 
+        end
         if any(edge_weight_opt)<0, error('matlab_bgl:invalidParameter',...
-                'the edge_weight array must be non-negative'); end
+                'the edge_weight array must be non-negative'); 
+        end
         [i j] = find(A);
         Av = sparse(i,j,edge_weight_opt,size(A,1),size(A,2));
         check_matlab_bgl(Av,struct('sym',1,'noneg',1));
