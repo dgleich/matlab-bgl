@@ -1,12 +1,13 @@
 #!/bin/bash -e
 
 BOOST_DIR=${HOME}/dev/lib/boost_1_36_0/
-YASMIC_DIR=${HOME}/dev/yasmic
+YASMIC_DIR=.
 
 source ccfiles.sh
 OFILES=`echo ${CCFILES} | sed -e 's/\.cc/\.o/g'`
 
 CFLAGS="-O2 -fPIC -c -I${BOOST_DIR} -I${YASMIC_DIR}"
+CFLAGS="-g -fPIC -c -I${BOOST_DIR} -I${YASMIC_DIR}"
 
 function echocmd {
 	echo $@

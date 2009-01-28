@@ -1,4 +1,4 @@
-%% New features in MatlabBGL version 3.0
+%% New features in MatlabBGL version 4.0
 % MatlabBGL 3.0 was only released as a beta test.  Version 4.0 is a 
 % full release with quite a few new features.
 

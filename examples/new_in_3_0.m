@@ -111,7 +111,7 @@ ccfs = clustering_coefficients(C)
 % Since Boost added the Kolmogorov max-flow function, we added the
 % full collection of flow algorithms to MatlabBGL.
 
-load('graphs/max_flow_example.mat');
+load('../graphs/max_flow_example.mat');
 
 push_relabel_max_flow(A,1,8)
 kolmogorov_max_flow(A,1,8)
@@ -126,7 +126,7 @@ max_flow(A,1,8,struct('algname','edmunds_karp'));
 % graphs.  These are also called flow-graphs.
 
 load('../graphs/dominator_tree_example.mat');
-p = lengauer_tarjan_dominator_tree(A);
+p = lengauer_tarjan_dominator_tree(A,1);
 
 
 %% New utility functions

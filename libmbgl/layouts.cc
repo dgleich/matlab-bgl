@@ -31,8 +31,73 @@
 #include <algorithm>
 
 #include <math.h>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 #include "libmbgl_util.hpp"
+
+/** Monitor tolerance for Kamada-Kawai layout with a maximum iteration limit
+ * This class fixes problems with the boost layout_tolerance code.
+ */
+template <typename T = double>
+class layout_and_iteration_tolerance
+{
+public:
+  layout_and_iteration_tolerance(const T& tolerance=0.001, int maxiter = 100)
+  : maxiter(maxiter), iter(0), tolerance(tolerance), 
+    first_energy((std::numeric_limits<T>::max)()),
+    last_energy((std::numeric_limits<T>::max)()),
+    first_local_energy((std::numeric_limits<T>::max)()),
+    last_local_energy((std::numeric_limits<T>::max)()) { }
+    
+  template<typename Graph>
+  bool 
+  operator()(T delta_p, 
+              typename boost::graph_traits<Graph>::vertex_descriptor p,
+              const Graph& g,
+              bool global)
+  {
+    bool done = false;
+    if (global) {
+      if (first_energy == (std::numeric_limits<T>::max)()) {
+        first_energy = delta_p;
+        last_energy = delta_p;
+        return delta_p < (std::numeric_limits<T>::epsilon)();
+      }
+      T diff = last_energy - delta_p;
+      if (diff < T(0)) diff = -diff;
+      done = (delta_p < (std::numeric_limits<T>::epsilon)() 
+              || diff/first_energy < tolerance);
+      last_energy = delta_p;
+    } else {
+      if (first_local_energy == (std::numeric_limits<T>::max)()) {
+        first_local_energy = delta_p;
+        last_local_energy = delta_p;
+        return delta_p < (std::numeric_limits<T>::epsilon)();
+      }
+      T diff = last_local_energy - delta_p;
+      // uncommenting the following line causes the layout to cycle
+      // if (diff < T(0)) diff = -diff; 
+      done = (delta_p < (std::numeric_limits<T>::epsilon)() 
+              || diff/first_local_energy < tolerance);
+      last_local_energy = delta_p;
+    }
+    if (!done && global) {
+      iter++;
+      done = iter>maxiter;
+    }
+    return done;
+  }
+              
+private:
+  int maxiter, iter;   
+  T tolerance;
+  T first_energy;
+  T last_energy;
+  T first_local_energy;
+  T last_local_energy;
+};
 
 /** Compute a spring layout of a graph
  * @param nverts the number of vertices in the graph
@@ -40,6 +105,7 @@
  * @param ia the row connectivity points into ja
  * @param weight the weight of each edge (can be NULL for unweighted graphs)
  * @param tol the stopping tolerance in terms of layout change
+ * @param iterations the maximum number of global layout iterations
  * @param spring_constant the spring constant
  * @param progressive a binary value (0 or 1) if we should reuse the positions
  * @param positions an array of positions, length nverts*2
@@ -50,7 +116,8 @@
  */
 int kamada_kawai_spring_layout(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight,
-    double tol, double spring_constant, int progressive, double edge_length,
+    double tol, int iterations, double spring_constant, int progressive, 
+    double edge_length,
     double *positions,
     double *spring_strength, double *distance)
 {
@@ -81,7 +148,7 @@ int kamada_kawai_spring_layout(
       make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
       boost::detail::constant_value_property_map<double>(1.0), // edge_weight
       boost::edge_length(edge_length), // edge_or_side_length
-      layout_tolerance<double>(tol), // done
+      layout_and_iteration_tolerance<double>(tol,iterations), // done
       spring_constant,
       get(vertex_index,g),
       row_matrix<double>(distance,nverts,nverts),
@@ -92,7 +159,7 @@ int kamada_kawai_spring_layout(
       make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
       get(edge_weight,g), // edge_weight
       boost::edge_length(edge_length), // edge_or_side_length
-      layout_tolerance<double>(tol), // done
+      layout_and_iteration_tolerance<double>(tol,iterations), // done
       spring_constant,
       get(vertex_index,g),
       row_matrix<double>(distance,nverts,nverts),

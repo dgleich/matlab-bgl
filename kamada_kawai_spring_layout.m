@@ -15,7 +15,8 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % ... = kamada_kawai_spring_layout(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
 % for the standard options. 
-%   options.tol: stopping tolerance of layout change [double | {0.0001}]
+%   options.tol: stopping tolerance of layout change [double | {1e-6}]
+%   options.maxiter: the maximum number of layout iterations [500]
 %   options.spring_constant: energy of the system [double | {1}]
 %   options.progressive: if you want to start from an existing layout,
 %     provide the coordinates of the layout [{0} | position matrix X]
@@ -30,8 +31,7 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 %   X = kamada_kawai_spring_layout(G);
 %   gplot(G,X);
 %
-% See also FRUCHTERMAN_REINGOLD_FORCE_DIRECTED_LAYOUT, GURSOY_ATUN_LAYOUT, 
-% LAYOUT
+% See also FRUCHTERMAN_REINGOLD_FORCE_DIRECTED_LAYOUT, GURSOY_ATUN_LAYOUT
 
 % David F. Gleich
 % Copyright, Stanford University, 2008
@@ -44,8 +44,8 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 if full2sparse && ~issparse(A), A = sparse(A); end
 
 n = num_vertices(A);
-options = struct('tol',0.0001,'spring_constant',1,'progressive',0,...
-    'edge_length',1,'edge_weight','matrix');
+options = struct('tol',1e-6,'maxiter',500,'spring_constant',1,...
+    'progressive',0,'edge_length',1,'edge_weight','matrix');
 options = merge_options(options,varargin{:});
 
 % edge_weights is an indicator that is 1 if we are using edge_weights
@@ -66,9 +66,11 @@ if check
     else
         if nnz(A) ~= length(edge_weight_opt)
             error('matlab_bgl:invalidParameter', ...
-             'the vector of edge weights must have length nnz(A)'); end
+             'the vector of edge weights must have length nnz(A)'); 
+        end
         if any(edge_weight_opt)<0, error('matlab_bgl:invalidParameter',...
-                'the edge_weight array must be non-negative'); end
+                'the edge_weight array must be non-negative'); 
+        end
         [i j] = find(A);
         Av = sparse(i,j,edge_weight_opt,size(A,1),size(A,2));
         check_matlab_bgl(Av,struct('sym',1,'noneg',1));
@@ -79,7 +81,7 @@ progressive_opt = [];
 if ~isscalar(options.progressive), progressive_opt = options.progressive; end
 
 [X,spring,distance]=kamada_kawai_spring_layout_mex(...
-    A, options.tol, options.spring_constant, progressive_opt, ...
-    options.edge_length, edge_weights, edge_weight_opt);
+    A, options.tol, options.maxiter, options.spring_constant, ...
+    progressive_opt, options.edge_length, edge_weights, edge_weight_opt);
 
 if nargout>1, data.spring_strength = spring; data.distances = distance; end
