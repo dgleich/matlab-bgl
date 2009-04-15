@@ -8,6 +8,8 @@ function ccfs = clustering_coefficients(A,varargin)
 %
 % This method works on directed or undirected graphs.
 % The runtime is O(nd^2) where d is the maximum vertex degree.
+% For weighted and directed graphs, the algorithms are from Fagiolo,
+% Phys Rev. E. 76 026107 (doi:10.1103/PhysRevE.76.026107).
 %
 % ... = clustering_coefficients(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
