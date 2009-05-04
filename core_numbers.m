@@ -11,7 +11,7 @@ function [cn rt] = core_numbers(A,varargin)
 % To get the out-degree core numbers, call core_numbers(A').
 %
 % The runtime is O(E) for unweighted graphs and O((N+M) log N) for weighted
-% graphs.  The default is the *unweighted version* which ignores egde
+% graphs.  The default is the *unweighted version* which ignores edge
 % weights.  For weighted graphs, the definition is the same, but the
 % in-degree is the weighted in-degree and is the sum of weight of 
 % incoming edges.
