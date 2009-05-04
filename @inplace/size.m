@@ -7,4 +7,4 @@ function [varargout] = size(ipa)
 %    ipa = inplace(ones(10,3));
 %    size(ipa)
 
-varargout{:} = size(ipd.get_a());
+varargout{:} = size(ipa.get_a());
