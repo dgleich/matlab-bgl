@@ -7,4 +7,4 @@ function ipa = assign(ipa,y,varargin)
 %    ipa = inplace(ones(5,1));
 %    assign(ipa,pi*ones(5,1));
 
-ipd.assign(y);
+ipa.assign(y);

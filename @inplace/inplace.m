@@ -6,10 +6,10 @@ function ip = inplace(a)
 %    ipa = inplace(ones(5));
 
 if nargin == 0
-    error('inplace:invalidParameter', ['ipdouble must be created with an initial .']);
-elseif isa(a,'ipdouble')
+    error('inplace:invalidParameter', ['inplace must be created with an initial variable.']);
+elseif isa(a,'inplace')
     % make a copy
-    ipd = inplace(a.a);
+    ip = inplace(a.get_a());
     
     return;
     
