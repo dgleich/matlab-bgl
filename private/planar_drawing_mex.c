@@ -67,6 +67,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         (mbglIndex*)p, (mbglDegreeType*)X);
   }
 
+#if _DEBUG
+  if (npos>0) {
+    mbglDegreeType* pos= (mbglDegreeType*)X; int i, end= n>10?10:n;
+    for (i=0; i<end; i++) { mexPrintf("p[%i]=(%u,%u)\n",i,pos[i],pos[i+n]); }
+  }
+#endif 
+
   if (rval == 1) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
       "triangulate_graph with biconnected or maximal requires a planar graph");
@@ -79,7 +86,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   mxSetM(oi, nedges);
   mxSetM(oj, nedges);
   expand_index_to_double((mwIndex*)p, p, n, 1.0);
-  expand_index_to_double((mwIndex*)X, X, n*npos, 0.0);
+  /* needs to be done as two calls to fix 32-bit offset errors */ 
+  expand_degree_to_double((mbglDegreeType*)X, X, n*npos, 0.0);
 }
 
 

@@ -6,6 +6,7 @@
 
 /** History
  * 2008-10-01: Initial version
+ * 2009-01-28: Fixed bug with insufficient mallocs
  */
 
 #include "mex.h"
@@ -50,7 +51,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     } else if (nlhs <= 3) {
       /* test for the planar graph and the kuratowski subgraph */
       double *ki, *kj;
-      mwIndex nedges= n>4 ? 3*n-6 : 6;
+      mwIndex nedges= n>5 ? 3*n-6 : 10;
       plhs[1]= mxCreateDoubleMatrix(nedges,1,mxREAL); ki=mxGetPr(plhs[1]);
       plhs[2]= mxCreateDoubleMatrix(nedges,1,mxREAL); kj=mxGetPr(plhs[2]);
       nedges= 0;
@@ -64,7 +65,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       /* test for the planar graph and the edge order */
       double *eip, *eie;
       double *ki, *kj;
-      mwIndex nedges= n>4 ? 3*n-6 : 6;
+      mwIndex nedges= n>5 ? 3*n-6 : 10;
       plhs[1]= mxCreateDoubleMatrix(nedges,1,mxREAL); ki=mxGetPr(plhs[1]);
       plhs[2]= mxCreateDoubleMatrix(nedges,1,mxREAL); kj=mxGetPr(plhs[2]);
       nedges= 0;

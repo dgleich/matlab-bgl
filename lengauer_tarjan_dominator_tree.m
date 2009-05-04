@@ -24,7 +24,7 @@ function pred=lengauer_tarjan_dominator_tree(A,u,varargin)
 %
 % Example:
 %   load('graphs/dominator_tree_example.mat');
-%   p=lengauer_tarjan_dominator_tree(A);
+%   p=lengauer_tarjan_dominator_tree(A,1);
 
 % David Gleich
 % Copyright, Stanford University, 2007-2008

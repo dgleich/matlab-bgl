@@ -285,7 +285,8 @@ int dominator_tree(
 
 int kamada_kawai_spring_layout(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight,
-    double tol, double spring_constant, int progressive, double edge_length,
+    double tol, int maxiter, double spring_constant, int progressive, 
+    double edge_length,
     double *positions,
     double *spring_strength, double *distance);
 

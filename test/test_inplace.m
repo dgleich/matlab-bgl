@@ -11,7 +11,7 @@ catch
 end
 
 ipd(1,1) = 5;
-if ipd2(2,2) == 5,
+if ipd2(1,1) == 5,
   error(msgid, 'inplace failed to deep copy');
 end  
   

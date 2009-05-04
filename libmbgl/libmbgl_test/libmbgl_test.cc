@@ -14,10 +14,16 @@
  * Initial version
  */
 
-// include the boost testing framework
-#include <boost/test/minimal.hpp>
+#include "matlab_bgl.h"
 
-int test_main(int, char*[])
+int main(int argc, char **argv)
 {
-    //BOOST_CHECK
+    mbglIndex ai[] = {0};
+    mbglIndex aj[] = {0};
+    mbglIndex ei[6], ej[6];
+    mbglIndex nedges = 0;
+
+    triangulate_graph(0, aj, ai, 1, 1, 0, ei, ej, &nedges);
+
+    return 0;
 }

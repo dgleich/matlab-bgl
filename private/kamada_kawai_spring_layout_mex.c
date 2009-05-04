@@ -31,23 +31,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   int reweighted = 0; /* true if this function is reweighted */
   double *X, *S, *D; /* output data */
   double tol, k, edgelen;
-  int progressive = 0;
+  int maxiter= 100, progressive = 0;
   int rval = 0;
 
   /* current calling pattern:
-   * kamada_kawai_spring_layout_mex(A,tol,spring_constant,progressive_opt,...
-   *   edge_length, edge_weights, edge_weight_opt)
+   * kamada_kawai_spring_layout_mex(A,tol,maxiter,spring_constant,...
+   *   progressive_opt,edge_length, edge_weights, edge_weight_opt)
    */
   const mxArray* arg_matrix;
-  const mxArray* arg_tol, *arg_k, *arg_progressive_opt, *arg_edgelen;
+  const mxArray* arg_tol, *arg_maxiter, *arg_k, 
+          *arg_progressive_opt, *arg_edgelen;
   const mxArray* arg_ews, *arg_ewopt;
-  if (nrhs != 7) {
-    mexErrMsgIdAndTxt("matlab_bgl:invalidCall","7 inputs required.");
+  if (nrhs != 8) {
+    mexErrMsgIdAndTxt("matlab_bgl:invalidCall","8 inputs required.");
   }
   arg_matrix= prhs[0];
-  arg_tol= prhs[1]; arg_k= prhs[2];
-  arg_progressive_opt= prhs[3]; arg_edgelen= prhs[4];
-  arg_ews= prhs[5]; arg_ewopt=prhs[6];
+  arg_tol= prhs[1]; arg_maxiter= prhs[2]; arg_k= prhs[3];
+  arg_progressive_opt= prhs[4]; arg_edgelen= prhs[5];
+  arg_ews= prhs[6]; arg_ewopt=prhs[7];
   if ((int)mxGetScalar(arg_ews)!=0) { reweighted=1; }
   /* The first input must be a sparse matrix. */
   mrows = mxGetM(arg_matrix);
@@ -79,9 +80,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     a= mxGetPr(arg_ewopt);
   }
   /* get the parameters */
-  if (isscalardouble(arg_tol) && isscalardouble(arg_k)
-      && isscalardouble(arg_edgelen)) {
+  if (isscalardouble(arg_tol) && isscalardouble(arg_maxiter) 
+      && isscalardouble(arg_k) && isscalardouble(arg_edgelen)) {
     tol = mxGetScalar(arg_tol);
+    maxiter = mxGetScalar(arg_maxiter);
     k = mxGetScalar(arg_k);
     edgelen = mxGetScalar(arg_edgelen);
   } else {
@@ -110,8 +112,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   X= mxGetPr(plhs[0]);
   if (n==0) { return; } /* special case empty graph */
   if (n==1) { return; } /* special case singleton graph */
-  rval= kamada_kawai_spring_layout(n, ja, ia, a, tol, k, progressive, edgelen,
-          X, S, D);
+  rval= kamada_kawai_spring_layout(n, ja, ia, a, tol, maxiter, k, progressive,
+           edgelen, X, S, D);
   if (rval == -2) {
     mexErrMsgIdAndTxt("matlab_bgl:callFailed",
       "the graph must be connected and have no negative weight cycles");

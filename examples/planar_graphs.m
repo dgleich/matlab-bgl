@@ -72,7 +72,7 @@ for ntimes=1:20
     a = Kcur*s; % follow one edge
     s = s&~a; % remove dependent edges
     a = Kcur*double(s);
-    sum(a&s) % = 0, which means we have an independent set.
+    fprintf('check for is: %i\n', full(sum(a&s))==0); % verify indep set.
 
     % contract the edges
     for k=find(s)'
@@ -155,10 +155,7 @@ gplot(M,X,'.-');
 % See the BGL documentation pages on planar graph algorithms for more
 % information.
 %
-% <html>
-% <a
-% href="http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/planar_graphs.h
-% tml"> Planar Graphs in the Boost Graph Library </a>
-% </html>
+% <http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/planar_graphs.html
+%  Planar Graphs in the Boost Graph Library>
 
 

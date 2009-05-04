@@ -20,8 +20,11 @@ set YASMICDIR=.
 set BOOSTDIR=C:\dev\boost_1_36_0
 
 set CFLAGS=/c /nologo /I"%YASMICDIR%" /I"%BOOSTDIR%" /Fo"%OUTDIR%" /EHsc /DNDEBUG /DMATLAB_BGL_LARGE_ARRAYS /O2 
-rem set CFLAGS=-c -nologo -Ie:\dev\yasmic -Ie:\dev\lib\boost_1_33_1 /Fo"%OUTDIR%\\" /EHsc /ML /Od /D "_DEBUG" /Fd"%OUTDIR%\vc70.pdb" /Zi
 set LIBFLAGS=-nologo /out:"%OUTDIR%\\%LIBNAME%"
+
+rem Make sure the release directory exists
+echo "Checking for the release directory..."
+if not exist Release ( mkdir Release ) else ( echo "Release direcotry exists" ) 
 
 @echo on
 
@@ -32,6 +35,19 @@ cl %CFLAGS% searches.cc
 cl %CFLAGS% shortest_path.cc
 cl %CFLAGS% spanning_trees.cc
 cl %CFLAGS% statistics.cc
-lib %LIBFLAGS% %OUTDIR%\components.obj 	%OUTDIR%\max_flow.obj %OUTDIR%\orderings.obj %OUTDIR%\searches.obj %OUTDIR%\shortest_path.obj %OUTDIR%\spanning_trees.obj %OUTDIR%\statistics.obj
+cl %CFLAGS% layouts.cc
+cl %CFLAGS% planar.cc
+
+lib %LIBFLAGS% ^
+  %OUTDIR%\components.obj ^
+  %OUTDIR%\max_flow.obj ^
+  %OUTDIR%\orderings.obj ^
+  %OUTDIR%\searches.obj ^
+  %OUTDIR%\shortest_path.obj ^
+  %OUTDIR%\spanning_trees.obj ^
+  %OUTDIR%\statistics.obj ^
+  %OUTDIR%\layouts.obj ^
+  %OUTDIR%\planar.obj 
+
 
 

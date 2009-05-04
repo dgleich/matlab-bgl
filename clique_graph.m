@@ -1,4 +1,4 @@
-function [A xy] = cycle_graph(n,varargin)
+function [A] = clique_graph(n,varargin)
 % CLIQUE_GRAPH Generate the clique graph or bipartite clique graph
 %
 % The clique graph is a graph with as many edges as possible.
