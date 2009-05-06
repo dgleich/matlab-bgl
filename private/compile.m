@@ -2,6 +2,7 @@ function compile(varargin)
 %% History
 %  2008-04-01: Added check for pre Matlab 2006b for non-large dim 
 %              sparse matrices.
+%  2009-05-06: Added macosx-intel-64-large
 %%
 
 debug = 0; if strmatch('-debug',varargin), debug=1; end
@@ -41,6 +42,8 @@ switch (computer)
         libname = 'mbgl-macosx-ppc-32';
     case 'MACI'
         libname = 'mbgl-macosx-intel-32';
+    case 'MACI64'
+        libname = 'mbgl-macosx-intel-64-large';
     case 'SOL2'
         solaris = 1;
         error('Not currently supported...\n');
