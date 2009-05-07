@@ -6,7 +6,7 @@ YASMIC_DIR=.
 source ccfiles.sh
 OFILES=`echo ${CCFILES} | sed -e 's/\.cc/\.o/g'`
 
-CFLAGS="-O2 -DMATLAB_BGL_LARGE_ARRAYS -fPIC -c -I${BOOST_DIR} -I${YASMIC_DIR}"
+CFLAGS="-O2 -arch x86_64 -DMATLAB_BGL_LARGE_ARRAYS -fPIC -c -I${BOOST_DIR} -I${YASMIC_DIR}"
 #CFLAGS="-g -W -DMATLAB_BGL_LARGE_ARRAYS -fPIC -c -I${BOOST_DIR} -I${YASMIC_DIR}"
 
 function echocmd {
