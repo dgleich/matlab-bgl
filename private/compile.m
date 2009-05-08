@@ -44,6 +44,7 @@ switch (computer)
         libname = 'mbgl-macosx-intel-32';
     case 'MACI64'
         libname = 'mbgl-macosx-intel-64-large';
+        large_arrays = 1;
     case 'SOL2'
         solaris = 1;
         error('Not currently supported...\n');
