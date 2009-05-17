@@ -14,7 +14,7 @@ function [flowval cut R F] = max_flow(A,u,v,varargin)
 %
 % The optional parameter algname specifies the algorithm used to compute
 % the maximum flow.  For reference, the push relabel method is likely the 
-% best general purpose algorithm.  The Edmunds-Karp algorithm 
+% best general purpose algorithm.  
 %
 % ... = max_flow(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
