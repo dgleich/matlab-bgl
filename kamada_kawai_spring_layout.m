@@ -12,6 +12,10 @@ function [X,data] = kamada_kawai_spring_layout(A,varargin)
 % http://www.boost.org/doc/libs/1_36_0/libs/graph/doc/kamada_kawai_spring_layout.html
 % for information about the layout function and the parameters
 %
+% Note: The initial layout for the Kamada-Kawai algorithm is a random circle 
+% layout of the graph.  To specify a different starting condition, use
+% the progressive option below.  
+%
 % ... = kamada_kawai_spring_layout(A,...) takes a set of
 % key-value pairs or an options structure.  See set_matlab_bgl_options
 % for the standard options. 
