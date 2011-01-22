@@ -1,4 +1,4 @@
-function X = circle_layout(G,radius)
+function X = circle_graph_layout(G,radius)
 % CIRCLE_LAYOUT Layout the vertices of a graph on a circle
 % 
 % X = circle_layout(G) generates a layout of graph with vertices uniformly
@@ -10,7 +10,7 @@ function X = circle_layout(G,radius)
 %
 % Example:
 %   G = cycle_graph(6);
-%   X = circle_layout(G);
+%   X = circle_graph_layout(G);
 %   gplot(G,X);
 
 % David F. Gleich

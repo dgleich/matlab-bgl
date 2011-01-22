@@ -64,7 +64,7 @@ switch (computer)
         end
     case 'x86_64-pc-linux-gnu'
         % this is octave
-        libname = 'mbgl-linux-64'
+        libname = 'mbgl-linux-64-large'
         large_arrays = 0;
         octave = 1;
     otherwise
