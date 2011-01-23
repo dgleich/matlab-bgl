@@ -1,0 +1,146 @@
+/* Css originally by mejobloggs  Design by Aran @ stuio7designs.com  Please email me if you use this, as I would love to see how it is being used, also you can join my linkshare to help you with your google ranking */
+
+
+
+body {
+	font-family: sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+/* Set the page width */
+#wrapper-menu-top, #header, #wrapper-content, #wrapper-footer {
+	width: 85%;
+	margin: 0 auto;
+}
+
+#wrapper-header {
+	background: transparent url('images/bg.png') top center repeat-x;
+}
+
+#header 
+{
+    background-color: #323232;
+    background-repeat: no-repeat;  
+    background-position: left top;
+    position: relative;
+    color: #ccc;
+}
+
+#header img
+{
+    position: relative;
+    left: 13px;
+    border-right: 2px solid #eaeaea;
+    clip: rect(0px 0px 150px 400px); 
+    z-index: 100;
+}
+
+#wrapper-header2 {
+	background: transparent url('images/bg02-blue-left.png') top left no-repeat;
+}
+
+#wrapper-header3 {
+	background: transparent url('images/bg02-blue-right.png') top right no-repeat;
+	height: 150px;
+}
+
+#wrapper-header4 
+{
+    position: absolute;
+    right: 150px;
+    top: 2em;
+    z-index: 200;
+}
+
+#header  h1 
+{
+    margin: 0;
+	padding: 0;
+	border-top: 2px solid #eaeaea;
+	display: run-in;
+}
+#header h2
+{
+    margin: 0;
+	padding: 0;
+	border-bottom: 1px solid #eaeaea;
+	text-indent: 2em;
+}
+
+#wrapper-content {
+	background: white url('images/bg02-white-left.png') no-repeat left top
+}
+
+* html #wrapper-content { height: 1%; }
+
+#content {
+	background: transparent url('images/bg02-white-right.png') no-repeat right top;
+	/* padding: 5px 245px 5px 40px; */
+	padding: 1em 3em 1em 3em;
+	text-align: justify;
+}
+
+#wrapper-menu-page {
+	float: right;
+	width: 180px;
+	margin: 20px 30px 3em 2em;
+	background: transparent url('images/menu.png') no-repeat;
+	text-align: center;
+	line-height: 140%;
+	font-family: sans-serif;
+}
+
+/* * html #wrapper-menu-page { margin-right: 15px; margin-left: 1em; } */
+
+#menu-page { padding-top: 5px; font-size: 12pt; line-height: 150%; letter-spacing: 0.1em;}
+
+#menu-page ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	
+}
+
+#menu-page h3 {
+	font-variant:small-caps;
+	margin: 1em 0 0.3em 0;
+	color: #5b8fbe;
+	font-weight: normal;
+	letter-spacing: 0.15em; 
+}
+
+#menu-page a:link, #menu-page a:visited { color: #888; }
+#menu-page a:hover { color: #5b8fbe; }
+
+#wrapper-footer {
+	margin-top: 1em;
+	text-align: center;
+}
+
+#footer {
+	margin: 0 20px;
+	background-color: #e5f0fc;
+	border: 1px solid #ccc;
+	border-bottom: 0;
+	clear: both;
+	font-size: small;
+}
+
+#footer p {padding: 0px; margin: 0px;}
+
+h2 { font-size: 110%; }
+h3 { font-size: 100%; }
+
+a:link, a:visited { color: #5b8fbe; text-decoration: none; }
+a:hover{ color: #666; text-decoration: none; }
+
+.matlab
+{
+    font-family: monospace;
+}
+
+.rightalign
+{
+    text-align: right;
+}
