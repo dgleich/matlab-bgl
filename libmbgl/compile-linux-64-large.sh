@@ -15,7 +15,7 @@ function echocmd {
 }
 
 for file in ${CCFILES}; do
-    echocmd g++-3.4 $CFLAGS $file
+    echocmd g++-4.1 $CFLAGS $file
 done
 
 echocmd ar rc libmbgl-linux-64-large.a ${OFILES} 

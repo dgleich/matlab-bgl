@@ -91,7 +91,7 @@ edge_rand = rand(num_edges(A)/2,1);
 [iu ju] = find(triu(A,0));
 Av = sparse(iu,ju,edge_rand,size(A,1),size(A,1)); Av = Av + Av';
 ee = @(ei,u,v) fprintf('examine_edge %2i, %1i, %1i, %4f, %4f, %4f\n', ...
-            ei, u, v, edge_rand(eil(ei)), Av(u,v), edge_rand(Ei(u,v)));
+            ei, u, v, edge_rand(eil(ei)), full(Av(u,v)), edge_rand(Ei(u,v)));
 breadth_first_search(A,1,struct('examine_edge', ee));
 
 % edge weight vector
