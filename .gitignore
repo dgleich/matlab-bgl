@@ -1,0 +1,12 @@
+*.m~
+*.dll
+*.mexa64
+*.mexglx
+*.mexmac
+*.mexmaci
+*.mexw32
+*.mexw64
+*.ps
+*.pdf
+*.asv
+*.a
