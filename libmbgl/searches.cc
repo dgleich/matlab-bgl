@@ -20,6 +20,9 @@
  * 29 August 2007
  * Switched to make_iterator_property_map in astar_search* functions
  * to fix compile bugs on g++-4.1
+ * 
+ * 13 March 2011
+ * Changed the stopping criteria for dijkstra and astar searches
  */
 
 #include "include/matlab_bgl.h"
@@ -431,7 +434,7 @@ int astar_search_hfunc(
                 rank_map(make_iterator_property_map(f, get(vertex_index,g))).
                 distance_map(make_iterator_property_map(d, get(vertex_index,g))).
                 visitor(make_astar_visitor(
-                    stop_search_on_vertex_target(dst, stop_astar(), on_discover_vertex()))));
+                    stop_search_on_vertex_target(dst, stop_astar(), on_examine_vertex()))));
         } catch (stop_astar) {}
     }
 

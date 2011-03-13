@@ -53,7 +53,7 @@ int dijkstra_sp(
             dijkstra_shortest_paths(g, src,
                 distance_inf(dinf).predecessor_map(pred).distance_map(d).
                 visitor(make_dijkstra_visitor(
-                            stop_search_on_vertex_target(dst, stop_dijkstra(), on_discover_vertex()))));
+                            stop_search_on_vertex_target(dst, stop_dijkstra(), on_examine_vertex()))));
         } catch (stop_dijkstra) {}
     }
 
@@ -123,7 +123,7 @@ int bellman_ford_sp(
             bellman_ford_shortest_paths(g,
                 root_vertex(src).distance_inf(dinf).predecessor_map(pred).distance_map(d).
                 visitor(make_bellman_visitor(
-                            stop_search_on_vertex_target(dst, stop_bellman_ford(), on_discover_vertex()))));
+                            stop_search_on_vertex_target(dst, stop_bellman_ford(), on_examine_vertex()))));
         } catch (stop_bellman_ford) {}
     }
 
@@ -192,7 +192,7 @@ int dag_sp(
             dag_shortest_paths(g, src,
                 distance_inf(dinf).predecessor_map(pred).distance_map(d).
                 visitor(make_dijkstra_visitor(
-                    stop_search_on_vertex_target(dst, stop_dag(), on_discover_vertex()))));
+                    stop_search_on_vertex_target(dst, stop_dag(), on_examine_vertex()))));
         } catch (stop_dag) {}
     }
 
