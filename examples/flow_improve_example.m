@@ -10,6 +10,9 @@
 set(0,'defaultlinelinewidth',.5);
 rand('state',0); % ensure we are looking at the same output!
 
+%% Flow improve is in the custom subdirectory of derived algorithms
+addpath_mbgl_custom
+
 %% The code
 % The implementation follows the notation of |Improve| algorithm in the 
 % paper closely.  
@@ -81,21 +84,27 @@ hold on; plot(xy(S,1), xy(S,2),'r.'); hold off;
 % There were just some slight changes, but we improved the cut
 % considerably: from 356 cut edges in the original to 296 in the improvement.
 
+%%
+
 
 %% The US Road Network
 % We'll examine these algorithms with the continential US road network.
 % This example will model a real world "bigger" graph.
 
-G = readSMAT('/home/dgleich/data/usroads/usroads-cc.smat');
-xy = load('/home/dgleich/data/usroads/usroads-cc.latlong');
+%% 
+% Get the data from Tim Davis's matrix repository
+
+addpath('~/data/uf'); % add the link to the local uf sparse matrix repo
+mat = UFget('Gleich/usroads-48');
+G = mat.A; % extract the graph, and coordinates
+xy = mat.aux.coord;
 fprintf('verts = %7i\n', size(G,1));
 fprintf('edges = %7i\n', nnz(G));
 
 %%
 % A 
 ms = 3; % set the marker size to 3 pt
-[px,py]=gplot(G,xy); plot(px,py,'k.-','MarkerSize',ms);  axis tight; axis off; 
-print(gcf,'-depsc2','untitled.eps');
+[px,py]=gplot(G,xy); plot(px,py,'k.-','MarkerSize',ms);axis tight; axis off;
 
 %%
 % Bisect the US horizontally.  We plot one side of the partition with

@@ -13,6 +13,7 @@ try
     publish('new_in_3_0.m', opts('new_in_3'));
     publish('new_in_4_0.m', opts('new_in_4'));
     publish('planar_graphs.m', opts('planar_graphs'));
+    publish('flow_improve_example.m', opts('flow_improve'));
 catch
     cd ('../doc');
 end
