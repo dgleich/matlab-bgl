@@ -23,10 +23,12 @@ function [A xy] = cycle_graph(n,varargin)
 %  2007-07-08: Added directed graph option
 %  2007-09-29: Changed output to double, fixed for n=0, changed options
 %    format
+%  2011-03-24: Changed default cycle to undirected, following the
+%    documentation
 %%
 
 [trans] = get_matlab_bgl_options(varargin{:});
-options = struct('directed', '1');
+options = struct('directed', 0);
 options = merge_options(options,varargin{:});
 
 if n>0
