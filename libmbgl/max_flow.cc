@@ -25,7 +25,7 @@
 
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
 #include <boost/graph/push_relabel_max_flow.hpp>
-#include <boost/graph/edmunds_karp_max_flow.hpp>
+#include <boost/graph/edmonds_karp_max_flow.hpp>
 #include <yasmic/boost_mod/kolmogorov_max_flow.hpp>
 #include <yasmic/iterator_utility.hpp>
 #include <boost/property_map/property_map.hpp>
@@ -173,7 +173,7 @@ int push_relabel_max_flow(
  * @param flow the maximum flow in the graph
  * @return an error code if possible
  */
-int edmunds_karp_max_flow(
+int edmonds_karp_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
     mbglIndex src, mbglIndex sink,
     int* cap, int* res,
@@ -186,7 +186,7 @@ int edmunds_karp_max_flow(
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
-    *flow = (edmunds_karp_max_flow(g,
+    *flow = (edmonds_karp_max_flow(g,
         src, sink,
         capacity_map(make_iterator_property_map(cap, get(edge_index,g))).
         residual_capacity_map(make_iterator_property_map(res, get(edge_index,g))).
