@@ -91,7 +91,7 @@ public:
     {
 			  (const_cast<reference>(_e)).r = boost::target(v,_g);
 			  (const_cast<reference>(_e)).i = _rev_edge_index[v.i];
-        _e;
+        return _e;
     }	
 
     inline
