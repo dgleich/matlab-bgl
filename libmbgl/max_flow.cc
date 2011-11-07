@@ -28,7 +28,7 @@
 #include <boost/graph/edmunds_karp_max_flow.hpp>
 #include <yasmic/boost_mod/kolmogorov_max_flow.hpp>
 #include <yasmic/iterator_utility.hpp>
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 
 template <typename Index, typename Value, typename EdgeIndex, class Child>
 struct reverse_edge_pmap_helper

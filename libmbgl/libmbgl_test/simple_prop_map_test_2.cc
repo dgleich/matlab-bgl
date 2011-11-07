@@ -1,5 +1,5 @@
 
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 
         template <typename Index, typename EdgeIndex>
         class simple_csr_edge {
