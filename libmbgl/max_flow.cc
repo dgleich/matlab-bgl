@@ -86,6 +86,13 @@ public:
         _e.i = _rev_edge_index[v.i];
         return _e;
     }
+	  inline typename traits::edge_descriptor const &
+    operator[](key_type v) const
+    {
+			  (const_cast<reference>(_e)).r = boost::target(v,_g);
+			  (const_cast<reference>(_e)).i = _rev_edge_index[v.i];
+        return _e;
+    }	
 
     inline
     reverse_edge_pmap(mbglIndex* rev_edge_index, const matrix& g)
