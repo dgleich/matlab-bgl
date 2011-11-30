@@ -17,7 +17,8 @@
 #include <yasmic/iterator_utility.hpp>
 
 #include <boost/graph/kamada_kawai_spring_layout.hpp>
-#include <yasmic/boost_mod/fruchterman_reingold.hpp>
+#include <boost/graph/fruchterman_reingold.hpp>
+//#include <yasmic/boost_mod/fruchterman_reingold.hpp>
 #include <boost/graph/gursoy_atun_layout.hpp>
 #include <boost/graph/circle_layout.hpp>
 #include <boost/graph/random_layout.hpp>
@@ -127,8 +128,11 @@ int kamada_kawai_spring_layout(
   crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
   assert(nverts == 0 || positions);
   if (tol < 0 || spring_strength == NULL || distance == NULL) { return -1; }
-  std::vector<simple_point<double> > position_vec(nverts);
-  std::vector<std::pair<double,double> > partial_deriv_vec(nverts);
+  typedef boost::square_topology<> topology_type;
+  typedef topology_type::point_type point_type;
+  topology_type topology(edge_length);
+  std::vector<point_type > position_vec(nverts);
+  //std::vector<std::pair<double,double> > partial_deriv_vec(nverts);
   if (!progressive) {
     // initial random layout
     circle_graph_layout(g,
@@ -138,8 +142,8 @@ int kamada_kawai_spring_layout(
     // copy the layout from positions
     mbglIndex n = num_vertices(g);
     for (mbglIndex i = 0; i<n; i++) {
-      position_vec[i].x = positions[i+0*n];
-      position_vec[i].y = positions[i+1*n];
+      position_vec[i][0] = positions[i+0*n];
+      position_vec[i][1] = positions[i+1*n];
     }
   }
   bool rval = false;
@@ -147,6 +151,7 @@ int kamada_kawai_spring_layout(
     rval = kamada_kawai_spring_layout(g,
       make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
       boost::detail::constant_value_property_map<double>(1.0), // edge_weight
+      topology,
       boost::edge_length(edge_length), // edge_or_side_length
       layout_and_iteration_tolerance<double>(tol,iterations), // done
       spring_constant,
@@ -158,6 +163,7 @@ int kamada_kawai_spring_layout(
     rval = kamada_kawai_spring_layout(g,
       make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
       get(edge_weight,g), // edge_weight
+      topology,
       boost::edge_length(edge_length), // edge_or_side_length
       layout_and_iteration_tolerance<double>(tol,iterations), // done
       spring_constant,
@@ -169,8 +175,8 @@ int kamada_kawai_spring_layout(
   if (rval) {
     mbglIndex n = num_vertices(g);
     for (mbglIndex i = 0; i<n; i++) {
-      positions[i+0*n] = position_vec[i].x;
-      positions[i+1*n] = position_vec[i].y;
+      positions[i+0*n] = position_vec[i][0];
+      positions[i+1*n] = position_vec[i][1];
     }
     return 0;
   } else {
@@ -203,20 +209,22 @@ int fruchterman_reingold_force_directed_layout(
   typedef simple_csr_matrix<mbglIndex,double> crs_graph;
   crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
   assert(nverts == 0 || positions);
-  std::vector<simple_point<double> > position_vec(nverts);
+  typedef boost::rectangle_topology<> topology_type;
+  typedef topology_type::point_type point_type;
+  std::vector<point_type> position_vec(nverts);
   if (width <= 0 || height <= 0 || iterations <= 0) { return -1; }
   if (!progressive) {
     // initial random layout
     minstd_rand gen;
     random_graph_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        -width/2.0, width/2.0, -height/2.0, height/2.0, gen);
+        topology(gen, -width/2.0, width/2.0, -height/2.0, height/2.0));
   } else {
     // copy the layout from positions
     mbglIndex n = num_vertices(g);
     for (mbglIndex i = 0; i<n; i++) {
-      position_vec[i].x = positions[i+0*n];
-      position_vec[i].y = positions[i+1*n];
+      position_vec[i][0] = positions[i+0*n];
+      position_vec[i][1] = positions[i+1*n];
     }
   }
   if (grid_force_pairs) {
@@ -234,8 +242,8 @@ int fruchterman_reingold_force_directed_layout(
   // copy the positions over
   mbglIndex n = num_vertices(g);
   for (mbglIndex i = 0; i<n; i++) {
-    positions[i+0*n] = position_vec[i].x;
-    positions[i+1*n] = position_vec[i].y;
+    positions[i+0*n] = position_vec[i][0];
+    positions[i+1*n] = position_vec[i][1];
   }
   return 0;
 }

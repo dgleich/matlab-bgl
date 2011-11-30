@@ -25,10 +25,10 @@
 
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
 #include <boost/graph/push_relabel_max_flow.hpp>
-#include <boost/graph/edmunds_karp_max_flow.hpp>
-#include <yasmic/boost_mod/kolmogorov_max_flow.hpp>
+#include <boost/graph/edmonds_karp_max_flow.hpp>
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <yasmic/iterator_utility.hpp>
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 
 template <typename Index, typename Value, typename EdgeIndex, class Child>
 struct reverse_edge_pmap_helper
@@ -180,7 +180,7 @@ int push_relabel_max_flow(
  * @param flow the maximum flow in the graph
  * @return an error code if possible
  */
-int edmunds_karp_max_flow(
+int edmonds_karp_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
     mbglIndex src, mbglIndex sink,
     int* cap, int* res,
@@ -193,7 +193,7 @@ int edmunds_karp_max_flow(
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
-    *flow = (edmunds_karp_max_flow(g,
+    *flow = (edmonds_karp_max_flow(g,
         src, sink,
         capacity_map(make_iterator_property_map(cap, get(edge_index,g))).
         residual_capacity_map(make_iterator_property_map(res, get(edge_index,g))).
@@ -225,7 +225,7 @@ int edmunds_karp_max_flow(
  * @param flow the maximum flow in the graph
  * @return an error code if possible
  */
-int kolmogorov_max_flow(
+int boykov_kolmogorov_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
     mbglIndex src, mbglIndex sink,
     int* cap, int* res,
@@ -238,7 +238,7 @@ int kolmogorov_max_flow(
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
-    *flow = (kolmogorov_max_flow(g,
+    *flow = (boykov_kolmogorov_max_flow(g,
         make_iterator_property_map(cap, get(edge_index,g)),
         make_iterator_property_map(res, get(edge_index,g)),
         make_reverse_edge_pmap(g,rev_edge_index),
