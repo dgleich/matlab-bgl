@@ -132,7 +132,7 @@ int kamada_kawai_spring_layout(
   typedef topology_type::point_type point_type;
   topology_type topology(edge_length);
   std::vector<point_type > position_vec(nverts);
-  //std::vector<std::pair<double,double> > partial_deriv_vec(nverts);
+  std::vector<topology_type::point_difference > partial_deriv_vec(nverts);
   if (!progressive) {
     // initial random layout
     circle_graph_layout(g,
@@ -218,7 +218,7 @@ int fruchterman_reingold_force_directed_layout(
     minstd_rand gen;
     random_graph_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        topology(gen, -width/2.0, width/2.0, -height/2.0, height/2.0));
+        topology_type(gen, -width/4.0, width/4.0, -height/4.0, height/4.0));
   } else {
     // copy the layout from positions
     mbglIndex n = num_vertices(g);
@@ -230,12 +230,12 @@ int fruchterman_reingold_force_directed_layout(
   if (grid_force_pairs) {
     fruchterman_reingold_force_directed_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        width, height,
+        topology_type(-width/2, width/2.0, -height/2.0, height/2.0),
         cooling(linear_cooling<double>(iterations, initial_temp)));
   } else {
     fruchterman_reingold_force_directed_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        width, height,
+        topology_type(-width/2, width/2.0, -height/2.0, height/2.0),
         cooling(linear_cooling<double>(iterations, initial_temp)).
           force_pairs(all_force_pairs()));
   }
