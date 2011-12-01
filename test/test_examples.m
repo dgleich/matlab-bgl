@@ -31,7 +31,7 @@ load('../graphs/padgett-florentine.mat');
 betweenness_centrality(A);
 
 % bfs
-load('../graphs/bfs_example.mat');
+load_mbgl_graph('bfs_example');s
 d = bfs(A,1);
 
 % biconnected_components
@@ -81,7 +81,7 @@ load('../graphs/dfs_example.mat');
 d = dfs(A,1);
 
 % dijkstra_sp
-load('../graphs/clr-25-2.mat')
+load_mbgl_graph('clr-25-2');
 [d pred] = dijkstra_sp(A,1);
 
 % edge_weight_index
