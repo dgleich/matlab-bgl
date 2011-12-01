@@ -29,7 +29,7 @@ function [d pred] = dijkstra_sp(A,u,varargin)
 % return anything, the algorithm continues.)
 %
 % Example:
-%    load graphs/clr-25-2.mat
+%    load_mbgl_graph('clr-25-2');
 %    dijkstra_sp(A,1)
 %
 % See also SHORTEST_PATHS, BELLMAN_FORD_SP.
@@ -40,6 +40,7 @@ function [d pred] = dijkstra_sp(A,u,varargin)
 %% History
 %  2006-04-23: Initial version
 %  2008-10-07: Changed options parsing
+%  2011-09-08: Changed doc to load_mbgl_graph
 %%
 
 algname = 'dijkstra';
