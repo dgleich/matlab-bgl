@@ -1,5 +1,5 @@
 
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 
 namespace yasmic {
   namespace impl {
