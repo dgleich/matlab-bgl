@@ -382,10 +382,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
         push_relabel_max_flow(n,j_flow,pi_flow,
             u,v,cap,res,rev_edge_map,&flow);
     } else if (strcmp(algname, "edmunds_karp") == 0) {
-        edmunds_karp_max_flow(n,j_flow,pi_flow,
+        edmonds_karp_max_flow(n,j_flow,pi_flow,
             u,v,cap,res,rev_edge_map,&flow);
     } else if (strcmp(algname, "kolmogorov") == 0) {
-        kolmogorov_max_flow(n,j_flow,pi_flow,
+        boykov_kolmogorov_max_flow(n,j_flow,pi_flow,
             u,v,cap,res,rev_edge_map,&flow);
     } else {
         mexErrMsgIdAndTxt("matlab_bgl:invalidMexArgument",
