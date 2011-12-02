@@ -106,13 +106,13 @@ int push_relabel_max_flow(
     int* cap, int* res, /* capacity and residual capacity */
     mbglIndex* rev_edge_index, int *flow);
 
-int kolmogorov_max_flow(
+int boykov_kolmogorov_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,  /* connectivity params */
     mbglIndex src, mbglIndex sink, /* flow data */
     int* cap, int* res, /* capacity and residual capacity */
     mbglIndex* rev_edge_index, int *flow);
 
-int edmunds_karp_max_flow(
+int edmonds_karp_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,  /* connectivity params */
     mbglIndex src, mbglIndex sink, /* flow data */
     int* cap, int* res, /* capacity and residual capacity */

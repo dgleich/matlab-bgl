@@ -6,7 +6,7 @@
 #include <boost/pending/integer_range.hpp>
 #include <boost/graph/detail/adj_list_edge_iterator.hpp>
 #include <boost/graph/properties.hpp>
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 
 #include <yasmic/compressed_row_matrix.hpp>
 #include <yasmic/tuple_utility.hpp>
