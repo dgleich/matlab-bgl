@@ -1,17 +1,13 @@
 .PHONY : clean
 
-PLATFORM := $(shell uname | tr A-Z a-z)
-ARCH=$(shell getconf LONG_BIT)
+include Makefile.conf
 
--include Makefile-$(PLATFORM)-$(ARCH)-conf.inc
-
-YAMIC_DIR=.
-CXXFLAGS=-O2 -I$(YAMIC_DIR) -I$(BOOST_DIR) 
-
+DEFINES ?= -DMATLAB_BGL_LARGE_ARRAYS
+CXXFLAGS += -O2 -I$(YAMIC_DIR) -I$(BOOST_DIR) $(DEFINES)
 
 CXXFILES=components.cc max_flow.cc orderings.cc searches.cc shortest_path.cc spanning_trees.cc statistics.cc  planar.cc layouts.cc
 OBJFILES=$(patsubst %.cc,%.o,$(CXXFILES))
-libmbgl-$(PLATFORM)-$(ARCH).a:$(OBJFILES)
+$(LIBNAME).a:$(OBJFILES)
 	$(AR) $(ARFLAGS) $@ $^
 clean:
 	rm *.o *.a
