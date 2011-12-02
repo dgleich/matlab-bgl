@@ -11,6 +11,7 @@
  *  2007-07-05: Implemented core_numbers
  *  2007-07-11: Implemented directed and weighted clustering coefficients
  *  2007-07-12: Implemented dominator tree
+ *  2011-11-30: Corrected betweenness centrality with property maps
  */
 
 #include "include/matlab_bgl.h"
@@ -22,8 +23,7 @@
 #include <vector>
 
 #include <boost/graph/iteration_macros.hpp>
-//#include <boost/graph/betweenness_centrality.hpp>
-#include <yasmic/boost_mod/betweenness_centrality.hpp>
+#include <boost/graph/betweenness_centrality.hpp>
 #include <boost/graph/topological_sort.hpp>
 
 #include <boost/iterator/reverse_iterator.hpp>
@@ -411,7 +411,9 @@ int betweenness_centrality(
     {
         if (ecentrality) {
             brandes_betweenness_centrality(g,
-	        		centrality_map(centrality)
+	        		centrality_map(
+                        make_iterator_property_map(centrality,
+                            get(vertex_index, g)))
                     .weight_map(
                         make_iterator_property_map(weight,
                             get(edge_index,g)))
@@ -420,7 +422,9 @@ int betweenness_centrality(
                             ecentrality, get(edge_index, g))));
         } else {
             brandes_betweenness_centrality(g,
-	        		centrality_map(centrality)
+	        		centrality_map(
+                        make_iterator_property_map(centrality,
+                            get(vertex_index, g)))
                     .weight_map(
                         make_iterator_property_map(weight,
                             get(edge_index,g))));
@@ -430,7 +434,9 @@ int betweenness_centrality(
     {
         if (ecentrality) {
             brandes_betweenness_centrality(g,
-			    	centrality_map(centrality)
+			    	centrality_map(
+                        make_iterator_property_map(centrality,
+                            get(vertex_index, g)))
                     .edge_centrality_map(
                         make_iterator_property_map(
                             ecentrality, get(edge_index, g))));

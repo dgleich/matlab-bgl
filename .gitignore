@@ -4,9 +4,11 @@
 *.mexglx
 *.mexmac
 *.mexmaci
+*.mexmaci64
 *.mexw32
 *.mexw64
 *.ps
 *.pdf
 *.asv
 *.a
+doc/html/

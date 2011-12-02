@@ -20,7 +20,7 @@ function [d dt pred] = bfs(A,u,varargin)
 % only uses the non-zero structure of A.
 %
 % Example:
-%    load graphs/bfs_example.mat
+%    load_mbgl_graph('bfs_example');
 %    d = bfs(A,1)
 %
 % See also DFS
@@ -33,6 +33,7 @@ function [d dt pred] = bfs(A,u,varargin)
 %  2006-05-31: Added full2sparse check
 %  2007-04-19: Added target option
 %  2008-10-07: Changed options parsing
+%  2011-09-08: Doc change for load_mbgl_graph
 %%
 
 [trans check full2sparse] = get_matlab_bgl_options(varargin{:});

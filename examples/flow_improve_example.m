@@ -128,6 +128,8 @@ hold on; plot(xy(A,1), xy(A,2),'r.','MarkerSize',ms); hold off;
 
 %%
 % Improve the partition
+tic
 S = flow_improve(G,A,[]);
+toc
 [px,py]=gplot(G,xy); plot(px,py,'k.-','MarkerSize',ms);  axis tight; axis off; 
 hold on; plot(xy(S,1), xy(S,2),'r.','MarkerSize',ms); hold off;
