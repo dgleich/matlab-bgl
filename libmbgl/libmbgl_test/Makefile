@@ -1,6 +1,9 @@
 
 include ../Makefile.conf
 
+CXX=g++
+CC=$(CXX)
+
 MBGLLIB = $(LIBDIR)/$(LIBNAME).a
 
 DEFINES ?= -DMATLAB_BGL_LARGE_ARRAYS
@@ -30,16 +33,18 @@ fr_layout_test : $(MBGLLIB)
 planar_ksubgraph_test : $(MBGLLIB)
 planar_is_straight_line_test : $(MBGLLIB)
 planar_funcs_test : $(MBGLLIB)
-core_numbers_test : core_numbers_test.cc $(LIBDIR)/yasmic/boost_mod/core_numbers.hpp
+core_numbers_test : $(MBGLLIB)
 
-libmbgl_funcs_test : $(MBGLLIB) layout_funcs_test.o planar_funcs_test.o
+
+funcs_objs := $(patsubst %.cc,%.o,$(wildcard *_funcs_test.cc))
+libmbgl_funcs_test : $(funcs_objs) $(MBGLLIB)
 
 test : libmbgl_funcs_test
 	./libmbgl_funcs_test
 	
 clean :
 	$(RM) \
-        libmbgl_funcs_test planar_funcs_test.o layout_funcs_test.o \
+        libmbgl_funcs_test $(funcs_objs) \
 	planar_funcs_test planar_is_straight_line_test planar_ksubgraph_test \
 	fr_layout_test \
 	property_map_test \

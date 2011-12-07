@@ -232,10 +232,44 @@ int prim_mst_rooted(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     mbglIndex* i, mbglIndex* j, double* val, mbglIndex* nedges, /* tree output */
     mbglIndex root);
+    
+/**
+ * @section structure
+ */    
+ 
+
+int topological_order(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
+    mbglIndex *rev_order, int *is_dag);
+
+int maximum_cardinality_matching(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
+    mbglIndex* mate, int initial_matching, int augmenting_path, int verify,
+    int *verified, mbglIndex *null_vertex);
+
+int test_maximum_cardinality_matching(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
+    mbglIndex* mate, int *verified); 
+
+int dominator_tree(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex src, mbglIndex *pred);
+    
+int is_bipartite(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    int* is_bipartite, mbglIndex* part);    
+    
+int find_odd_cycle(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex *cycle, mbglIndex *cyclelen);   
+    
+int isomorphism(
+    mbglIndex nverts1, mbglIndex *ja1, mbglIndex *ia1,
+    mbglIndex nverts2, mbglIndex *ja2, mbglIndex *ia2,
+    int *iso, mbglIndex *map);         
 
 /**
  * @section statistics.cc
- *
  */
 int betweenness_centrality(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
@@ -253,19 +287,6 @@ int directed_clustering_coefficients(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     double *ccoeffs);
 
-int topological_order(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex *rev_order, int *is_dag);
-
-int maximum_cardinality_matching(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex* mate, int initial_matching, int augmenting_path, int verify,
-    int *verified, mbglIndex *null_vertex);
-
-int test_maximum_cardinality_matching(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex* mate, int *verified);
-
 int core_numbers(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglDegreeType *cn, int *rt);
@@ -273,10 +294,14 @@ int core_numbers(
 int weighted_core_numbers(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     double *cn, int *rt);
-
-int dominator_tree(
+    
+int bandwidth( 
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
-    mbglIndex src, mbglIndex *pred);
+    mbglIndex *bandwidth);    
+    
+int vertex_bandwidth( 
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex v, mbglIndex *bandwidth);    
 
 /**
  * @section layouts.cc
@@ -353,8 +378,9 @@ int reverse_cuthill_mckee_order(
 
 int king_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex *perm /* permutation output */);
-
+    mbglIndex start, 
+    mbglIndex *iperm /* permutation output */, mbglIndex *ipermlen);
+    
 int minimum_degree_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex *perm /* permutation output */);
