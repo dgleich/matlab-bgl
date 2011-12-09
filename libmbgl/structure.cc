@@ -27,8 +27,6 @@
 #include <boost/graph/bipartite.hpp>
 #include <boost/graph/isomorphism.hpp>
 
-#include <boost/graph/graph_utility.hpp>
-
 #include <iostream>
 
 #include <math.h>
@@ -463,21 +461,10 @@ int isomorphism(
 
   build_row_and_column_from_csr(h, &ati[0], &atj[0], &atid[0]);
   
-  std::cout << "Graph G\n";
-  boost::print_graph(g);
-  
-  std::cout << "Graph H\n";
-  boost::print_edges(h, get(vertex_index, g));
-  
-  
   typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
   bidir_graph bh(nverts2, nverts2, ia2[nverts2], ia2, ja2, NULL, 
     &ati[0], &atj[0], &atid[0]);
 
-  std::cout << "Graph BH\n";
-  boost::print_in_edges(bh, get(vertex_index, g));
-  boost::print_graph(bh);
-  
   
   for (mbglIndex i=0; i<nverts1; ++i) {
     map[i] = graph_traits<bidir_graph>::null_vertex();
@@ -485,8 +472,7 @@ int isomorphism(
   bool isiso = boost::isomorphism(g, bh,
         isomorphism_map(make_iterator_property_map(
             map, get(vertex_index, g))));
-    
-  std::cout << "isiso = " << isiso << "\n";
+
   if (isiso) { 
       *iso = 1; 
   } else { 
