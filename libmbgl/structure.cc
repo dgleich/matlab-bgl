@@ -27,6 +27,8 @@
 #include <boost/graph/bipartite.hpp>
 #include <boost/graph/isomorphism.hpp>
 
+#include <boost/graph/graph_utility.hpp>
+
 #include <iostream>
 
 #include <math.h>
@@ -448,6 +450,8 @@ int isomorphism(
 {
   using namespace yasmic;
   using namespace boost;
+  
+  if (nverts1 != nverts2) { *iso = 0; return 0; }
 
   typedef simple_csr_matrix<mbglIndex, double> crs_graph;
   crs_graph g(nverts1, nverts1, ia1[nverts1], ia1, ja1, NULL);
@@ -458,19 +462,36 @@ int isomorphism(
   std::vector<mbglIndex> atid(ia2[nverts2]);
 
   build_row_and_column_from_csr(h, &ati[0], &atj[0], &atid[0]);
-
+  
+  std::cout << "Graph G\n";
+  boost::print_graph(g);
+  
+  std::cout << "Graph H\n";
+  boost::print_edges(h, get(vertex_index, g));
+  
+  
   typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
   bidir_graph bh(nverts2, nverts2, ia2[nverts2], ia2, ja2, NULL, 
     &ati[0], &atj[0], &atid[0]);
 
+  std::cout << "Graph BH\n";
+  boost::print_in_edges(bh, get(vertex_index, g));
+  boost::print_graph(bh);
   
-  bool isiso = boost::isomorphism(g, bh, 
+  
+  for (mbglIndex i=0; i<nverts1; ++i) {
+    map[i] = graph_traits<bidir_graph>::null_vertex();
+  }
+  bool isiso = boost::isomorphism(g, bh,
         isomorphism_map(make_iterator_property_map(
             map, get(vertex_index, g))));
     
+  std::cout << "isiso = " << isiso << "\n";
   if (isiso) { 
       *iso = 1; 
-  } else { *iso = 0; }
+  } else { 
+      *iso = 0; 
+  }
   
   return 0;
 }    

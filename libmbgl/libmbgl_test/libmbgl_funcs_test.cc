@@ -11,5 +11,6 @@ int main(int argc, char **argv) {
   layout_funcs_test();
   planar_funcs_test();
   ordering_funcs_test();
+  structure_funcs_test();
   return 0;
 }
