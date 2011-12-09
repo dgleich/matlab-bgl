@@ -73,3 +73,14 @@ print "For isomorphism 1"
 print_arrays(graph_from_smat('Baltz-2005-isospectral-1.smat'))
 print "For isomorphism 2"
 print_arrays(graph_from_smat('Baltz-2005-isospectral-2.smat'))
+
+
+print "For bipartite (true)"
+edges = [(0, 1), (0, 4), (1, 2), (2, 6), (3, 4), (3, 8), (4, 5), (4, 7), (5, 6), 
+      (6, 7), (7, 10), (8, 9), (9, 10)]
+print_arrays(graph_from_edges(append_weight(edges)))    
+
+print "For bipartite (false)"
+edges = [(0, 1), (0, 4), (1, 2), (2, 6), (3, 4), (3, 8), (4, 5), (4, 7), (5, 6),
+      (6, 7), (7, 9), (8, 9)]
+print_arrays(graph_from_edges(append_weight(edges)))    
