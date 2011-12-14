@@ -158,6 +158,35 @@ int test_5() {
   return 0;
 } 
 
+int test_sldraw() {
+
+    mbglIndex n = 4;
+    mbglIndex rp[] = {0,3,6,9,12};
+    mbglIndex ci[] = {1,2,3,0,2,3,0,1,3,0,1,2};
+	double X[] = { 1,2,1,0,2,1,0,1 };
+	int is_sldraw = 0;
+    is_straight_line_drawing(n, ci, rp, X, &is_sldraw);
+    
+    return 0;
+}
+
+int test_kuratowski_subgraph() {
+    mbglIndex n = 5;
+    mbglIndex rp[] = {0,4,8,12,16,20};
+    mbglIndex ci[] = {1,2,3,4,0,2,3,4,0,1,3,4,0,1,2,4,0,1,2,3};
+	mbglIndex ki[20];
+	mbglIndex kj[20];
+	int is_planar = 0;
+	mbglIndex nedges = 0;
+    boyer_myrvold_planarity_test(n, ci, rp, &is_planar, ki, kj, &nedges,
+	  NULL, NULL);
+    //std::cout << "is_planar = " << is_planar << std::endl;
+    //std::cout << "nedges = " << nedges << std::endl;
+    myassert(nedges == 10, "wrong kuratowski subgraph size");
+    myassert(is_planar == 0, "incorrect planar flag");
+    return 0;
+}
+
 int planar_funcs_test() {
   int nfail = 0, ntotal = 0;
   int rval;
@@ -189,9 +218,19 @@ int planar_funcs_test() {
   if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
   else { printf("%20s  success\n", name); }
 
+  name= "straight_line";
+  rval= test_sldraw(); ntotal++;
+  if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
+  else { printf("%20s  success\n", name); }
+
+  name= "kuratowski_subgraph";
+  rval= test_kuratowski_subgraph(); ntotal++;
+  if (rval!= 0) { nfail++; printf("%20s  %50s\n", name, errstr); }
+  else { printf("%20s  success\n", name); }
+
   printf("\n");
   printf("Total tests  : %3i\n", ntotal);
   printf("Total failed : %3i\n", nfail);
 
-  return nfail!=0;
+  return nfail;
 }

@@ -34,6 +34,6 @@ int layout_funcs_test()
   printf("Total tests  : %3i\n", ntotal);
   printf("Total failed : %3i\n", nfail);
 
-  return nfail!=0;
+  return nfail;
 }
 
