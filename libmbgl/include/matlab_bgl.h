@@ -237,6 +237,11 @@ int prim_mst_rooted(
     mbglIndex* i, mbglIndex* j, double* val, mbglIndex* nedges, /* tree output */
     mbglIndex root);
     
+int random_spanning_tree(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    mbglIndex* i, mbglIndex* j, double* val, mbglIndex* nedges, /* tree output */
+    mbglIndex root, unsigned int seed);
+    
 /**
  * @section structure
  */    
