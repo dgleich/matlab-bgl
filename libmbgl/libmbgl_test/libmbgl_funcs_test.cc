@@ -12,6 +12,8 @@ int main(int argc, char **argv) {
   nfail += layout_funcs_test();
   nfail += planar_funcs_test();
   nfail += ordering_funcs_test();
+  nfail += structure_funcs_test();
+  nfail += statistics_funcs_test();
   nfail += spanning_trees_funcs_test();
   
   printf("\n");

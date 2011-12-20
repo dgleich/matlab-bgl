@@ -230,12 +230,12 @@ int fruchterman_reingold_force_directed_layout(
   if (grid_force_pairs) {
     fruchterman_reingold_force_directed_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        topology_type(-width/2, width/2.0, -height/2.0, height/2.0),
+        topology_type(-width/2, height/2.0, width/2.0, -height/2.0),
         cooling(linear_cooling<double>(iterations, initial_temp)));
   } else {
     fruchterman_reingold_force_directed_layout(g,
         make_iterator_property_map(position_vec.begin(),get(vertex_index,g)),
-        topology_type(-width/2, width/2.0, -height/2.0, height/2.0),
+        topology_type(-width/2, height/2.0, width/2.0, -height/2.0),
         cooling(linear_cooling<double>(iterations, initial_temp)).
           force_pairs(all_force_pairs()));
   }

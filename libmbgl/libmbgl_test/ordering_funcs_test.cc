@@ -26,7 +26,7 @@ int check_perm(mbglIndex *perm, mbglIndex len) {
 
 int test_king_ordering() {
   const mbglIndex n=10;
-  mbglIndex rp[] = {0,2,6,9,13,16,20,24,26,27,28,28}; // allocate one extra vertex at the beginning
+  mbglIndex rp[] = {0,2,6,9,13,16,20,24,26,27,28,28}; // allocate one extra vertex at the end
   mbglIndex ci[] = {3,5,9,2,4,6,1,3,4,0,8,2,5,1,2,6,0,3,6,7,1,4,5,7,5,6,3,1};
   mbglIndex iperm[n];
   mbglIndex iperm2[n+1];
@@ -49,7 +49,6 @@ int test_king_ordering() {
   
   rval= king_order(n+1, ci, rp, n+1, iperm2, &ipermlen);
   myassert(rval==0, "function error");
-  printf("%i\n", ipermlen);
   myassert(ipermlen == n+1, "perm length incorrect (long)");
   myassert(check_perm(iperm2,ipermlen),"invalid perm");
   

@@ -361,9 +361,14 @@ int is_bipartite(
   
   // TODO, see if we can skip the extra malloc here
 
-  boost::is_bipartite(g,  get(vertex_index, g),
+  bool ans=boost::is_bipartite(g,  get(vertex_index, g),
     make_iterator_property_map(part, get(vertex_index, g)));
 
+  if (ans) { 
+    *is_bipartite = 1; 
+  } else {
+    *is_bipartite = 0;
+  }
   return 0;
 }
 
@@ -372,8 +377,8 @@ int is_bipartite(
  * @param nverts the number of vertices in the graph
  * @param ja the connectivity for each vertex
  * @param ia the row connectivity points into ja
- * @param cycle, an indicator vector over the vertices in one half 
- *   of the partition (length n)
+ * @param cycle, a list of vertices in the cycle, excluding
+ *   the final vertex, so the cyclenlen-1 elements are valid.
  * @param cyclelen the length of the cycle in cycle.
  * If the network is bipartite, cyclelen is 0
  * 
@@ -389,8 +394,6 @@ int find_odd_cycle(
   typedef simple_csr_matrix<mbglIndex, double> crs_graph;
   crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
   
-  // TODO, see if we can skip the extra malloc here
-
   mbglIndex* final = boost::find_odd_cycle(g,  cycle);
   
   *cyclelen = final - cycle;
@@ -448,6 +451,8 @@ int isomorphism(
 {
   using namespace yasmic;
   using namespace boost;
+  
+  if (nverts1 != nverts2) { *iso = 0; return 0; }
 
   typedef simple_csr_matrix<mbglIndex, double> crs_graph;
   crs_graph g(nverts1, nverts1, ia1[nverts1], ia1, ja1, NULL);
@@ -458,19 +463,24 @@ int isomorphism(
   std::vector<mbglIndex> atid(ia2[nverts2]);
 
   build_row_and_column_from_csr(h, &ati[0], &atj[0], &atid[0]);
-
+  
   typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
   bidir_graph bh(nverts2, nverts2, ia2[nverts2], ia2, ja2, NULL, 
     &ati[0], &atj[0], &atid[0]);
 
   
-  bool isiso = boost::isomorphism(g, bh, 
+  for (mbglIndex i=0; i<nverts1; ++i) {
+    map[i] = graph_traits<bidir_graph>::null_vertex();
+  }
+  bool isiso = boost::isomorphism(g, bh,
         isomorphism_map(make_iterator_property_map(
             map, get(vertex_index, g))));
-    
+
   if (isiso) { 
       *iso = 1; 
-  } else { *iso = 0; }
+  } else { 
+      *iso = 0; 
+  }
   
   return 0;
 }    
