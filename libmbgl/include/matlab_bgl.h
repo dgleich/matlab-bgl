@@ -117,6 +117,10 @@ int edmonds_karp_max_flow(
     mbglIndex src, mbglIndex sink, /* flow data */
     int* cap, int* res, /* capacity and residual capacity */
     mbglIndex* rev_edge_index, int *flow);
+    
+int stoer_wagner_min_cut(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    double* cut, mbglIndex *cutset);
 
 /**
  * @section searches.cc

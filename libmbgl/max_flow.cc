@@ -23,12 +23,16 @@
 
 #include "include/matlab_bgl.h"
 
+#include <yasmic/undir_simple_csr_matrix_as_graph.hpp>
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
 #include <boost/graph/push_relabel_max_flow.hpp>
 #include <boost/graph/edmonds_karp_max_flow.hpp>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <yasmic/iterator_utility.hpp>
 #include <boost/property_map/property_map.hpp>
+
+#include <boost/graph/one_bit_color_map.hpp>
+#include <boost/graph/stoer_wagner_min_cut.hpp>
 
 template <typename Index, typename Value, typename EdgeIndex, class Child>
 struct reverse_edge_pmap_helper
@@ -244,14 +248,56 @@ int boykov_kolmogorov_max_flow(
         make_reverse_edge_pmap(g,rev_edge_index),
         get(vertex_index,g),
         src, sink));
-    /*test_kolmogorov(g,
-        make_iterator_property_map(cap, get(edge_index,g)),
-        make_iterator_property_map(res, get(edge_index,g)),
-        make_reverse_edge_pmap(g,rev_edge_index));*/
-
 
     return (0);
 }
 
 
+/** Compute a minimum cut via the Stoer Wagner algorithm
+ * 
+ * The graph must be undirected. 
+ *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param weight the weight of each edge in the graph
+ * @param cut the value of the mincut
+ * @param cutset an indicator vector over the vertices indicating
+ *   0 -> one side; 1 -> the second side
+ * @return an error code if possible.
+ */
+int stoer_wagner_min_cut(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    double* cut, mbglIndex *cutset)
+{
+  using namespace yasmic;
+  using namespace boost;
+  
+  if (nverts < 2) {
+    return -1; 
+  }
+  
+  typedef undir_simple_csr_matrix<mbglIndex,double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
+  BOOST_AUTO(parities, boost::make_one_bit_color_map(num_vertices(g), get(boost::vertex_index, g)));
+  
+  double cutval = 
+     stoer_wagner_min_cut(g, get(boost::edge_weight, g), 
+       boost::parity_map(parities));
+  
+  if (cutset != NULL) {
+    for (mbglIndex i = 0; i<nverts; ++i) {
+      if (get(parities,i)) {
+        cutset[i] = 1;
+      } else {
+        cutset[i] = 0;
+      }
+    }
+  }
+  
+  if (cut != NULL) {
+    *cut = cutval;
+  }
+  return 0;
+}

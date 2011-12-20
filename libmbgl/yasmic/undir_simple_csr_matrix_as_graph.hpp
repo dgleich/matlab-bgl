@@ -117,7 +117,7 @@ private:
     // iterator_facade requirements
     const edge_descriptor& dereference() const { return _e; }
 
-    bool equal(const simple_csr_out_edge_iterator<Index,Value,EdgeIndex>& other) const
+    bool equal(const undir_simple_csr_out_edge_iterator<Index,Value,EdgeIndex>& other) const
     { return _e == other._e; }
 
     void increment() { ++_e.i; }
