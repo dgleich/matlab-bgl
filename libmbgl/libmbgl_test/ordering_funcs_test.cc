@@ -49,7 +49,6 @@ int test_king_ordering() {
   
   rval= king_order(n+1, ci, rp, n+1, iperm2, &ipermlen);
   myassert(rval==0, "function error");
-  printf("%i\n", ipermlen);
   myassert(ipermlen == n+1, "perm length incorrect (long)");
   myassert(check_perm(iperm2,ipermlen),"invalid perm");
   
