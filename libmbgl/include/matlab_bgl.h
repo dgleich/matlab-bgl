@@ -397,6 +397,25 @@ int minimum_degree_order(
 int sloan_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex *perm /* permutation output */);
+    
+/** 
+ * @section random_graphs.cc
+ */
+ 
+int erdos_renyi_edges(
+    mbglIndex nverts, double prob, int loops,
+    mbglIndex *src, mbglIndex *dst, mbglIndex *nallocedges, 
+    unsigned int seed);
+
+int small_world_edges(
+    mbglIndex nverts, mbglIndex k, double prob, int loops,
+    mbglIndex *src, mbglIndex *dst, mbglIndex *nallocedges, 
+    unsigned int seed);
+
+int plod_edges(
+    mbglIndex nverts, double alpha, double beta, int loops,
+    mbglIndex *src, mbglIndex *dst, mbglIndex *nallocedges, 
+    unsigned int seed);
 
 #ifdef __cplusplus
 }

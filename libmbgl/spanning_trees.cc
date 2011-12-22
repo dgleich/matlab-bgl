@@ -1,4 +1,3 @@
-
 /** @file spanning_trees.cc
  * @author David F. Gleich
  * @date 2008-09-29
