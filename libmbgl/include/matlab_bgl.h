@@ -279,7 +279,7 @@ int isomorphism(
 
 int sequential_vertex_coloring(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
-    mbglIndex *colors)    
+    mbglIndex *colors);
 
 /**
  * @section statistics.cc
@@ -401,7 +401,7 @@ int minimum_degree_order(
 int sloan_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex vstart, mbglIndex vend,
-    mbglIndex *iperm /* permutation output */, mbglIndex *ipermlen)
+    mbglIndex *iperm /* permutation output */, mbglIndex *ipermlen);
     
 /** 
  * @section random_graphs.cc
