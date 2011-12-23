@@ -26,6 +26,7 @@
 #include <boost/graph/dominator_tree.hpp>
 #include <boost/graph/bipartite.hpp>
 #include <boost/graph/isomorphism.hpp>
+#include <boost/graph/sequential_vertex_coloring.hpp>
 
 #include <iostream>
 
@@ -485,3 +486,18 @@ int isomorphism(
   return 0;
 }    
     
+int sequential_vertex_coloring(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex *colors)
+{    
+  using namespace yasmic;
+  using namespace boost;
+
+  typedef simple_csr_matrix<mbglIndex, double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
+  
+  sequential_vertex_coloring(g, 
+    make_iterator_property_map(colors, get(vertex_index, g)));
+
+  return 0;
+}

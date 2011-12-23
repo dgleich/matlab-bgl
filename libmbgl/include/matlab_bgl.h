@@ -277,6 +277,10 @@ int isomorphism(
     mbglIndex nverts2, mbglIndex *ja2, mbglIndex *ia2,
     int *iso, mbglIndex *map);         
 
+int sequential_vertex_coloring(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex *colors)    
+
 /**
  * @section statistics.cc
  */
