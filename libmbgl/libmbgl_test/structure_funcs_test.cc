@@ -15,6 +15,78 @@ int check_map(mbglIndex* map, mbglIndex* perm, mbglIndex len)
     return 1;
 }
 
+mbglIndex max_value_index(mbglIndex *list, mbglIndex n) {
+    mbglIndex max=0;
+    for (mbglIndex i=0; i<n; ++i) {
+        if (list[i] > max) { max=list[i]; }
+    }
+    return max;
+}
+
+int test_empty() {
+  const mbglIndex n = 0;
+  mbglIndex rp[] = {0};
+  mbglIndex *ci = NULL;
+  
+  int rval;
+  int iso=0;
+  mbglIndex *map = NULL;
+  rval= isomorphism(n, ci, rp, n, ci, rp, &iso, map);
+  myassert(rval==0, "function error");
+  myassert(iso==1, "empty graphs are isomorphic");
+  
+  mbglIndex *color = NULL;
+  rval = sequential_vertex_coloring(n, ci, rp, color);
+  myassert(rval==0,"function error");  
+  
+  int isbi;
+  mbglIndex *part = NULL;
+  rval = is_bipartite(n, ci, rp, &isbi, part);
+  myassert(rval==0,"function error");
+  myassert(isbi==1,"bipartite graph not detected");
+  
+    
+  mbglIndex cycle[n+1];
+  mbglIndex cyclelen=1;
+  rval = find_odd_cycle(n, ci, rp, cycle, &cyclelen);
+  myassert(rval==0,"function error");
+  myassert(cyclelen==0, "non-empty cycle");
+  
+  return 0;
+}
+  
+int test_single() {
+  const mbglIndex n = 1;
+  mbglIndex rp[] = {0,0};
+  mbglIndex *ci = NULL;
+  
+  int rval;
+  int iso=0;
+  mbglIndex map[n];
+  rval= isomorphism(n, ci, rp, n, ci, rp, &iso, map);
+  myassert(rval==0, "function error");
+  myassert(iso==1, "empty graphs are isomorphic");
+  
+  mbglIndex color[n];
+  rval = sequential_vertex_coloring(n, ci, rp, color);
+  myassert(rval==0,"function error");  
+  
+  int isbi;
+  mbglIndex part[n];
+  rval = is_bipartite(n, ci, rp, &isbi, part);
+  myassert(rval==0,"function error");
+  myassert(isbi==1,"bipartite graph not detected");
+  
+    
+  mbglIndex cycle[n+1];
+  mbglIndex cyclelen=1;
+  rval = find_odd_cycle(n, ci, rp, cycle, &cyclelen);
+  myassert(rval==0,"function error");
+  myassert(cyclelen==0, "non-empty cycle");
+  
+  return 0;
+}
+  
 int test_isomorphism() {
   const mbglIndex n=10;
   mbglIndex rp1[] = {0,4,8,12,16,20,24,28,32,36,40};
@@ -172,15 +244,83 @@ int test_bipartite_3()
   return 0;
 }
 
+
+int test_coloring_1() 
+{
+  // graph from boost test case  
+  /**
+   * Create the graph drawn below.
+   *
+   *       0 - 1 - 2
+   *       |       |
+   *   3 - 4 - 5 - 6
+   *  /      \   /
+   *  |        7
+   *  |        |
+   *  8 - 9 - 10
+   **/
+
+  const mbglIndex n=11;
+  mbglIndex rp[] = {0,2,4,6,8,12,14,17,20,22,24,26};
+  mbglIndex ci[] = {1,4,0,2,1,6,8,4,0,3,5,7,4,6,2,5,7,10,4,6,9,3,8,10,9,7};
+
+  mbglIndex color[n]; 
+
+  int rval = sequential_vertex_coloring(n, ci, rp, color);
+  myassert(rval==0,"function error");  
+  myassert(max_value_index(color,n) == 1,"bipartite graph not 2 colorable");
+  
+  return 0;
+}
+
+int test_coloring_2() 
+{
+    
+  /**
+   * Create the graph drawn below.
+   * 
+   *       2 - 1 - 0
+   *       |       |
+   *   3 - 6 - 5 - 4
+   *  /      \   /
+   *  |        7
+   *  |       /
+   *  8 ---- 9
+   *  
+   **/
+  
+  
+  const mbglIndex n=10;
+  mbglIndex rp[] = {0,2,4,6,8,12,14,17,20,22,24};
+  mbglIndex ci[] = {1,4,0,2,1,6,8,4,0,3,5,7,4,6,2,5,7,9,4,6,9,3,8,7};
+
+  mbglIndex color[n]; 
+
+  int rval = sequential_vertex_coloring(n, ci, rp, color);
+  myassert(rval==0,"function error");  
+  myassert(max_value_index(color,n) == 2,"non bipartite graph not 2 colorable");
+  
+  
+  return 0;
+}
+
+
+
 int structure_funcs_test() 
 {
   int nfail= 0, ntotal= 0, rval;
+  
+  testcase("empty(structure)", test_empty);
+  testcase("single(structure)", test_single);
+
   
   testcase("isomorphism", test_isomorphism);
   testcase("bipartite (true)", test_bipartite_1);
   testcase("bipartite (false)", test_bipartite_2);
   testcase("bipartite (cycle)", test_bipartite_3);
-   
+  testcase("coloring (bipartite)", test_coloring_1);
+  testcase("coloring (general)", test_coloring_2);
+  
   printf("\n");
   printf("Total tests  : %3i\n", ntotal);
   printf("Total failed : %3i\n", nfail);
