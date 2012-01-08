@@ -1,0 +1,17 @@
+.PHONY : clean
+
+PLATFORM=pcwin
+ARCH=32
+
+include mingw32.sh
+include Makefile.conf
+
+BOOST_DIR=$(HOME)/dev/lib/boost_1_48_0
+
+CXXFLAGS += -O2 -I$(YASMIC_DIR) -I$(BOOST_DIR) $(DEFINES) -D__MSVCRT_VERSION__=0x0601
+
+$(LIBNAME).lib:$(OBJFILES)
+	$(AR) $(ARFLAGS) $@ $^
+
+clean:
+	rm -f *.lib *.o

@@ -10,11 +10,14 @@ $(LIBNAME).a:$(OBJFILES)
 	
 alllibs: win32	
 
-win32 : 
+win32: 
 	make -f Makefile.win32 clean
-	make -f Makefile.win32 all
+	make -f Makefile.win32 
+win64: 
+	make -f Makefile.win64 clean
+	make -f Makefile.win64 
 
 clean:
-	rm *.o *.a
+	rm -f *.o *.a
 	
 	
