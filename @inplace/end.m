@@ -7,4 +7,11 @@ function n=end(ipa,a,n)
 %    ipa = inplace(cumsum(ones(5,1)));
 %    ipa(3:end)
 
-n = size(ipa.get_a(),a);
+% History
+% 2012-03-20: Fixed linear indexing bug from Laurens Bakker
+
+if( 1 == n )
+   n = numel(ipa.get_a());
+else
+   n = size(ipa.get_a(),a);
+end
