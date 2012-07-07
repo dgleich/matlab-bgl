@@ -40,8 +40,10 @@ end
 dims=cell(k,1);
 dim_size = cell2mat(varargin(end:-1:1));
 
-A = sparse(1);
-for ii=1:length(dim_size)
+n2 = dim_size(1);
+dims{1} = linspace(0,1,n2);
+A = line_graph(n2);
+for ii=2:length(dim_size)
     n2 = dim_size(ii);
     dims{ii} = linspace(0,1,n2);
     
