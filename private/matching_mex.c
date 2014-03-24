@@ -30,7 +30,7 @@ typedef int mwSize;
 #include <string.h>
 
 /*
- * The mex function runs a MST problem.
+ * The mex function runs a matching problem.
  */
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])

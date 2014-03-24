@@ -24,8 +24,8 @@ typedef int mwSize;
 #endif /* MX_API_VER */
 
 #include "matlab_bgl.h"
-
 #include "expand_macros.h"
+#include "common_functions.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -36,11 +36,11 @@ typedef int mwSize;
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
 {
-    int i;
+    mwIndex i;
     
-    int mrows, ncols;
+    mwIndex mrows, ncols;
     
-    int n,nz;
+    mwIndex n,nz;
     
     /* sparse matrix */
     mwIndex *ia, *ja;
@@ -49,46 +49,17 @@ void mexFunction(int nlhs, mxArray *plhs[],
     double *ci, *sizes;
     mwIndex* int_ci;
     
-    int num_cc;
-    
-    
-    if (nrhs != 1) 
-    {
-        mexErrMsgTxt("1 inputs required.");
-    }
+    mwIndex num_cc;
 
-    /* The first input must be a sparse matrix. */
-    mrows = mxGetM(prhs[0]);
-    ncols = mxGetN(prhs[0]);
-    if (mrows != ncols ||
-        !mxIsSparse(prhs[0])) 
-    {
-        mexErrMsgTxt("Input must be a square sparse matrix.");
-    }
+    /* load the matrix*/
+    load_graph_arg(nrhs, prhs, 0, -1, -1, 0, &n, &nz, &ia, &ja, NULL);
     
-    n = mrows;
-        
-    
-    
-    /* Get the sparse matrix */
-    
-    /* recall that we've transposed the matrix */
-    ja = mxGetIr(prhs[0]);
-    ia = mxGetJc(prhs[0]);
-    
-    nz = ia[n];
-    
-    
+    /* create the output */
     plhs[0] = mxCreateDoubleMatrix(n,1,mxREAL);
-    
     ci = mxGetPr(plhs[0]);
     
     strong_components(n, ja, ia,
         (mwIndex*)ci);
-    
-
-    
-    
     
     /* count the number of components */
     int_ci = (mwIndex*)ci;    

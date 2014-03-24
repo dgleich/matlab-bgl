@@ -156,10 +156,12 @@ void load_graph_arg(int nrhs, const mxArray *prhs[],
   const mxArray* arg_matrix;
   int reweighted = 0;
 
-  if (nrhs <= arg || nrhs <= reweighted_arg || nrhs <= reweighted_opt_arg) {
+  if (nrhs <= arg && 
+          ((reweighted_arg >= 0 && nrhs <= reweighted_arg) || (reweighted_arg < 0)))
+  {
     mexErrMsgIdAndTxt("matlab_bgl:invalidCall",
-        "load_matrix requires args %i,%i,%i but only %i args provided",
-        arg, reweighted_opt_arg, reweighted_arg, nrhs);
+        "load_matrix requires args %i,%i but only %i args provided",
+        arg, reweighted_arg, nrhs);
   }
 
   arg_matrix= prhs[arg];

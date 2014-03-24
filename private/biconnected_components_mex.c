@@ -16,6 +16,8 @@
  *
  * 1 March 2007 
  * Fixed compile bugs on win32
+ * 
+ * 2013-03-23: Fixed int issue
  */
 
 
@@ -32,6 +34,7 @@ typedef int mwSize;
 
 #include "matlab_bgl.h"
 #include "expand_macros.h"
+#include "common_functions.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -42,11 +45,11 @@ typedef int mwSize;
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[])
 {
-    int i;
+    mwIndex i;
     
-    int mrows, ncols;
+    mwIndex mrows, ncols;
     
-    int n,nz;
+    mwIndex n,nz;
     
     /* sparse matrix */
     mwIndex *ia, *ja;
@@ -55,36 +58,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
     /* output data */
     double *a, *ci;
     mwIndex *int_a;
-     
     
-    if (nrhs != 1) 
-    {
-        mexErrMsgTxt("1 inputs required.");
-    }
+    /* load graph structure alone */
+    load_graph_arg(nrhs, prhs, 0, -1, -1, 0, &n, &nz, &ia, &ja, NULL);
 
-    /* The first input must be a sparse matrix. */
-    mrows = mxGetM(prhs[0]);
-    ncols = mxGetN(prhs[0]);
-    if (mrows != ncols ||
-        !mxIsSparse(prhs[0]) ||
-        !mxIsDouble(prhs[0]) || 
-        mxIsComplex(prhs[0])) 
-    {
-        mexErrMsgTxt("Input must be a noncomplex square sparse matrix.");
-    }
-    
-    n = mrows;
-        
-    
-    
-    /* Get the sparse matrix */
-    
-    /* recall that we've transposed the matrix */
-    ja = mxGetIr(prhs[0]);
-    ia = mxGetJc(prhs[0]);
-    
-    nz = ia[n];
-        
+    /* Start creating the output */
     plhs[0] = mxCreateDoubleMatrix(n,1,mxREAL);
     a = mxGetPr(plhs[0]);
     ci = NULL;
@@ -96,8 +74,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     }
     
     int_a = (mwIndex*)a;
-    for (i=0; i<n; i++)
-    {
+    for (i=0; i<n; i++) {
         int_a[i] = MWINDEX_MAX;
     }
     
@@ -106,8 +83,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
         (mwIndex*)a, (mwIndex*)ci);
     
     expand_index_to_double_zero_special((mwIndex*)a, a, n, 1.0, MWINDEX_MAX);
-    if (nlhs > 1)
-    {
+    if (nlhs > 1) {
         expand_index_to_double((mwIndex*)ci, ci, nz, 1.0);
     }
 }
