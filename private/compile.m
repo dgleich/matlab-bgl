@@ -3,6 +3,7 @@ function compile(varargin)
 %  2008-04-01: Added check for pre Matlab 2006b for non-large dim 
 %              sparse matrices.
 %  2009-05-06: Added macosx-intel-64-large
+%  2011-12-07: Updated library names to remove large
 %%
 
 debug = 0; if strmatch('-debug',varargin), debug=1; end
@@ -61,7 +62,7 @@ switch (computer)
             libname = 'mbgl-linux-64';
             large_arrays = 0;
         else
-            libname = 'mbgl-linux-64-large';
+            libname = 'mbgl-linux-64';
             large_arrays = 1;
         end
     otherwise

@@ -31,7 +31,7 @@ load('../graphs/padgett-florentine.mat');
 betweenness_centrality(A);
 
 % bfs
-load_mbgl_graph('bfs_example');s
+load_mbgl_graph('bfs_example');
 d = bfs(A,1);
 
 % biconnected_components

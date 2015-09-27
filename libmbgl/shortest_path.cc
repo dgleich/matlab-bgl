@@ -16,6 +16,8 @@
  *
  * 9 July 2007
  * Switched to simple_csr_matrix graph type
+ * 
+ * 2011-11-30: Switched to property maps in dijkstra's
  */
 
 #include "include/matlab_bgl.h"
@@ -47,13 +49,23 @@ int dijkstra_sp(
     crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
     if (dst == nverts) {
-        dijkstra_shortest_paths(g, src, distance_inf(dinf).predecessor_map(pred).distance_map(d));
+        dijkstra_shortest_paths(g, src, 
+            distance_inf(dinf).
+            predecessor_map(
+                make_iterator_property_map(pred, get(vertex_index,g))).
+            distance_map(
+                make_iterator_property_map(d, get(vertex_index,g))));
     } else {
         try {
             dijkstra_shortest_paths(g, src,
-                distance_inf(dinf).predecessor_map(pred).distance_map(d).
+                distance_inf(dinf).
+                predecessor_map(
+                    make_iterator_property_map(pred, get(vertex_index,g))).
+                distance_map(
+                    make_iterator_property_map(d, get(vertex_index,g))).
                 visitor(make_dijkstra_visitor(
-                            stop_search_on_vertex_target(dst, stop_dijkstra(), on_examine_vertex()))));
+                    stop_search_on_vertex_target(
+                        dst, stop_dijkstra(), on_examine_vertex()))));
         } catch (stop_dijkstra) {}
     }
 
@@ -91,12 +103,15 @@ int dijkstra_sp_visitor(
     c_dijkstra_visitor<crs_weighted_graph> visitor_impl;
     visitor_impl.vis = &vis;
 
-    try
-    {
-        dijkstra_shortest_paths(g, src, distance_inf(dinf).predecessor_map(pred).distance_map(d).visitor(visitor_impl));
-    }
-    catch (stop_dijkstra)
-    {
+    try {
+        dijkstra_shortest_paths(g, src, 
+            distance_inf(dinf).
+            predecessor_map(
+                make_iterator_property_map(pred, get(vertex_index,g))).
+            distance_map(
+                make_iterator_property_map(d, get(vertex_index,g))).
+            visitor(visitor_impl));
+    } catch (stop_dijkstra) {
     }
 
     return (0);

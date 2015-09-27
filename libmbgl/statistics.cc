@@ -11,6 +11,8 @@
  *  2007-07-05: Implemented core_numbers
  *  2007-07-11: Implemented directed and weighted clustering coefficients
  *  2007-07-12: Implemented dominator tree
+ *  2011-11-30: Corrected betweenness centrality with property maps
+ *  2011-12-03: Moved some functions into structure.cc
  */
 
 #include "include/matlab_bgl.h"
@@ -22,15 +24,16 @@
 #include <vector>
 
 #include <boost/graph/iteration_macros.hpp>
-//#include <boost/graph/betweenness_centrality.hpp>
-#include <yasmic/boost_mod/betweenness_centrality.hpp>
+#include <boost/graph/betweenness_centrality.hpp>
 #include <boost/graph/topological_sort.hpp>
 
 #include <boost/iterator/reverse_iterator.hpp>
 
 #include <boost/graph/max_cardinality_matching.hpp>
-#include <yasmic/boost_mod/core_numbers.hpp>
+#include <boost/graph/core_numbers.hpp>
 #include <boost/graph/dominator_tree.hpp>
+#include <boost/graph/bipartite.hpp>
+#include <boost/graph/bandwidth.hpp>
 
 #include <iostream>
 
@@ -411,7 +414,9 @@ int betweenness_centrality(
     {
         if (ecentrality) {
             brandes_betweenness_centrality(g,
-	        		centrality_map(centrality)
+	        		centrality_map(
+                        make_iterator_property_map(centrality,
+                            get(vertex_index, g)))
                     .weight_map(
                         make_iterator_property_map(weight,
                             get(edge_index,g)))
@@ -420,7 +425,9 @@ int betweenness_centrality(
                             ecentrality, get(edge_index, g))));
         } else {
             brandes_betweenness_centrality(g,
-	        		centrality_map(centrality)
+	        		centrality_map(
+                        make_iterator_property_map(centrality,
+                            get(vertex_index, g)))
                     .weight_map(
                         make_iterator_property_map(weight,
                             get(edge_index,g))));
@@ -430,7 +437,9 @@ int betweenness_centrality(
     {
         if (ecentrality) {
             brandes_betweenness_centrality(g,
-			    	centrality_map(centrality)
+			    	centrality_map(
+                        make_iterator_property_map(centrality,
+                            get(vertex_index, g)))
                     .edge_centrality_map(
                         make_iterator_property_map(
                             ecentrality, get(edge_index, g))));
@@ -444,256 +453,6 @@ int betweenness_centrality(
     return (0);
 }
 
-/**
- * Test for a topological order or topological sort of a graph.
- *
- * This function will also test if the graph is a dag.  If the
- * rev_order parameter is null, then the actual topological order
- * is ignored and the function just tests for a dag.
- *
- * @param nverts the number of vertices in the graph
- * @param ja the connectivity for each vertex
- * @param ia the row connectivity points into ja
- * @param topo_order a topological order of the vertices
- * @param is_dag tests if the graph is a dag (optional)
- */
-int topological_order(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex *topo_order, int *is_dag)
-{
-    using namespace yasmic;
-    using namespace boost;
-
-    typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-
-    if (is_dag) {
-        *is_dag = 1;
-    }
-
-    if (topo_order == NULL)
-    {
-        return (-1);
-    }
-    else
-    {
-        typedef reverse_iterator<mbglIndex*>
-            reverse_iter;
-
-        // note for the future, boost's reverse iterator is wild in that
-        // it actually dereferences the PRIOR element, so the correct
-        // range of a boost reverse itertor is the same as the original
-        // iterator.  Consequently, the last element is actual topo_order +
-        // nverts because the previous element (what * returns) is the
-        // correct element.
-        reverse_iter output(topo_order + (nverts));
-
-        try {
-            topological_sort(g, output);
-        } catch (not_a_dag) {
-            if (is_dag) {
-                *is_dag = 0;
-            }
-        }
-    }
-
-    return (0);
-}
-
-template <typename Graph,
-        typename MateMap,
-        typename VertexIndexMap>
-bool matching_help(const Graph& g, MateMap mate, VertexIndexMap vm,
-                   int initial_matching, int augmenting_path, int verify)
-{
-    using namespace boost;
-    if (initial_matching == 1)
-    {
-        if (augmenting_path == 1)
-            if (verify == 1)
-                return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder,
-                        empty_matching,
-                        no_matching_verifier>
-                        (g, mate, vm);
-            else
-                return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder,
-                        empty_matching,
-                        maximum_cardinality_matching_verifier>
-                        (g, mate, vm);
-        else
-            if (verify == 1)
-                return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder,
-                        empty_matching,
-                        no_matching_verifier>
-                        (g, mate, vm);
-            else
-                return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder,
-                        empty_matching,
-                        maximum_cardinality_matching_verifier>
-                        (g, mate, vm);
-    }
-    else if (initial_matching == 2)
-    {
-        if (augmenting_path == 1)
-            if (verify == 1)
-                return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder,
-                        greedy_matching,
-                        no_matching_verifier>
-                        (g, mate, vm);
-            else
-                return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder,
-                        greedy_matching,
-                        maximum_cardinality_matching_verifier>
-                        (g, mate, vm);
-        else
-            if (verify == 1)
-                return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder,
-                        greedy_matching,
-                        no_matching_verifier>
-                        (g, mate, vm);
-            else
-                return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder,
-                        greedy_matching,
-                        maximum_cardinality_matching_verifier>
-                        (g, mate, vm);
-    }
-    else
-    {
-        if (augmenting_path == 1)
-            if (verify == 1)
-                return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder,
-                        extra_greedy_matching,
-                        no_matching_verifier>
-                        (g, mate, vm);
-            else
-                return matching<Graph,MateMap,VertexIndexMap,
-                        no_augmenting_path_finder,
-                        extra_greedy_matching,
-                        maximum_cardinality_matching_verifier>
-                        (g, mate, vm);
-        else
-            if (verify == 1)
-                return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder,
-                        extra_greedy_matching,
-                        no_matching_verifier>
-                        (g, mate, vm);
-            else
-                return matching<Graph,MateMap,VertexIndexMap,
-                        edmonds_augmenting_path_finder,
-                        extra_greedy_matching,
-                        maximum_cardinality_matching_verifier>
-                        (g, mate, vm);
-    }
-}
-
-/** Wrap a boost graph library call to matching.
- *
- * A matching is a subset of edges with no common vertices in an undirected
- * graph.
- *
- * A maximum cardinality matching has the largest number of edges over all
- * possible matchings.
- *
- * The graph must be undirected.
- *
- * @param nverts the number of vertices in the graph
- * @param ja the connectivity for each vertex
- * @param ia the row connectivity points into ja
- * @param mate an array of size nverts which stores the matching vertex index
- *  or null vertex if there is no match
- * @param initial_matching indicates the initial matching used in the algorithm
- *  1: no_matching
- *  2: greedy_matching
- *  3: extra_greedy_matching
- * @param augmenting_path indicates the algorithm used to find augmenting paths
- *  1: no_augmenting_path_finder
- *  2: edmonds_augmenting_path_finder
- * @param verify indicates if we verify the algorithm ouput
- *  1: no_matching_verifier
- *  2: maximum_cardinality_matching_verifier
- * @param verified the output of the verification algorithm (if run), or
- *  false otherwise
- * @param null_vertex the special index to indicate an unmatched vertex
- * @return an error code if possible
- *   0: indicates success
- *  -1: indicates a parameter error with initial_matching, augmenting_path, or verify
- */
-int maximum_cardinality_matching(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex* mate, int initial_matching, int augmenting_path, int verify,
-    int *verified, mbglIndex *null_vertex)
-{
-    using namespace yasmic;
-    using namespace boost;
-
-    typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-
-    if (initial_matching < 1 || initial_matching > 3 ||
-        augmenting_path < 1 || augmenting_path > 2 ||
-        verify < 1 || verify > 2)
-    {
-        return (-1);
-    }
-
-    bool max_matching =
-        matching_help(g,mate,get(vertex_index,g),
-            initial_matching,augmenting_path,verify);
-
-    if (verified) {
-        *verified = 0;
-        if (verify > 1) { *verified = max_matching; }
-    }
-
-    if (null_vertex) {
-        *null_vertex = graph_traits<crs_graph>::null_vertex();
-    }
-
-    return (0);
-}
-
-template <typename Graph, typename MateMap, typename VertexIndexMap>
-bool verify_matching_help(const Graph& g, MateMap mate, VertexIndexMap vm)
-{
-    return boost::maximum_cardinality_matching_verifier<
-                    Graph,MateMap,VertexIndexMap>::verify_matching(g,mate,vm);
-}
-
-/*
- * mate = nverts if unmatched
- */
-int test_maximum_cardinality_matching(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex* mate, int *verified)
-{
-    using namespace yasmic;
-    using namespace boost;
-
-    typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-
-    // set the null_vertex to the true null
-    mbglIndex true_null = graph_traits<crs_graph>::null_vertex();
-    for (mbglIndex v=0;v<num_vertices(g);++v) {
-        if (mate[v] == nverts) { mate[v] = true_null; }
-    }
-
-    bool max_matching = verify_matching_help(g, mate, get(vertex_index,g));
-    if (verified) { *verified = 0; }
-    if (max_matching && verified) { *verified = 1; }
-
-    return (0);
-}
 
 /** Compute the core_numbers of a graph
  *
@@ -771,49 +530,56 @@ int weighted_core_numbers(
     return (0);
 }
 
-
-int dominator_tree(
+/** Find the bandwidth of the graph.
+ * 
+ * The bandwidth is the maximum difference in index on any edge.
+ * See the boost documentation for more.
+ * 
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param bandwidth the bandwidth of the graph
+ * @return an error code if possible
+ */
+int bandwidth( 
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
-    mbglIndex src, mbglIndex *pred)
-{
-    //
-    // History
-    //
-    // 12 July 2007
-    // Initial implementation
-    //
-    // 23 July 2007
-    // Added iterator property map call for pred.
-    //
-    using namespace yasmic;
-    using namespace boost;
+    mbglIndex *bandwidth)
+{    
+  using namespace yasmic;
+  using namespace boost;
 
-    typedef simple_csr_matrix<mbglIndex,double> crs_graph;
-    crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
-
-    std::vector<mbglIndex> ati(nverts+1);
-    std::vector<mbglIndex> atj(ia[nverts]);
-    std::vector<mbglIndex> atid(ia[nverts]);
-
-    build_row_and_column_from_csr(g, &ati[0], &atj[0], &atid[0]);
-
-    typedef simple_row_and_column_matrix<mbglIndex,double> bidir_graph;
-    bidir_graph bg(nverts, nverts, ia[nverts], ia, ja, NULL, &ati[0], &atj[0], &atid[0]);
-
-    // modify the output to conform to what matlab_bgl expects
-    mbglIndex null_vertex = graph_traits<bidir_graph>::null_vertex();
-    for (mbglIndex i=0; i< nverts; i++) { pred[i] = null_vertex; }
-
-    lengauer_tarjan_dominator_tree(bg, src,
-        make_iterator_property_map(pred, get(vertex_index,bg)));
-
-    pred[src] = src;
-
-    // modify the output to conform to what matlab_bgl expects
-    for (mbglIndex i=0; i< nverts; i++) {
-        if (pred[i] == null_vertex) { pred[i] = i; }
-    }
-
-    return (0);
+  typedef simple_csr_matrix<mbglIndex, double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
+  
+  *bandwidth = boost::bandwidth(g);
+  
+  return 0;
 }
 
+
+/** Find the bandwidth of a vertex in the graph
+ * 
+ * The bandwidth of the vertex is the maximum difference in indices of
+ * of any of that vertices edges.
+ * 
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param v the vertex for the bandwidth computation
+ * @param bandwidth the bandwidth of the graph
+ * @return an error code if possible
+ */
+int vertex_bandwidth( 
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex v, mbglIndex *bandwidth)
+{    
+  using namespace yasmic;
+  using namespace boost;
+
+  typedef simple_csr_matrix<mbglIndex, double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
+  
+  *bandwidth = boost::ith_bandwidth(v, g);
+  
+  return 0;
+}

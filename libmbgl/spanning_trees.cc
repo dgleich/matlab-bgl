@@ -1,4 +1,3 @@
-
 /** @file spanning_trees.cc
  * @author David F. Gleich
  * @date 2008-09-29
@@ -18,6 +17,7 @@
  *  2007-11-16: Added root vertex option to prim's MST
  *  2008-10-01: Changed copy_to_ijval to use mbglIndex instead of int.
  *    Removed old commented regions.
+ *  2011-12-20: Added random_spanning_tree
  */
 
 #include "include/matlab_bgl.h"
@@ -27,8 +27,25 @@
 
 #include <yasmic/boost_mod/kruskal_min_spanning_tree.hpp>
 #include <boost/graph/prim_minimum_spanning_tree.hpp>
+#include <boost/graph/random_spanning_tree.hpp>
+#include <boost/random.hpp>
 
 #include <vector>
+
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/timeb.h>
+unsigned int curtime()
+{
+#if defined(_WIN32) || defined(_WIN64)
+  struct __timeb64 t; _ftime64(&t);
+  return (t.time*1000 + t.millitm)%(1<<32-1);
+#else
+  struct timeval t; gettimeofday(&t, 0);
+  return (t.tv_sec*1000 + t.tv_usec*1000)%(1<<32-1);
+#endif
+}
+
 
 /*template <class Graph, class Edge>
 class spanning_tree_insert_iterator
@@ -174,3 +191,92 @@ int prim_mst(
     return prim_mst_rooted(nverts, ja, ia, weight, i, j, val, nedges, 0);
 }
 
+
+/** Compute a random minimum spanning tree of a graph
+ * 
+ * The graph can be directed or undirected
+ * 
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param weight the weight of each edge in the graph
+ * @param i the rows of the spanning tree
+ * @param j the columns of the spanning tree
+ * @param val the weights in the spanning tree
+ * @param root the starting vertex for the tree
+ * @param seed a value to seed the random number
+ *  sequence, a value of zero indicates the seed should
+ *  be based on the current time
+ * @return an error code if possible.
+ */
+
+int random_spanning_tree(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    mbglIndex* i, mbglIndex* j, double* val, mbglIndex* nedges, /* tree output */
+    mbglIndex root, unsigned int seed)
+{
+  using namespace yasmic;
+  using namespace boost;
+  
+  assert(root>=0 && root < nverts);
+  
+  boost::mt19937 gen;
+  if (seed != 0) {
+    gen.seed(seed);
+  } else {
+    gen.seed(curtime());
+  }
+
+  typedef simple_csr_matrix<mbglIndex, double> crs_weighted_graph;
+  crs_weighted_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
+
+  std::vector<mbglIndex> pred(nverts);
+  
+  try {
+    if (weight) {
+      random_spanning_tree(g, gen,
+        root_vertex(root)
+        .predecessor_map(make_iterator_property_map(
+            pred.begin(), get(vertex_index, g)))
+        .weight_map(get(edge_weight, g))
+      );
+    } else {
+      random_spanning_tree(g, gen,
+        root_vertex(root)
+        .predecessor_map(make_iterator_property_map(
+            pred.begin(), get(vertex_index, g)))
+      );
+    }
+  } catch (loop_erased_random_walk_stuck) {
+    return 1;
+  }
+
+  mbglIndex true_null = graph_traits<crs_weighted_graph>::null_vertex();
+  mbglIndex edge_num = 0;
+  for (mbglIndex pi = 0; pi < nverts; pi++) {
+    if (pred[pi] == true_null) {
+      // this edge isn't present
+    } else {
+      assert(edge_num<nverts-1);
+
+      i[edge_num] = pi;
+      j[edge_num] = pred[pi];
+      val[edge_num] = 1.0;
+
+      if (weight) {
+        for (mbglIndex k = ia[pred[pi]]; k < ia[pred[pi] + 1]; k++) {
+          if (ja[k] == pi) {
+            val[edge_num] = weight[k];
+            break;
+          }
+        }
+      }
+
+      edge_num++;
+    }
+  }
+
+  *nedges = edge_num;
+
+  return 0;
+}

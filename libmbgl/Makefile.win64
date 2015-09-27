@@ -1,0 +1,18 @@
+.PHONY : clean
+
+PLATFORM=pcwin
+ARCH=64
+
+include mingw64.sh
+include Makefile.conf
+
+BOOST_DIR=$(HOME)/dev/lib/boost_1_48_0
+DEFINES ?= -DMATLAB_BGL_LARGE_ARRAYS
+
+CXXFLAGS += -O2 -I/usr/include/c++/4.4/ -I$(YASMIC_DIR) -I$(BOOST_DIR) $(DEFINES) -fPIC
+
+$(LIBNAME).lib:$(OBJFILES)
+	$(AR) $(ARFLAGS) $@ $^
+
+clean:
+	rm -f *.lib *.o

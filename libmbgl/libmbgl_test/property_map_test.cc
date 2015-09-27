@@ -1,6 +1,6 @@
 #include "include/matlab_bgl.h"
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 
 
 

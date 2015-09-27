@@ -15,18 +15,21 @@
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
 #include <yasmic/iterator_utility.hpp>
 
+#include <stack>
+
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/planar_canonical_ordering.hpp>
-//#include <boost/graph/chrobak_payne_drawing.hpp>
-#include <yasmic/boost_mod/chrobak_payne_drawing.hpp>
+//#include <boost/graph/planar_canonical_ordering.hpp>
+#include <boost/graph/chrobak_payne_drawing.hpp>
+//#include <yasmic/boost_mod/chrobak_payne_drawing.hpp>
 #include <boost/graph/boyer_myrvold_planar_test.hpp>
 #include <boost/graph/is_kuratowski_subgraph.hpp>
 #include <boost/graph/make_connected.hpp>
 #include <boost/graph/make_biconnected_planar.hpp>
 #include <boost/graph/make_maximal_planar.hpp>
 #include <boost/graph/simple_point.hpp>
-//#include <boost/graph/is_straight_line_drawing.hpp>
-#include <yasmic/boost_mod/is_straight_line_drawing.hpp>
+#include <boost/graph/is_straight_line_drawing.hpp>
+//#include <yasmic/boost_mod/is_straight_line_drawing.hpp>
+#include <boost/graph/planar_canonical_ordering.hpp>
 #include <boost/graph/filtered_graph.hpp>
 
 #include <vector>

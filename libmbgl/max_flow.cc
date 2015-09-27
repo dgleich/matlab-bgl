@@ -23,12 +23,16 @@
 
 #include "include/matlab_bgl.h"
 
+#include <yasmic/undir_simple_csr_matrix_as_graph.hpp>
 #include <yasmic/simple_csr_matrix_as_graph.hpp>
 #include <boost/graph/push_relabel_max_flow.hpp>
-#include <boost/graph/edmunds_karp_max_flow.hpp>
-#include <yasmic/boost_mod/kolmogorov_max_flow.hpp>
+#include <boost/graph/edmonds_karp_max_flow.hpp>
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <yasmic/iterator_utility.hpp>
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
+
+#include <boost/graph/one_bit_color_map.hpp>
+#include <boost/graph/stoer_wagner_min_cut.hpp>
 
 template <typename Index, typename Value, typename EdgeIndex, class Child>
 struct reverse_edge_pmap_helper
@@ -86,6 +90,13 @@ public:
         _e.i = _rev_edge_index[v.i];
         return _e;
     }
+	  inline typename traits::edge_descriptor const &
+    operator[](key_type v) const
+    {
+			  (const_cast<reference>(_e)).r = boost::target(v,_g);
+			  (const_cast<reference>(_e)).i = _rev_edge_index[v.i];
+        return _e;
+    }	
 
     inline
     reverse_edge_pmap(mbglIndex* rev_edge_index, const matrix& g)
@@ -173,7 +184,7 @@ int push_relabel_max_flow(
  * @param flow the maximum flow in the graph
  * @return an error code if possible
  */
-int edmunds_karp_max_flow(
+int edmonds_karp_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
     mbglIndex src, mbglIndex sink,
     int* cap, int* res,
@@ -186,7 +197,7 @@ int edmunds_karp_max_flow(
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
-    *flow = (edmunds_karp_max_flow(g,
+    *flow = (edmonds_karp_max_flow(g,
         src, sink,
         capacity_map(make_iterator_property_map(cap, get(edge_index,g))).
         residual_capacity_map(make_iterator_property_map(res, get(edge_index,g))).
@@ -218,7 +229,7 @@ int edmunds_karp_max_flow(
  * @param flow the maximum flow in the graph
  * @return an error code if possible
  */
-int kolmogorov_max_flow(
+int boykov_kolmogorov_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
     mbglIndex src, mbglIndex sink,
     int* cap, int* res,
@@ -231,20 +242,62 @@ int kolmogorov_max_flow(
     typedef simple_csr_matrix<mbglIndex,double> crs_graph;
     crs_graph g(nverts, nverts, ia[nverts], ia, ja, NULL);
 
-    *flow = (kolmogorov_max_flow(g,
+    *flow = (boykov_kolmogorov_max_flow(g,
         make_iterator_property_map(cap, get(edge_index,g)),
         make_iterator_property_map(res, get(edge_index,g)),
         make_reverse_edge_pmap(g,rev_edge_index),
         get(vertex_index,g),
         src, sink));
-    /*test_kolmogorov(g,
-        make_iterator_property_map(cap, get(edge_index,g)),
-        make_iterator_property_map(res, get(edge_index,g)),
-        make_reverse_edge_pmap(g,rev_edge_index));*/
-
 
     return (0);
 }
 
 
+/** Compute a minimum cut via the Stoer Wagner algorithm
+ * 
+ * The graph must be undirected. 
+ *
+ * @param nverts the number of vertices in the graph
+ * @param ja the connectivity for each vertex
+ * @param ia the row connectivity points into ja
+ * @param weight the weight of each edge in the graph
+ * @param cut the value of the mincut
+ * @param cutset an indicator vector over the vertices indicating
+ *   0 -> one side; 1 -> the second side
+ * @return an error code if possible.
+ */
+int stoer_wagner_min_cut(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    double* cut, mbglIndex *cutset)
+{
+  using namespace yasmic;
+  using namespace boost;
+  
+  if (nverts < 2) {
+    return -1; 
+  }
+  
+  typedef undir_simple_csr_matrix<mbglIndex,double> crs_graph;
+  crs_graph g(nverts, nverts, ia[nverts], ia, ja, weight);
 
+  BOOST_AUTO(parities, boost::make_one_bit_color_map(num_vertices(g), get(boost::vertex_index, g)));
+  
+  double cutval = 
+     stoer_wagner_min_cut(g, get(boost::edge_weight, g), 
+       boost::parity_map(parities));
+  
+  if (cutset != NULL) {
+    for (mbglIndex i = 0; i<nverts; ++i) {
+      if (get(parities,i)) {
+        cutset[i] = 1;
+      } else {
+        cutset[i] = 0;
+      }
+    }
+  }
+  
+  if (cut != NULL) {
+    *cut = cutval;
+  }
+  return 0;
+}

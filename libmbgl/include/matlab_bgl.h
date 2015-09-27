@@ -106,17 +106,21 @@ int push_relabel_max_flow(
     int* cap, int* res, /* capacity and residual capacity */
     mbglIndex* rev_edge_index, int *flow);
 
-int kolmogorov_max_flow(
+int boykov_kolmogorov_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,  /* connectivity params */
     mbglIndex src, mbglIndex sink, /* flow data */
     int* cap, int* res, /* capacity and residual capacity */
     mbglIndex* rev_edge_index, int *flow);
 
-int edmunds_karp_max_flow(
+int edmonds_karp_max_flow(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,  /* connectivity params */
     mbglIndex src, mbglIndex sink, /* flow data */
     int* cap, int* res, /* capacity and residual capacity */
     mbglIndex* rev_edge_index, int *flow);
+    
+int stoer_wagner_min_cut(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    double* cut, mbglIndex *cutset);
 
 /**
  * @section searches.cc
@@ -232,10 +236,53 @@ int prim_mst_rooted(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     mbglIndex* i, mbglIndex* j, double* val, mbglIndex* nedges, /* tree output */
     mbglIndex root);
+    
+int random_spanning_tree(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
+    mbglIndex* i, mbglIndex* j, double* val, mbglIndex* nedges, /* tree output */
+    mbglIndex root, unsigned int seed);
+    
+/**
+ * @section structure
+ */    
+ 
+
+int topological_order(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
+    mbglIndex *rev_order, int *is_dag);
+
+int maximum_cardinality_matching(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
+    mbglIndex* mate, int initial_matching, int augmenting_path, int verify,
+    int *verified, mbglIndex *null_vertex);
+
+int test_maximum_cardinality_matching(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
+    mbglIndex* mate, int *verified); 
+
+int dominator_tree(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex src, mbglIndex *pred);
+    
+int is_bipartite(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    int* is_bipartite, mbglIndex* part);    
+    
+int find_odd_cycle(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex *cycle, mbglIndex *cyclelen);   
+    
+int isomorphism(
+    mbglIndex nverts1, mbglIndex *ja1, mbglIndex *ia1,
+    mbglIndex nverts2, mbglIndex *ja2, mbglIndex *ia2,
+    int *iso, mbglIndex *map);         
+
+int sequential_vertex_coloring(
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex *colors);
 
 /**
  * @section statistics.cc
- *
  */
 int betweenness_centrality(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
@@ -253,19 +300,6 @@ int directed_clustering_coefficients(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     double *ccoeffs);
 
-int topological_order(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex *rev_order, int *is_dag);
-
-int maximum_cardinality_matching(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex* mate, int initial_matching, int augmenting_path, int verify,
-    int *verified, mbglIndex *null_vertex);
-
-int test_maximum_cardinality_matching(
-    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex* mate, int *verified);
-
 int core_numbers(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglDegreeType *cn, int *rt);
@@ -273,10 +307,14 @@ int core_numbers(
 int weighted_core_numbers(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, double *weight, /* connectivity params */
     double *cn, int *rt);
-
-int dominator_tree(
+    
+int bandwidth( 
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
-    mbglIndex src, mbglIndex *pred);
+    mbglIndex *bandwidth);    
+    
+int vertex_bandwidth( 
+    mbglIndex nverts, mbglIndex *ja, mbglIndex *ia,
+    mbglIndex v, mbglIndex *bandwidth);    
 
 /**
  * @section layouts.cc
@@ -353,15 +391,36 @@ int reverse_cuthill_mckee_order(
 
 int king_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex *perm /* permutation output */);
-
+    mbglIndex start, 
+    mbglIndex *iperm /* permutation output */, mbglIndex *ipermlen);
+    
 int minimum_degree_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
     mbglIndex *perm /* permutation output */);
 
 int sloan_order(
     mbglIndex nverts, mbglIndex *ja, mbglIndex *ia, /* connectivity params */
-    mbglIndex *perm /* permutation output */);
+    mbglIndex vstart, mbglIndex vend,
+    mbglIndex *iperm /* permutation output */, mbglIndex *ipermlen);
+    
+/** 
+ * @section random_graphs.cc
+ */
+ 
+int erdos_renyi_edges(
+    mbglIndex nverts, double prob, int loops,
+    mbglIndex *src, mbglIndex *dst, mbglIndex *nallocedges, 
+    unsigned int seed);
+
+int small_world_edges(
+    mbglIndex nverts, mbglIndex k, double prob, int loops,
+    mbglIndex *src, mbglIndex *dst, mbglIndex *nallocedges, 
+    unsigned int seed);
+
+int plod_edges(
+    mbglIndex nverts, double alpha, double beta, int loops,
+    mbglIndex *src, mbglIndex *dst, mbglIndex *nallocedges, 
+    unsigned int seed);
 
 #ifdef __cplusplus
 }
