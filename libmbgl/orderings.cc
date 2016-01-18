@@ -18,10 +18,8 @@
 #include <yasmic/iterator_utility.hpp>
 
 #include <boost/graph/properties.hpp>
-#include <boost/graph/king_ordering.hpp>
-#include <boost/graph/sloan_ordering.hpp>
-
 #include <boost/graph/graph_utility.hpp>
+
 
 // fix crappy oversight in king_ordering.cc
 namespace boost {
@@ -31,6 +29,11 @@ namespace boost {
       return boost::graph::has_no_vertices(g);
     }
 }
+
+#include <boost/graph/king_ordering.hpp>
+#include <boost/graph/sloan_ordering.hpp>
+
+
 
 /**
  * undirected graphs only
