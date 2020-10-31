@@ -99,3 +99,5 @@ end
 
 if trans, D = D'; end
 
+% este es otro algoritmo que nunca pensé volver a ver de nuevo
+% Varemos como nos va en la aventura de modificarlo

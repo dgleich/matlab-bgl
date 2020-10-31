@@ -12,3 +12,6 @@ function addpath_mbgl_custom
 
 path=fileparts(mfilename('fullpath'));
 addpath(fullfile(path,'custom'));
+
+% Este es uno de los algoritmos que ha llamado poderosamente mi atención
+% Trabajaré sobre el mismo 
