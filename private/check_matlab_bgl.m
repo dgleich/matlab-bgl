@@ -18,7 +18,15 @@ function check_matlab_bgl(A,options)
 %  2007-07-22: Fixed empty array error for noneg check
 %  2008-09-23: Added no diagonal check, misc formatting fixes
 %% 
-
+if isempty(A)
+    error('matlab_bgl:invalidParameter', 'the matrix A must be non-empty');
+else
+    v = min(A, [], 'all');
+    u = max(A, [], 'all');
+    if v == 0 && u == 0
+        error('matlab_bgl:invalidParameter', 'the matrix A must not be all-zero');
+    end
+end
 if ~isfield(options, 'nodefault') || options.nodefault == 0
     if size(A,1) ~= size(A,2)
         error('matlab_bgl:invalidParameter', 'the matrix A must be square.');
@@ -32,7 +40,6 @@ if isfield(options, 'values') && options.values == 1
 end
 
 if isfield(options, 'noneg') && options.noneg == 1
-    v=min(min(A));
     if ~isempty(v) && v < 0
         error('matlab_bgl:invalidParameter', 'the matrix A must have non-negative values.');
     end
