@@ -18,6 +18,15 @@ Synopsis
 
 [coming soon]
 
+Installation
+------------
+
+Ideally, you download, unzip and it works. Reality is almost never ideal though.
+
+There are some fantastic instructions from others on how to compile here.
+<https://answers.launchpad.net/matlab-bgl/+question/69161>
+
+
 License
 -------
 
